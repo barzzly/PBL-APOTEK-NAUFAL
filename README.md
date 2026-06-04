@@ -34,10 +34,10 @@
 ---
 
 ## 👨‍💻 Tim Pengembang
+- Hidayathul Fikri
 - Nabilla Fitricia Hernanda  
 - Farid Yahya  
 - Rury Matari  
-- Noesantara Team  
 
 ---
 
