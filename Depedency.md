@@ -1,4 +1,4 @@
-# Identifikasi dan Analisis Dependency Laravel pada Proyek PBL Apotek Naufal
+# Dependency Laravel pada Proyek PBL Apotek Naufal
 
 ## 1. Spatie Laravel Permission
 
