@@ -37,7 +37,7 @@
 - Hidayathul Fikri
 - Nabilla Fitricia Hernanda  
 - Farid Yahya  
-- Rury Matari  
+- Rury Fezriani Matari  
 
 ---
 
