@@ -1,116 +1,234 @@
-# Dependency Laravel pada Proyek PBL Apotek Naufal
+# Analisis Dependency Laravel pada Proyek Sistem Informasi Apotek Naufal
 
-## 1. Spatie Laravel Permission
+## Pendahuluan
 
-### What
+Dalam pengembangan Sistem Informasi Apotek Naufal, penggunaan dependency atau package pihak ketiga diperlukan untuk mempercepat proses pengembangan aplikasi. Dependency memungkinkan pengembang memanfaatkan fitur yang telah tersedia tanpa harus membangun seluruh fungsionalitas dari awal. Pemilihan dependency dilakukan berdasarkan kebutuhan sistem, kemudahan implementasi, keamanan, serta kompatibilitas dengan framework Laravel yang digunakan.
 
-Spatie Laravel Permission adalah package Laravel yang digunakan untuk mengelola Role dan Permission pengguna.
+---
 
-### Why
+# 1. Spatie Laravel Permission
 
-Package ini digunakan untuk membatasi hak akses pengguna berdasarkan peran masing-masing, seperti Admin, Apoteker, dan Kasir.
+## What (Apa)
 
-### Who
+Spatie Laravel Permission merupakan package Laravel yang menyediakan fitur manajemen Role-Based Access Control (RBAC). Package ini memungkinkan sistem untuk mengelola role dan permission pengguna secara fleksibel.
 
-Digunakan oleh seluruh pengguna sistem yang memiliki level akses berbeda.
+## Why (Mengapa)
 
-### When
+Pada Sistem Informasi Apotek terdapat beberapa jenis pengguna dengan hak akses yang berbeda, seperti:
 
-Digunakan saat proses login dan ketika pengguna mengakses menu atau fitur tertentu.
+* Administrator
+* Apoteker
+* Kasir
+* Pemilik Apotek
 
-### Where
+Setiap pengguna hanya boleh mengakses fitur sesuai tugas dan tanggung jawabnya. Oleh karena itu diperlukan mekanisme pengaturan hak akses yang terstruktur dan aman.
 
-Modul Manajemen User, Login, Role Management, dan Hak Akses Sistem.
+Tanpa package ini, pengembang harus membuat sistem role dan permission secara manual yang membutuhkan waktu lebih lama serta berpotensi menimbulkan kesalahan implementasi.
 
-### How
+## Who (Siapa)
 
-Package diinstall menggunakan Composer dan diintegrasikan dengan model User untuk mengatur role dan permission.
+Dependency ini digunakan oleh:
 
-### Risiko Dependency
+* Administrator
+* Apoteker
+* Kasir
+* Pemilik Apotek
+
+Selain digunakan oleh pengguna sistem, package ini juga membantu developer dalam mengelola hak akses secara lebih efisien.
+
+## When (Kapan)
+
+Dependency digunakan ketika:
+
+* Pengguna melakukan login
+* Sistem memverifikasi hak akses pengguna
+* Pengguna membuka menu tertentu
+* Pengguna melakukan operasi tambah, ubah, hapus, atau melihat data
+
+## Where (Di Mana)
+
+Dependency ini digunakan pada:
+
+* Modul Login
+* Modul Manajemen User
+* Modul Hak Akses
+* Modul Data Obat
+* Modul Transaksi Penjualan
+* Modul Laporan
+
+## How (Bagaimana)
+
+Implementasi dilakukan melalui Composer:
+
+```bash
+composer require spatie/laravel-permission
+```
+
+Package kemudian dihubungkan dengan model User dan digunakan untuk memberikan role serta permission kepada setiap pengguna.
+
+Contoh:
+
+* Admin → akses penuh
+* Apoteker → mengelola data obat
+* Kasir → melakukan transaksi
+* Pemilik → melihat laporan
+
+## Risiko Dependency
 
 * Ketergantungan terhadap package pihak ketiga.
-* Perlu pembaruan versi secara berkala untuk menjaga keamanan.
+* Potensi perubahan API pada versi terbaru.
+* Kesalahan konfigurasi dapat menyebabkan pengguna memperoleh akses yang tidak sesuai.
 
-### Referensi
+## Manfaat
+
+* Mempercepat implementasi sistem hak akses.
+* Meningkatkan keamanan aplikasi.
+* Memudahkan pengelolaan pengguna.
+
+## Referensi
 
 https://spatie.be/docs/laravel-permission
 
 ---
 
-## 2. Laravel DomPDF
+# 2. Laravel DomPDF
 
-### What
+## What (Apa)
 
-Laravel DomPDF adalah package yang digunakan untuk membuat dan mengunduh dokumen PDF dari data aplikasi.
+Laravel DomPDF merupakan package yang digunakan untuk menghasilkan dokumen PDF dari tampilan HTML atau Blade Laravel.
 
-### Why
+## Why (Mengapa)
 
-Digunakan untuk menghasilkan laporan penjualan, laporan stok obat, dan laporan transaksi dalam format PDF.
+Sistem Informasi Apotek memerlukan fitur pencetakan laporan untuk kebutuhan administrasi dan dokumentasi.
 
-### Who
+Beberapa laporan yang perlu dicetak:
 
-Digunakan oleh Admin dan Pemilik Apotek.
+* Laporan Penjualan Obat
+* Laporan Stok Obat
+* Laporan Transaksi
+* Laporan Obat Kadaluarsa
 
-### When
+Format PDF dipilih karena mudah dibagikan, dicetak, dan memiliki tampilan yang konsisten.
 
-Digunakan saat pengguna memilih menu cetak atau unduh laporan.
+## Who (Siapa)
 
-### Where
+Dependency digunakan oleh:
 
-Modul Laporan Penjualan, Laporan Obat, dan Laporan Transaksi.
+* Administrator
+* Pemilik Apotek
+* Apoteker
 
-### How
+## When (Kapan)
 
-Package diinstall melalui Composer kemudian digunakan untuk mengubah tampilan Blade menjadi file PDF.
+Dependency digunakan ketika:
 
-### Risiko Dependency
+* Pengguna menekan tombol Cetak Laporan
+* Pengguna mengunduh laporan
+* Sistem menghasilkan dokumen arsip
 
-* Proses generate PDF dapat memperlambat sistem jika data sangat banyak.
-* Beberapa elemen CSS tidak selalu didukung sempurna.
+## Where (Di Mana)
 
-### Referensi
+Digunakan pada:
+
+* Modul Laporan Penjualan
+* Modul Laporan Stok
+* Modul Laporan Transaksi
+* Modul Laporan Obat
+
+## How (Bagaimana)
+
+Implementasi dilakukan menggunakan Composer:
+
+```bash
+composer require barryvdh/laravel-dompdf
+```
+
+Data yang ditampilkan pada halaman Blade kemudian dikonversi menjadi file PDF menggunakan library DomPDF.
+
+## Risiko Dependency
+
+* Membutuhkan memori lebih besar untuk laporan dengan data banyak.
+* Tidak semua CSS didukung secara sempurna.
+* Proses generate PDF dapat memperlambat aplikasi jika data terlalu besar.
+
+## Manfaat
+
+* Mempermudah pembuatan laporan.
+* Menghasilkan dokumen profesional.
+* Mengurangi pekerjaan manual pengguna.
+
+## Referensi
 
 https://github.com/barryvdh/laravel-dompdf
 
 ---
 
-## 3. Laravel Excel
+# 3. Laravel Debugbar
 
-### What
+## What (Apa)
 
-Laravel Excel adalah package untuk melakukan import dan export data Excel.
+Laravel Debugbar adalah package yang digunakan untuk membantu proses debugging dan monitoring aplikasi selama tahap pengembangan.
 
-### Why
+## Why (Mengapa)
 
-Digunakan untuk mempermudah pengelolaan data obat dalam jumlah besar melalui file Excel.
+Saat membangun Sistem Informasi Apotek, developer perlu mengetahui:
 
-### Who
+* Query database yang dijalankan
+* Error aplikasi
+* Waktu eksekusi program
+* Penggunaan memori
 
-Digunakan oleh Admin dan Apoteker.
+Informasi tersebut sangat membantu dalam proses pengembangan dan optimasi sistem.
 
-### When
+## Who (Siapa)
 
-Digunakan saat menambah data obat secara massal atau mengunduh laporan dalam format Excel.
+Dependency digunakan oleh:
 
-### Where
+* Programmer
+* Tim Pengembang
 
-Modul Data Obat, Stok Obat, dan Laporan.
+Dependency ini tidak digunakan langsung oleh pengguna akhir.
 
-### How
+## When (Kapan)
 
-Package diinstall menggunakan Composer dan memanfaatkan class Export serta Import yang disediakan package.
+Digunakan selama:
 
-### Risiko Dependency
+* Pengembangan aplikasi
+* Pengujian fitur
+* Perbaikan bug
+* Optimasi performa
 
-* Membutuhkan memori lebih besar ketika mengolah file Excel berukuran besar.
-* Kesalahan format file dapat menyebabkan proses import gagal.
+## Where (Di Mana)
 
-### Referensi
+Digunakan pada seluruh modul aplikasi selama tahap development.
 
-https://laravel-excel.com
+## How (Bagaimana)
+
+Instalasi dilakukan menggunakan Composer:
+
+```bash
+composer require barryvdh/laravel-debugbar --dev
+```
+
+Setelah terpasang, Debugbar akan menampilkan informasi debugging pada bagian bawah halaman aplikasi.
+
+## Risiko Dependency
+
+* Tidak boleh digunakan pada server production.
+* Dapat menampilkan informasi sensitif apabila tidak dikonfigurasi dengan baik.
+
+## Manfaat
+
+* Mempercepat pencarian bug.
+* Membantu optimasi query database.
+* Mempermudah monitoring performa aplikasi.
+
+## Referensi
+
+https://github.com/barryvdh/laravel-debugbar
 
 ---
 
-## Kesimpulan
+# Kesimpulan
 
-Dependency membantu mempercepat pengembangan aplikasi karena menyediakan fitur yang siap digunakan. Pada proyek Sistem Informasi Apotek, package Spatie Permission digunakan untuk manajemen hak akses, DomPDF untuk pembuatan laporan PDF, dan Laravel Excel untuk import-export data. Penggunaan dependency harus didokumentasikan dan dikelola dengan baik karena dapat memengaruhi pemeliharaan dan evolusi perangkat lunak di masa mendatang.
+Dependency merupakan komponen penting dalam pengembangan perangkat lunak modern karena dapat mempercepat proses pembangunan aplikasi dan meningkatkan kualitas sistem. Pada proyek Sistem Informasi Apotek Naufal, dependency yang dipilih adalah Spatie Laravel Permission untuk manajemen hak akses, Laravel DomPDF untuk pembuatan laporan PDF, dan Laravel Debugbar untuk membantu proses debugging. Ketiga dependency tersebut dipilih karena sesuai dengan kebutuhan sistem, mudah diintegrasikan dengan Laravel, serta mendukung proses pengembangan aplikasi secara lebih efektif dan efisien.
