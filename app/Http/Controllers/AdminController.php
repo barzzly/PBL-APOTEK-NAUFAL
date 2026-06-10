@@ -31,11 +31,12 @@ class AdminController extends Controller
                                 ->where('payment_status', 'paid')
                                 ->sum('total_amount');
 
-        // Low stock medicines (stock <= 10)
-        $lowStockMedicines = Medicine::where('stock', '<=', 10)
+        // Low stock medicines (stock < 30)
+        $lowStockMedicines = Medicine::where('stock', '<', 30)
                                      ->orderBy('stock')
                                      ->limit(5)
                                      ->get();
+        $lowStockCount = Medicine::where('stock', '<', 30)->count();
 
         // Recent orders
         $recentOrders = Order::with('user')
@@ -47,7 +48,7 @@ class AdminController extends Controller
             'categoriesCount', 'medicinesCount',
             'totalOrders', 'ordersPending', 'ordersToday',
             'revenueToday', 'revenueMonth',
-            'lowStockMedicines', 'recentOrders'
+            'lowStockMedicines', 'lowStockCount', 'recentOrders'
         ));
     }
 

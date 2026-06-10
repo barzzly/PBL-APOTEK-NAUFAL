@@ -9,7 +9,7 @@
     <div class="absolute -right-2 bottom-0 w-24 h-24 bg-white/5 rounded-full"></div>
     <div class="relative">
         <p class="text-sm font-medium text-white/75 mb-1">{{ now()->isoFormat('dddd, DD MMMM YYYY') }}</p>
-        <h2 class="text-2xl font-bold mb-1">Selamat datang, {{ auth()->user()->name ?? 'Admin' }}! 👋</h2>
+        <h2 class="text-2xl font-bold mb-1">Selamat datang, {{ auth()->user()->name ?? 'Admin' }}!</h2>
         <p class="text-sm text-white/80">Berikut ringkasan aktivitas Apotek Naufal hari ini.</p>
     </div>
 </div>
@@ -135,8 +135,8 @@
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <div>
-                <div class="text-2xl font-bold {{ $lowStockMedicines->count() > 0 ? 'text-red-500' : 'text-gray-800' }}">
-                    {{ $lowStockMedicines->count() }}
+                <div class="text-2xl font-bold {{ $lowStockCount > 0 ? 'text-red-500' : 'text-gray-800' }}">
+                    {{ $lowStockCount }}
                 </div>
                 <div class="text-sm text-gray-400 mt-0.5">Stok Hampir Habis</div>
             </div>
@@ -218,7 +218,7 @@
                 </div>
                 <div>
                     <h2 class="text-sm font-bold text-gray-800">Stok Hampir Habis</h2>
-                    <p class="text-xs text-gray-400 mt-0.5">Stok &le; 10 unit</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Stok &lt; 30 unit</p>
                 </div>
             </div>
 

@@ -300,36 +300,36 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm" style="table-layout: fixed; min-width: 1000px;">
             <thead>
-                <tr class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
-                    <th class="px-6 py-3.5">No. Order</th>
-                    <th class="px-6 py-3.5">Pelanggan</th>
-                    <th class="px-6 py-3.5">Tanggal</th>
-                    <th class="px-6 py-3.5">Jenis</th>
-                    <th class="px-6 py-3.5">Metode Bayar</th>
-                    <th class="px-6 py-3.5">Status Order</th>
-                    <th class="px-6 py-3.5">Status Bayar</th>
-                    <th class="px-6 py-3.5 text-right">Total</th>
+                <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 14%;">No. Order</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 18%;">Pelanggan</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">Tanggal</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 10%;">Jenis</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">Metode Bayar</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">Status Order</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">Status Bayar</th>
+                    <th class="px-6 py-3.5 text-right" style="width: 12%;">Total</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @forelse($orders as $order)
                 <tr class="hover:bg-gray-50/60 transition-colors">
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 border-r border-gray-100">
                         <span class="font-mono text-xs font-semibold text-gray-700 bg-gray-100 px-2 py-1 rounded-lg whitespace-nowrap">
                             {{ $order->order_number }}
                         </span>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 border-r border-gray-100">
                         <div class="font-medium text-gray-800">{{ $order->user->name ?? '-' }}</div>
                         <div class="text-xs text-gray-400 mt-0.5">{{ $order->user->email ?? '' }}</div>
                     </td>
-                    <td class="px-6 py-4 text-gray-500 text-xs whitespace-nowrap">
+                    <td class="px-6 py-4 text-gray-500 text-xs whitespace-nowrap border-r border-gray-100">
                         <div>{{ $order->created_at->isoFormat('DD MMM YYYY') }}</div>
                         <div class="text-gray-400 mt-0.5">{{ $order->created_at->format('H:i') }}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 border-r border-gray-100">
                         @if($order->order_type === 'delivery')
                             <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full whitespace-nowrap">
                                 <i class="fa-solid fa-truck text-[10px]"></i> Dikirim
@@ -340,10 +340,10 @@
                             </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-gray-600 text-xs font-medium whitespace-nowrap">
+                    <td class="px-6 py-4 text-gray-600 text-xs font-medium whitespace-nowrap border-r border-gray-100">
                         {{ $order->payment_method_label }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 border-r border-gray-100">
                         @php
                             $colorMap = [
                                 'yellow' => 'text-yellow-700 bg-yellow-50',
@@ -361,7 +361,7 @@
                             {{ $order->status_label }}
                         </span>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 border-r border-gray-100">
                         @if($order->payment_status === 'paid')
                             <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap">
                                 <i class="fa-solid fa-check text-[10px]"></i> Lunas
