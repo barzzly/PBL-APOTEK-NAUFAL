@@ -6,6 +6,49 @@ Aplikasi ini dibangun menggunakan framework **Laravel** dengan integrasi fronten
 
 ---
 
+## 👥 Tim Pengembang (PBL)
+Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
+* **Farid Yahya**
+* **Hidayathul Fikri**
+* **Nabilla Fitricia Hernanda**
+* **Rury Fezriani Matari**
+
+---
+
+## 🎯 Tujuan Proyek
+Proyek ini dibuat dengan tujuan:
+* **Digitalisasi Operasional Apotek**: Mengotomatiskan pencatatan stok obat, manajemen kategori, dan transaksi secara real-time.
+* **Kemudahan Akses Pelanggan**: Memfasilitasi pelanggan untuk memesan obat secara online baik melalui metode *delivery* (diantar) maupun *pickup* (ambil langsung).
+* **Verifikasi Resep Digital**: Menyediakan fitur bagi apoteker untuk memverifikasi unggahan foto resep dokter dari pelanggan sebelum memproses pesanan obat keras.
+* **Pelaporan yang Cepat & Akurat**: Membantu pihak administrasi apotek dalam mengunduh laporan penjualan dan stok dalam format PDF maupun Excel secara efisien.
+
+---
+
+## 🌟 Fitur Utama
+* **Autentikasi & Multi-Role**: Sistem login dan hak akses terintegrasi untuk 3 role pengguna: **Admin**, **Pharmacist (Apoteker)**, dan **Customer**.
+* **Manajemen Inventaris Obat**: Manajemen data obat mencakup kategori, stok, harga diskon, batas minimum stok, status wajib resep dokter, hingga tanggal kadaluwarsa.
+* **Sistem Pemesanan (Checkout)**: Fitur pemesanan obat online dengan opsi pengiriman (*delivery*) atau pengambilan di apotek (*pickup*).
+* **Upload & Verifikasi Resep**: Pelanggan dapat mengunggah foto resep dokter, dan apoteker dapat memverifikasi atau menolak resep tersebut melalui panel khusus.
+* **Metode Pembayaran Variatif**: Mendukung pembayaran via *Cash*, *Transfer* (dengan unggah bukti bayar), *QRIS*, dan *BPJS*.
+* **Ekspor & Cetak Laporan**: Generate laporan penjualan format PDF, serta impor/ekspor data obat secara massal menggunakan format Excel.
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+Aplikasi ini menggunakan kombinasi teknologi berikut untuk memastikan keandalan dan performa terbaik:
+
+* **Backend / Engine Utama**: [Laravel](https://laravel.com) (Framework PHP MVC modern)
+* **Frontend UI**: [Laravel Blade](https://laravel.com/docs/blade) (Templating Engine) & [Tailwind CSS v4](https://tailwindcss.com) (Styling UI)
+* **Asset Bundler / Build Tool**: [Vite](https://vite.dev) (Terintegrasi via `laravel-vite-plugin`)
+* **Basis Data (Database)**: MySQL / MariaDB
+* **Library Pendukung Penting**:
+  * **Spatie Laravel Permission**: Mengelola otorisasi akses (Role & Permission) pengguna.
+  * **Laravel DomPDF**: Menghasilkan dokumen laporan penjualan dan bukti transaksi berformat PDF.
+  * **Laravel Excel**: Memproses ekspor dan impor data inventaris obat dengan format Excel (.xlsx).
+
+---
+
 ## 🚀 Panduan Instalasi & Clone Repository
 
 Ikuti langkah-langkah di bawah ini untuk memasang proyek ini di lingkungan lokal Anda:
@@ -221,3 +264,13 @@ Aplikasi ini menggunakan beberapa paket open-source penting berikut untuk menduk
 * **Spatie Laravel Permission**: Digunakan untuk mengelola peran (Role) dan hak akses (Permission) pengguna (misalnya: membedakan menu Admin, Apoteker, dan Kasir/Customer).
 * **Laravel DomPDF**: Digunakan untuk mencetak dokumen dan laporan penjualan, stok, serta transaksi ke format PDF.
 * **Laravel Excel**: Digunakan untuk mengekspor atau mengimpor data obat-obatan dalam jumlah besar menggunakan file Excel (.xlsx).
+
+---
+
+## 👥 Anggota Tim Pengembang (PBL)
+
+Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
+* **Farid Yahya**
+* **Hidayathul Fikri**
+* **Nabilla Fitricia Hernanda**
+* **Rury Fezriani Matari**
