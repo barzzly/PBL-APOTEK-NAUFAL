@@ -9,30 +9,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        #sidebar {
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            width: 256px; /* w-64 */
+        }
+        #sidebar.sidebar-hidden {
+            width: 0;
+        }
+        #sidebar .sidebar-text {
+            transition: opacity 0.15s ease;
+            opacity: 1;
+            white-space: nowrap;
+        }
+        #sidebar.sidebar-hidden .sidebar-text {
+            opacity: 0;
+        }
+    </style>
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
+    <aside id="sidebar" class="bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
         <div class="h-16 flex items-center px-10 border-b border-gray-100 shrink-0">
             <a href="/" class="text-primary text-xl font-bold flex items-center gap-3">
                 <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center shadow-md shadow-primary/30">
                     <i class="fa-solid fa-notes-medical"></i>
                 </div>
-                Apotek Naufal
+                <span class="sidebar-text">Apotek Naufal</span>
             </a>
         </div>
         
         <nav class="flex-grow p-4 space-y-1.5 overflow-y-auto">
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2 px-3">Menu Utama</div>
+            <div class="sidebar-text text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2 px-3">Menu Utama</div>
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-chart-pie w-5 {{ request()->routeIs('admin.dashboard') ? 'text-white/90' : 'text-gray-400' }}"></i> Dashboard
+                <i class="fa-solid fa-chart-pie w-5 {{ request()->routeIs('admin.dashboard') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Dashboard</span>
             </a>
             <a href="{{ route('admin.categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.categories*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-list w-5 {{ request()->routeIs('admin.categories*') ? 'text-white/90' : 'text-gray-400' }}"></i> Kategori Obat
+                <i class="fa-solid fa-list w-5 {{ request()->routeIs('admin.categories*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Kategori Obat</span>
             </a>
             <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.medicines*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-pills w-5 {{ request()->routeIs('admin.medicines*') ? 'text-white/90' : 'text-gray-400' }}"></i> Data Obat
+                <i class="fa-solid fa-pills w-5 {{ request()->routeIs('admin.medicines*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Data Obat</span>
+            </a>
+            <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Laporan Penjualan</span>
             </a>
         </nav>
 
@@ -40,7 +65,8 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all text-left font-medium text-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-red-400"></i> Keluar
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-red-400"></i>
+                    <span class="sidebar-text">Keluar</span>
                 </button>
             </form>
         </div>
@@ -49,8 +75,16 @@
     <!-- Main Content -->
     <main class="flex-grow flex flex-col min-w-0 bg-gray-50/50">
         <!-- Header -->
-        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between pl-16 pr-10 sticky top-0 z-10 shrink-0">
-            <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'Dashboard')</h1>
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between pl-6 pr-10 sticky top-0 z-10 shrink-0">
+            <div class="flex items-center gap-4">
+                <!-- Toggle sidebar button -->
+                <button id="sidebarToggle"
+                    class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-gray-100 transition-all"
+                    title="Sembunyikan/Tampilkan Menu">
+                    <i class="fa-solid fa-bars text-base"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'Dashboard')</h1>
+            </div>
             
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-4">
@@ -167,6 +201,22 @@
         }
     </style>
     <script>
+        // Sidebar toggle
+        (function () {
+            var sidebar = document.getElementById('sidebar');
+            var btn = document.getElementById('sidebarToggle');
+
+            // Restore saved state
+            if (localStorage.getItem('sidebar_hidden') === '1') {
+                sidebar.classList.add('sidebar-hidden');
+            }
+
+            btn.addEventListener('click', function () {
+                sidebar.classList.toggle('sidebar-hidden');
+                localStorage.setItem('sidebar_hidden', sidebar.classList.contains('sidebar-hidden') ? '1' : '0');
+            });
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             // Confirm delete kustom
             document.addEventListener('submit', function(e) {
