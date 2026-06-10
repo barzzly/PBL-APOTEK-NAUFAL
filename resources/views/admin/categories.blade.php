@@ -39,7 +39,7 @@
                             <a href="{{ route('admin.categories.edit', $category->id) }}" class="w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-600 hover:text-white transition" title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
-                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Menghapus kategori ini akan menghapus semua obat di dalamnya. Yakin?');">
+                            <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="confirm-delete" data-message="Menghapus kategori ini akan menghapus semua obat di dalamnya. Yakin?">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="w-8 h-8 rounded bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-600 hover:text-white transition" title="Hapus">

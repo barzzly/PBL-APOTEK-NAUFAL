@@ -80,25 +80,148 @@
 
         <!-- Content -->
         <div class="p-8 bg-bg-body">
-            @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if($errors->any())
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
-                <ul class="list-disc pl-5">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
             @yield('content')
         </div>
     </main>
+
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+    <style>
+        /* SweetAlert2 Custom Theme - Apotek Naufal */
+        .swal2-popup {
+            font-family: 'Inter', sans-serif;
+            border-radius: 1.25rem !important;
+            padding: 2rem 2rem 1.75rem !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04) !important;
+        }
+        .swal2-title {
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+            padding-top: 0.5rem !important;
+        }
+        .swal2-html-container, .swal2-content {
+            font-size: 0.9rem !important;
+            color: #6b7280 !important;
+            line-height: 1.6 !important;
+        }
+        .swal2-icon {
+            margin-bottom: 1rem !important;
+            margin-top: 0 !important;
+            width: 4.5rem !important;
+            height: 4.5rem !important;
+        }
+        .swal2-icon .swal2-icon-content {
+            font-size: 2.25rem !important;
+        }
+        .swal2-actions {
+            gap: 0.75rem !important;
+            margin-top: 1.75rem !important;
+            padding: 0 !important;
+            flex-wrap: nowrap !important;
+        }
+        .swal2-confirm {
+            padding: 0.65rem 1.75rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            border-radius: 0.625rem !important;
+            background-color: #00A651 !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0,166,81,0.3) !important;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
+            min-width: 120px !important;
+        }
+        .swal2-confirm:hover {
+            background-color: #008f45 !important;
+            box-shadow: 0 6px 16px rgba(0,166,81,0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+        .swal2-cancel {
+            padding: 0.65rem 1.75rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            border-radius: 0.625rem !important;
+            background-color: #fff !important;
+            color: #374151 !important;
+            border: 1.5px solid #d1d5db !important;
+            box-shadow: none !important;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s !important;
+            min-width: 100px !important;
+        }
+        .swal2-cancel:hover {
+            background-color: #f9fafb !important;
+            border-color: #9ca3af !important;
+            transform: translateY(-1px) !important;
+        }
+        /* Progress bar for success */
+        .swal2-timer-progress-bar {
+            background: #00A651 !important;
+        }
+        /* Error icon */
+        .swal2-icon.swal2-error {
+            border-color: #fca5a5 !important;
+        }
+        .swal2-icon.swal2-error .swal2-x-mark-line-left,
+        .swal2-icon.swal2-error .swal2-x-mark-line-right {
+            background-color: #ef4444 !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Confirm delete kustom
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('.confirm-delete');
+                if (form) {
+                    e.preventDefault();
+                    const message = form.getAttribute('data-message') || 'Apakah Anda yakin ingin menghapus data ini?';
+                    
+                    Swal.fire({
+                        title: 'Konfirmasi Hapus',
+                        text: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right:6px"></i>Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        buttonsStyling: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+
+            // Flash success alert
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    buttonsStyling: true
+                });
+            @endif
+
+            // Flash error / validation alert
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: `<ul class="text-left list-disc pl-5 text-sm space-y-1 text-red-600">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>`,
+                    confirmButtonText: 'Tutup',
+                    buttonsStyling: true
+                });
+            @endif
+        });
+    </script>
 
 </body>
 </html>
