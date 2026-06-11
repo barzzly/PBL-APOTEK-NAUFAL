@@ -8,6 +8,8 @@ use App\Http\Controllers\CartController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+use App\Http\Controllers\CartController;
+
 // Auto-create admin user for testing
 if (php_sapi_name() !== 'cli') {
     try {
@@ -25,6 +27,7 @@ if (php_sapi_name() !== 'cli') {
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
+Route::get('/obat/{slug}', [HomeController::class, 'show'])->name('product.detail');
 
 // Cart routes
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -46,6 +49,9 @@ Route::get('/register', function () {
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Cart Route (Action only)
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
 
 // Admin routes
 Route::middleware('auth')->prefix('admin')->group(function () {
