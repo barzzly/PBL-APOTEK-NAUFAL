@@ -190,8 +190,9 @@
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_15px_35px_rgba(0,0,0,0.04)] space-y-5">
                     <h3 class="text-xs tracking-wider uppercase font-bold text-gray-500 mb-1">Atur jumlah & catatan</h3>
                     
-                    <form action="{{ route('cart.add', $medicine->id) }}" method="POST" id="purchaseForm">
+                    <form action="{{ route('cart.add') }}" method="POST" id="purchaseForm">
                         @csrf
+                        <input type="hidden" name="medicine_id" value="{{ $medicine->id }}">
                         <!-- Selected variant/product mini card -->
                         <div class="flex items-center gap-3 p-3 bg-gray-50/70 rounded-xl border border-gray-100">
                             @if($medicine->image)
