@@ -18,7 +18,6 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 ## Struktur Sprint
 
 ### Sprint 1: Setup Proyek & Autentikasi Dasar
-**Periode:** 1 April - 20 April 2025  
 **Target Rilis:** `v0.1.0`  
 **Tujuan Sprint:** Menyiapkan struktur dasar aplikasi Laravel 11, sistem autentikasi pengguna, migrasi tabel-tabel utama, serta halaman katalog obat dasar.
 
@@ -34,7 +33,6 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 ---
 
 ### Sprint 2: Keranjang Belanja & Otorisasi Pengguna
-**Periode:** 21 April - 10 Mei 2025  
 **Target Rilis:** `v0.2.0`  
 **Tujuan Sprint:** Membatasi akses menu menggunakan Spatie Laravel-Permission, membuat halaman keranjang belanja (cart) interaktif, dan merapikan visual layout menggunakan partials.
 
@@ -51,7 +49,6 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 ---
 
 ### Sprint 3: Alur Checkout, Pemesanan & Cetak PDF
-**Periode:** 11 Mei - 1 Juni 2025  
 **Target Rilis:** `v0.3.0`  
 **Tujuan Sprint:** Menyelesaikan alur checkout transaksi, menangani upload resep dokter untuk obat keras, pelacakan status pesanan secara real-time, dan ekspor struk dalam format PDF.
 
@@ -67,7 +64,6 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 ---
 
 ### Sprint 4: Dashboard Grafik, Notifikasi & Fitur AI (Direncanakan)
-**Periode:** Juni 2025 - Selesai  
 **Target Rilis:** `v0.4.0` (Unreleased)  
 **Tujuan Sprint:** Meningkatkan pengalaman pengguna dengan visualisasi grafik penjualan, notifikasi email, dan asisten rekomendasi obat berbasis AI.
 
