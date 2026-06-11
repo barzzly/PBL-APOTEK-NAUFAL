@@ -9,30 +9,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        #sidebar {
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            width: 256px; /* w-64 */
+        }
+        #sidebar.sidebar-hidden {
+            width: 0;
+        }
+        #sidebar .sidebar-text {
+            transition: opacity 0.15s ease;
+            opacity: 1;
+            white-space: nowrap;
+        }
+        #sidebar.sidebar-hidden .sidebar-text {
+            opacity: 0;
+        }
+    </style>
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
+    <aside id="sidebar" class="bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
         <div class="h-16 flex items-center px-10 border-b border-gray-100 shrink-0">
             <a href="/" class="text-primary text-xl font-bold flex items-center gap-3">
                 <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center shadow-md shadow-primary/30">
                     <i class="fa-solid fa-notes-medical"></i>
                 </div>
-                Apotek Naufal
+                <span class="sidebar-text">Apotek Naufal</span>
             </a>
         </div>
         
         <nav class="flex-grow p-4 space-y-1.5 overflow-y-auto">
-            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2 px-3">Menu Utama</div>
+            <div class="sidebar-text text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2 px-3">Menu Utama</div>
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-chart-pie w-5 {{ request()->routeIs('admin.dashboard') ? 'text-white/90' : 'text-gray-400' }}"></i> Dashboard
+                <i class="fa-solid fa-chart-pie w-5 {{ request()->routeIs('admin.dashboard') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Dashboard</span>
             </a>
             <a href="{{ route('admin.categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.categories*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-list w-5 {{ request()->routeIs('admin.categories*') ? 'text-white/90' : 'text-gray-400' }}"></i> Kategori Obat
+                <i class="fa-solid fa-list w-5 {{ request()->routeIs('admin.categories*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Kategori Obat</span>
             </a>
             <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.medicines*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-pills w-5 {{ request()->routeIs('admin.medicines*') ? 'text-white/90' : 'text-gray-400' }}"></i> Data Obat
+                <i class="fa-solid fa-pills w-5 {{ request()->routeIs('admin.medicines*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Data Obat</span>
+            </a>
+            <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Laporan Penjualan</span>
             </a>
         </nav>
 
@@ -40,7 +65,8 @@
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-3 px-3 py-2.5 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all text-left font-medium text-sm">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-red-400"></i> Keluar
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-red-400"></i>
+                    <span class="sidebar-text">Keluar</span>
                 </button>
             </form>
         </div>
@@ -49,8 +75,16 @@
     <!-- Main Content -->
     <main class="flex-grow flex flex-col min-w-0 bg-gray-50/50">
         <!-- Header -->
-        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between pl-16 pr-10 sticky top-0 z-10 shrink-0">
-            <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'Dashboard')</h1>
+        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between pl-6 pr-10 sticky top-0 z-10 shrink-0">
+            <div class="flex items-center gap-4">
+                <!-- Toggle sidebar button -->
+                <button id="sidebarToggle"
+                    class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-gray-100 transition-all"
+                    title="Sembunyikan/Tampilkan Menu">
+                    <i class="fa-solid fa-bars text-base"></i>
+                </button>
+                <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'Dashboard')</h1>
+            </div>
             
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-4">
@@ -80,25 +114,164 @@
 
         <!-- Content -->
         <div class="p-8 bg-bg-body">
-            @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            @if($errors->any())
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
-                <ul class="list-disc pl-5">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
             @yield('content')
         </div>
     </main>
+
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+    <style>
+        /* SweetAlert2 Custom Theme - Apotek Naufal */
+        .swal2-popup {
+            font-family: 'Inter', sans-serif;
+            border-radius: 1.25rem !important;
+            padding: 2rem 2rem 1.75rem !important;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.04) !important;
+        }
+        .swal2-title {
+            font-size: 1.25rem !important;
+            font-weight: 700 !important;
+            color: #1f2937 !important;
+            padding-top: 0.5rem !important;
+        }
+        .swal2-html-container, .swal2-content {
+            font-size: 0.9rem !important;
+            color: #6b7280 !important;
+            line-height: 1.6 !important;
+        }
+        .swal2-icon {
+            margin-bottom: 1rem !important;
+            margin-top: 0 !important;
+            width: 4.5rem !important;
+            height: 4.5rem !important;
+        }
+        .swal2-icon .swal2-icon-content {
+            font-size: 2.25rem !important;
+        }
+        .swal2-actions {
+            gap: 0.75rem !important;
+            margin-top: 1.75rem !important;
+            padding: 0 !important;
+            flex-wrap: nowrap !important;
+        }
+        .swal2-confirm {
+            padding: 0.65rem 1.75rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            border-radius: 0.625rem !important;
+            background-color: #00A651 !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 4px 12px rgba(0,166,81,0.3) !important;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
+            min-width: 120px !important;
+        }
+        .swal2-confirm:hover {
+            background-color: #008f45 !important;
+            box-shadow: 0 6px 16px rgba(0,166,81,0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+        .swal2-cancel {
+            padding: 0.65rem 1.75rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            border-radius: 0.625rem !important;
+            background-color: #fff !important;
+            color: #374151 !important;
+            border: 1.5px solid #d1d5db !important;
+            box-shadow: none !important;
+            transition: background 0.2s, border-color 0.2s, transform 0.15s !important;
+            min-width: 100px !important;
+        }
+        .swal2-cancel:hover {
+            background-color: #f9fafb !important;
+            border-color: #9ca3af !important;
+            transform: translateY(-1px) !important;
+        }
+        /* Progress bar for success */
+        .swal2-timer-progress-bar {
+            background: #00A651 !important;
+        }
+        /* Error icon */
+        .swal2-icon.swal2-error {
+            border-color: #fca5a5 !important;
+        }
+        .swal2-icon.swal2-error .swal2-x-mark-line-left,
+        .swal2-icon.swal2-error .swal2-x-mark-line-right {
+            background-color: #ef4444 !important;
+        }
+    </style>
+    <script>
+        // Sidebar toggle
+        (function () {
+            var sidebar = document.getElementById('sidebar');
+            var btn = document.getElementById('sidebarToggle');
+
+            // Restore saved state
+            if (localStorage.getItem('sidebar_hidden') === '1') {
+                sidebar.classList.add('sidebar-hidden');
+            }
+
+            btn.addEventListener('click', function () {
+                sidebar.classList.toggle('sidebar-hidden');
+                localStorage.setItem('sidebar_hidden', sidebar.classList.contains('sidebar-hidden') ? '1' : '0');
+            });
+        })();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Confirm delete kustom
+            document.addEventListener('submit', function(e) {
+                const form = e.target.closest('.confirm-delete');
+                if (form) {
+                    e.preventDefault();
+                    const message = form.getAttribute('data-message') || 'Apakah Anda yakin ingin menghapus data ini?';
+                    
+                    Swal.fire({
+                        title: 'Konfirmasi Hapus',
+                        text: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fa-solid fa-trash-can" style="margin-right:6px"></i>Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        buttonsStyling: true,
+                        focusCancel: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                }
+            });
+
+            // Flash success alert
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    buttonsStyling: true
+                });
+            @endif
+
+            // Flash error / validation alert
+            @if($errors->any())
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan!',
+                    html: `<ul class="text-left list-disc pl-5 text-sm space-y-1 text-red-600">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>`,
+                    confirmButtonText: 'Tutup',
+                    buttonsStyling: true
+                });
+            @endif
+        });
+    </script>
 
 </body>
 </html>

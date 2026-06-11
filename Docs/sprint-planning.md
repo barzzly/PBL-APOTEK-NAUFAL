@@ -8,8 +8,10 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 | Nama | Peran | Deskripsi |
 |---|---|---|
-| **Farid Yahya** | Backend Developer / Scrum Master | Mengelola core logic, arsitektur database, otorisasi, integrasi library, dan workflow CI. |
-| **Payid (Barzzly)** | Frontend Developer / UI Designer | Mengelola desain tampilan (Blade), styling responsif, interaksi keranjang, upload berkas, dan visualisasi data. |
+| **Farid Yahya** | Database Engineer / Backend Developer | Mengembangkan skema migrasi database, optimasi query relasional, dan validasi data. |
+| **Hidayathul Fikri** | Backend Developer / Scrum Master | Mengelola core logic, arsitektur database, otorisasi, integrasi library, dan workflow CI. |
+| **Nabilla Fitricia Hernanda** | Frontend Developer / UI Designer | Mengelola desain tampilan (Blade), styling responsif, interaksi keranjang, upload berkas, dan visualisasi data. |
+| **Rury Fezriani Matari** | UI/UX Designer / Frontend Developer | Mengembangkan desain antarmuka pengguna (layouts), elemen blade partials, dan gaya visual responsif. |
 
 ---
 
@@ -22,12 +24,12 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 | Task ID | Item Pekerjaan (Backlog) | Assignee | Status |
 |---|---|---|---|
-| SP1-01 | Inisiasi proyek Laravel 11 & setup repository GitHub | Farid Yahya | ✅ Selesai |
-| SP1-02 | Setup autentikasi (Login, Register, Logout) dengan Laravel Breeze | Farid Yahya | ✅ Selesai |
-| SP1-03 | Migrasi database awal (`users`, `obat`, `kategori_obat`) | Payid | ✅ Selesai |
-| SP1-04 | Fitur CRUD data obat oleh admin | Farid Yahya | ✅ Selesai |
-| SP1-05 | Pembuatan halaman katalog obat untuk pelanggan | Payid | ✅ Selesai |
-| SP1-06 | Implementasi halaman profil apotek | Payid | ✅ Selesai |
+| SP1-01 | Inisiasi proyek Laravel 11 & setup repository GitHub | Hidayathul Fikri | ✅ Selesai |
+| SP1-02 | Setup autentikasi (Login, Register, Logout) dengan Laravel Breeze | Hidayathul Fikri | ✅ Selesai |
+| SP1-03 | Migrasi database awal (`users`, `obat`, `kategori_obat`) | Farid Yahya | ✅ Selesai |
+| SP1-04 | Fitur CRUD data obat oleh admin | Hidayathul Fikri | ✅ Selesai |
+| SP1-05 | Pembuatan halaman katalog obat untuk pelanggan | Nabilla Fitricia Hernanda | ✅ Selesai |
+| SP1-06 | Implementasi halaman profil apotek | Rury Fezriani Matari | ✅ Selesai |
 
 ---
 
@@ -38,13 +40,13 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 | Task ID | Item Pekerjaan (Backlog) | Assignee | Status |
 |---|---|---|---|
-| SP2-01 | Integrasi package `spatie/laravel-permission` | Farid Yahya | ✅ Selesai |
-| SP2-02 | Setup middleware proteksi route (admin vs pelanggan) | Farid Yahya | ✅ Selesai |
-| SP2-03 | Pembuatan dashboard admin dengan data statistik ringkas | Payid | ✅ Selesai |
+| SP2-01 | Integrasi package `spatie/laravel-permission` | Hidayathul Fikri | ✅ Selesai |
+| SP2-02 | Setup middleware proteksi route (admin vs pelanggan) | Hidayathul Fikri | ✅ Selesai |
+| SP2-03 | Pembuatan dashboard admin dengan data statistik ringkas | Rury Fezriani Matari | ✅ Selesai |
 | SP2-04 | Fitur CRUD kategori obat oleh admin | Farid Yahya | ✅ Selesai |
-| SP2-05 | Implementasi fitur keranjang belanja (tambah, edit qty, hapus) | Payid | ✅ Selesai |
-| SP2-06 | Refactoring: Pemindahan logic validasi stok ke `StokService` | Farid Yahya | ✅ Selesai |
-| SP2-07 | Refactoring: Pemisahan layouts Blade ke partials (`_navbar`, `_sidebar`, `_footer`) | Payid | ✅ Selesai |
+| SP2-05 | Implementasi fitur keranjang belanja (tambah, edit qty, hapus) | Nabilla Fitricia Hernanda | ✅ Selesai |
+| SP2-06 | Refactoring: Pemindahan logic validasi stok ke `StokService` | Hidayathul Fikri | ✅ Selesai |
+| SP2-07 | Refactoring: Pemisahan layouts Blade ke partials (`_navbar`, `_sidebar`, `_footer`) | Rury Fezriani Matari | ✅ Selesai |
 
 ---
 
@@ -55,11 +57,11 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 | Task ID | Item Pekerjaan (Backlog) | Assignee | Status |
 |---|---|---|---|
-| SP3-01 | Alur checkout pesanan dari keranjang belanja | Farid Yahya | ✅ Selesai |
-| SP3-02 | Form upload resep dokter untuk pembelian obat keras | Payid | ✅ Selesai |
+| SP3-01 | Alur checkout pesanan dari keranjang belanja | Hidayathul Fikri | ✅ Selesai |
+| SP3-02 | Form upload resep dokter untuk pembelian obat keras | Nabilla Fitricia Hernanda | ✅ Selesai |
 | SP3-03 | Pilihan metode pembayaran (Transfer Bank / COD) | Farid Yahya | ✅ Selesai |
-| SP3-04 | Halaman dan fitur tracking status pesanan | Payid | ✅ Selesai |
-| SP3-05 | Integrasi package `barryvdh/laravel-dompdf` | Farid Yahya | ✅ Selesai |
+| SP3-04 | Halaman dan fitur tracking status pesanan | Rury Fezriani Matari | ✅ Selesai |
+| SP3-05 | Integrasi package `barryvdh/laravel-dompdf` | Hidayathul Fikri | ✅ Selesai |
 | SP3-06 | Fitur cetak struk PDF pesanan pelanggan | Farid Yahya | ✅ Selesai |
 
 ---
@@ -71,9 +73,9 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 | Task ID | Item Pekerjaan (Backlog) | Assignee | Status |
 |---|---|---|---|
-| SP4-01 | Fitur rekomendasi obat berbasis AI (keluhan/gejala -> obat) | Farid Yahya | ⏳ Direncanakan |
-| SP4-02 | Notifikasi perubahan status pesanan otomatis via email | Payid | ⏳ Direncanakan |
-| SP4-03 | Dashboard laporan penjualan dengan grafik interaktif | Farid Yahya | ⏳ Direncanakan |
+| SP4-01 | Fitur rekomendasi obat berbasis AI (keluhan/gejala -> obat) | Hidayathul Fikri | ⏳ Direncanakan |
+| SP4-02 | Notifikasi perubahan status pesanan otomatis via email | Farid Yahya | ⏳ Direncanakan |
+| SP4-03 | Dashboard laporan penjualan dengan grafik interaktif | Nabilla Fitricia Hernanda | ⏳ Direncanakan |
 
 ---
 
