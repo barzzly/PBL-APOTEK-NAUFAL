@@ -295,5 +295,83 @@ class DatabaseSeeder extends Seeder
                 $order->items()->create($item);
             }
         }
+
+        if ($catIbuBayi) {
+            Medicine::firstOrCreate(
+                ['name' => 'Zwitsal Baby Bath Hair & Body 200ml'],
+                [
+                    'category_id' => $catIbuBayi->id,
+                    'slug' => Str::slug('Zwitsal Baby Bath Hair & Body 200ml'),
+                    'price' => 22000,
+                    'stock' => 30,
+                    'is_active' => true,
+                    'image' => '/images/product_1.png'
+                ]
+            );
+            
+            Medicine::firstOrCreate(
+                ['name' => 'SGM Eksplor 1+ Madu 900g'],
+                [
+                    'category_id' => $catIbuBayi->id,
+                    'slug' => Str::slug('SGM Eksplor 1+ Madu 900g'),
+                    'price' => 85000,
+                    'stock' => 15,
+                    'is_active' => true,
+                    'image' => '/images/product_2.png'
+                ]
+            );
+        }
+
+        if ($catP3K) {
+            Medicine::firstOrCreate(
+                ['name' => 'Betadine Antiseptic Solution 15ml'],
+                [
+                    'category_id' => $catP3K->id,
+                    'slug' => Str::slug('Betadine Antiseptic Solution 15ml'),
+                    'price' => 18500,
+                    'stock' => 40,
+                    'is_active' => true,
+                    'image' => '/images/product_1.png'
+                ]
+            );
+            
+            Medicine::firstOrCreate(
+                ['name' => 'Hansaplast Plester Kain Elastis 10 Lembar'],
+                [
+                    'category_id' => $catP3K->id,
+                    'slug' => Str::slug('Hansaplast Plester Kain Elastis 10 Lembar'),
+                    'price' => 7500,
+                    'stock' => 150,
+                    'is_active' => true,
+                    'image' => '/images/product_2.png'
+                ]
+            );
+        }
+
+        if ($catHerbal) {
+            Medicine::firstOrCreate(
+                ['name' => 'Tolak Angin Cair 12 Sachet'],
+                [
+                    'category_id' => $catHerbal->id,
+                    'slug' => Str::slug('Tolak Angin Cair 12 Sachet'),
+                    'price' => 42000,
+                    'stock' => 80,
+                    'is_active' => true,
+                    'image' => '/images/product_1.png'
+                ]
+            );
+            
+            Medicine::firstOrCreate(
+                ['name' => 'Minyak Kayu Putih Cap Lang 120ml'],
+                [
+                    'category_id' => $catHerbal->id,
+                    'slug' => Str::slug('Minyak Kayu Putih Cap Lang 120ml'),
+                    'price' => 46000,
+                    'stock' => 60,
+                    'is_active' => true,
+                    'image' => '/images/product_2.png'
+                ]
+            );
+        }
     }
 }
