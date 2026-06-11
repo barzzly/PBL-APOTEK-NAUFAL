@@ -1,3 +1,8 @@
+@inject('notificationService', 'App\Services\NotificationService')
+@php
+    $notifications = $notificationService->getNotifications();
+    $totalNotifCount = $notifications->count();
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -88,10 +93,61 @@
             
             <div class="flex items-center gap-6">
                 <div class="flex items-center gap-4">
-                    <button class="relative text-gray-400 hover:text-primary transition cursor-pointer">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-0.5 w-2 h-2 bg-secondary rounded-full border border-white"></span>
-                    </button>
+                    {{-- Notifications Dropdown --}}
+                    <div class="relative" id="notificationDropdownContainer">
+                        <button id="notificationBellBtn" class="relative w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-gray-100 transition-all cursor-pointer focus:outline-none" title="Notifikasi">
+                            <i class="fa-regular fa-bell text-xl"></i>
+                            @if($totalNotifCount > 0)
+                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full border border-white flex items-center justify-center shadow-md animate-pulse">
+                                    {{ $totalNotifCount }}
+                                </span>
+                            @endif
+                        </button>
+                        
+                        {{-- Dropdown Panel --}}
+                        <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                            <div class="px-5 py-4 bg-gradient-to-r from-primary/10 to-emerald-500/10 border-b border-gray-100 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold text-gray-800">Notifikasi</span>
+                                    <span class="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold">
+                                        {{ $totalNotifCount }} Baru
+                                    </span>
+                                </div>
+                                <span class="text-xs font-semibold text-gray-400">Apotek Naufal</span>
+                            </div>
+                            
+                            <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                                @forelse($notifications as $notif)
+                                    <a href="{{ $notif['route'] }}" class="px-5 py-4 flex gap-4 hover:bg-gray-50/80 transition-colors block text-left">
+                                        <div class="w-10 h-10 rounded-xl {{ $notif['icon_bg'] }} flex items-center justify-center text-base shrink-0 shadow-sm border border-gray-100">
+                                            <i class="fa-solid {{ $notif['icon'] }}"></i>
+                                        </div>
+                                        <div class="flex-grow min-w-0">
+                                            <div class="flex items-center justify-between gap-2 mb-1">
+                                                <span class="text-xs font-bold {{ $notif['text_color'] }}">{{ $notif['title'] }}</span>
+                                                <span class="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-full font-medium shrink-0">{{ $notif['time'] }}</span>
+                                            </div>
+                                            <p class="text-xs text-gray-600 leading-normal">{!! $notif['message'] !!}</p>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="flex flex-col items-center justify-center py-10 text-center text-gray-400">
+                                        <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg mb-3 shadow-inner">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        </div>
+                                        <p class="text-xs font-bold text-gray-700">Semua aman!</p>
+                                        <p class="text-[11px] text-gray-400 mt-0.5 px-6">Tidak ada stok obat yang hampir habis atau orderan pending.</p>
+                                    </div>
+                                @endforelse
+                            </div>
+                            
+                            @if($totalNotifCount > 0)
+                                <div class="px-5 py-3.5 bg-gray-50 border-t border-gray-100 text-center">
+                                    <span class="text-xs font-semibold text-gray-500">Silakan klik notifikasi untuk merespons</span>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                     
                     <div class="h-8 w-px bg-gray-200"></div>
 
@@ -218,6 +274,21 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Toggle notification dropdown
+            const bellBtn = document.getElementById('notificationBellBtn');
+            const dropdown = document.getElementById('notificationDropdown');
+            if (bellBtn && dropdown) {
+                bellBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target) && e.target !== bellBtn && !bellBtn.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+
             // Confirm delete kustom
             document.addEventListener('submit', function(e) {
                 const form = e.target.closest('.confirm-delete');
