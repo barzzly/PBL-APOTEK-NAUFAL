@@ -313,4 +313,91 @@ class AdminController extends Controller
 
         return response()->json(compact('labels', 'revenues', 'counts'));
     }
+
+    // --- Order Management ---
+    public function orders(Request $request)
+    {
+        $status = $request->get('status', 'all');
+        $query = Order::with('user')->latest();
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $orders = $query->paginate(15)->withQueryString();
+        return view('admin.orders', compact('orders', 'status'));
+    }
+
+    public function showOrder($id)
+    {
+        $order = Order::with(['items.medicine', 'user'])->findOrFail($id);
+        
+        // Fetch prescription if exists
+        $prescription = \App\Models\Prescription::where('order_id', $order->id)->first();
+        
+        return view('admin.order_show', compact('order', 'prescription'));
+    }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,processing,ready_for_pickup,shipped,delivered,cancelled',
+            'payment_status' => 'required|in:unpaid,paid,refunded',
+            'pharmacist_note' => 'nullable|string|max:255',
+        ]);
+
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
+        // If order gets cancelled, restock medicines
+        if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+            foreach ($order->items as $item) {
+                if ($item->medicine) {
+                    $item->medicine->increment('stock', $item->quantity);
+                }
+            }
+        }
+        
+        // If order was cancelled but gets un-cancelled (restored), reduce stock again
+        if ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+            foreach ($order->items as $item) {
+                if ($item->medicine) {
+                    $item->medicine->decrement('stock', $item->quantity);
+                }
+            }
+        }
+
+        $updateData = [
+            'status' => $newStatus,
+            'payment_status' => $request->payment_status,
+            'pharmacist_note' => $request->pharmacist_note,
+        ];
+
+        if ($request->payment_status === 'paid' && $order->payment_status !== 'paid') {
+            $updateData['paid_at'] = now();
+        }
+
+        $order->update($updateData);
+
+        // Update prescription status if exists
+        $prescription = \App\Models\Prescription::where('order_id', $order->id)->first();
+        if ($prescription) {
+            if ($newStatus === 'cancelled') {
+                $prescription->update(['status' => 'rejected']);
+            } elseif ($newStatus === 'delivered') {
+                $prescription->update(['status' => 'completed']);
+            } elseif (in_array($newStatus, ['confirmed', 'processing', 'ready_for_pickup', 'shipped'])) {
+                $prescription->update([
+                    'status' => 'verified',
+                    'verified_by' => auth()->id(),
+                    'verified_at' => now(),
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.orders')->with('success', 'Status pesanan berhasil diperbarui!');
+    }
 }
+
