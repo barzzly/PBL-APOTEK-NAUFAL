@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -62,4 +64,26 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Laporan Penjualan
     Route::get('/laporan-penjualan', [AdminController::class, 'laporanPenjualan'])->name('admin.laporan');
     Route::get('/laporan-penjualan/chart-data', [AdminController::class, 'laporanChartData'])->name('admin.laporan.chart');
+
+    // Admin Orders
+    Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
+    Route::post('/orders/{id}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.update_status');
 });
+
+// Cart routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Checkout and customer orders (protected by auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/orders/success', [CheckoutController::class, 'success'])->name('orders.success');
+    Route::get('/orders', [CheckoutController::class, 'history'])->name('orders.history');
+    Route::get('/orders/{id}', [CheckoutController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/upload-payment', [CheckoutController::class, 'uploadPaymentProof'])->name('orders.upload_payment');
+});
+
