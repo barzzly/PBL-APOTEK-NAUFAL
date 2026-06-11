@@ -51,11 +51,10 @@
             </div>
 
             <div class="flex items-center gap-5">
-                <a href="#" class="text-text-main hover:text-primary text-xl relative transition">
+                <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ session('cart') ? collect(session('cart'))->sum('quantity') : 0 }}
-                    </span>
+                    @php $cartCount = collect(session('cart', []))->sum('quantity') @endphp
+                    <span class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $cartCount }}</span>
                 </a>
                 <div class="hidden sm:flex items-center gap-3">
                     @auth
@@ -95,24 +94,26 @@
 
     <!-- Main Content -->
     <main class="flex-grow">
-        <!-- Notification Area -->
-        <div class="max-w-7xl mx-auto px-4 mt-4">
+        <!-- Alerts -->
+        <div class="max-w-7xl mx-auto px-4 mt-5">
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-lg flex items-center justify-between shadow-sm">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
-                        <span class="text-sm font-medium">{{ session('success') }}</span>
-                    </div>
+            <div class="p-4 bg-green-50 border-l-4 border-primary rounded-r-lg flex items-center justify-between text-green-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-primary text-lg"></i>
+                    <span class="text-sm font-medium">{{ session('success') }}</span>
                 </div>
+            </div>
             @endif
+
             @if(session('error'))
-                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-r-lg flex items-center gap-3 shadow-sm">
-                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
+            <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-center justify-between text-red-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-red-500 text-lg"></i>
                     <span class="text-sm font-medium">{{ session('error') }}</span>
                 </div>
+            </div>
             @endif
         </div>
-
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 py-5">
             <div class="w-full h-48 md:h-[350px] rounded-2xl overflow-hidden relative shadow-md bg-primary-light">
@@ -191,11 +192,9 @@
                         @endif
                         <div class="text-base font-bold text-secondary mb-2 mt-auto">Rp {{ number_format($medicine->price, 0, ',', '.') }}</div>
                         <div class="text-xs text-text-muted mb-4">Sisa stok: {{ $medicine->stock }}</div>
-                        
                         <form action="{{ route('cart.add', $medicine->id) }}" method="POST" class="mt-auto w-full">
                             @csrf
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="w-full py-2 bg-white border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary hover:text-white transition">Tambah ke Keranjang</button>
+                            <button type="submit" class="w-full py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-lg hover:bg-primary hover:text-white transition cursor-pointer">Tambah ke Keranjang</button>
                         </form>
                     </div>
                 </div>
