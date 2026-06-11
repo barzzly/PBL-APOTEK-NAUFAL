@@ -196,7 +196,16 @@
                         @endif
                         <div class="text-base font-bold text-secondary mb-2 mt-auto">Rp {{ number_format($medicine->price, 0, ',', '.') }}</div>
                         @if($medicine->stock > 0)
-                            <button onclick="addToCart({{ $medicine->id }})" class="mt-auto w-full py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-lg hover:bg-primary hover:text-white transition cursor-pointer">Tambah ke Keranjang</button>
+                            <button onclick="addToCart(this)" 
+                                    class="mt-auto w-full py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-lg hover:bg-primary hover:text-white transition cursor-pointer"
+                                    data-id="{{ $medicine->id }}"
+                                    data-name="{{ $medicine->name }}"
+                                    data-price="Rp {{ number_format($medicine->price, 0, ',', '.') }}"
+                                    data-description="{{ $medicine->description ?? 'Tidak ada deskripsi obat.' }}"
+                                    data-unit="{{ $medicine->unit ?? 'Pcs' }}"
+                                    data-image="{{ $medicine->image ? (str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image) : '' }}">
+                                Tambah ke Keranjang
+                            </button>
                         @else
                             <button disabled class="mt-auto w-full py-2 bg-gray-150 border border-gray-200 text-gray-400 text-xs font-semibold rounded-lg cursor-not-allowed">Stok Habis</button>
                         @endif
@@ -304,66 +313,127 @@
     </footer>
 
     <script>
-        function addToCart(medicineId) {
-            Swal.fire({
-                title: 'Menambahkan ke keranjang...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+        function addToCart(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const price = button.getAttribute('data-price');
+            const unit = button.getAttribute('data-unit');
+            const image = button.getAttribute('data-image');
+            const description = button.getAttribute('data-description');
 
-            fetch('{{ route('cart.add') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    medicine_id: medicineId,
-                    quantity: 1
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                Swal.close();
-                if (data.success) {
-                    // Update badge
-                    const badge = document.getElementById('cart-badge');
-                    if (badge) {
-                        badge.innerText = data.cart_count;
-                    }
-                    
+            // Format image HTML
+            let imgHtml = '';
+            if (image) {
+                imgHtml = `<img src="${image}" alt="${name}" style="width: 64px; height: 64px; object-fit: contain; border-radius: 8px; border: 1px solid #e5e7eb; padding: 4px; background-color: #fff; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">`;
+            } else {
+                imgHtml = `<div style="width: 64px; height: 64px; border-radius: 8px; background-color: #f9fafb; color: #d1d5db; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"><i class="fa-solid fa-pills" style="font-size: 24px; color: #9ca3af;"></i></div>`;
+            }
+
+            Swal.fire({
+                title: 'Tambah ke Keranjang?',
+                html: `
+                    <div style="font-family: 'Inter', sans-serif; text-align: left; margin-top: 12px;">
+                        <p style="font-size: 13px; color: #6b7280; margin: 0 0 16px 0; line-height: 1.4;">Apakah Anda yakin ingin memasukkan obat ini ke keranjang belanja?</p>
+                        
+                        <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: linear-gradient(to right, #f9fafb, #fff); border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04); width: 100%; box-sizing: border-box;">
+                            ${imgHtml}
+                            <div style="flex-grow: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                                <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #1f2937; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</h4>
+                                <div style="margin-top: 2px;">
+                                    <span style="display: inline-block; font-size: 11px; font-weight: 600; color: #00A651; background-color: #e6f6ec; border: 1px solid rgba(0,166,81,0.15); padding: 2px 8px; border-radius: 9999px; line-height: 1.2;">Kemasan: ${unit}</span>
+                                </div>
+                                <div style="font-size: 16px; font-weight: 800; color: #f26522; margin-top: 4px;">${price}</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 14px; padding: 12px 14px; background-color: #f9fafb; border-radius: 10px; border: 1px dashed #e5e7eb; font-size: 12px; color: #4b5563; line-height: 1.5; text-align: left;">
+                            <strong style="color: #1f2937; display: block; margin-bottom: 4px; font-size: 12px;"><i class="fa-solid fa-file-prescription" style="color: #00A651; margin-right: 4px;"></i>Deskripsi Obat:</strong>
+                            ${description || 'Tidak ada deskripsi obat.'}
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#00A651',
+                cancelButtonColor: '#f26522',
+                confirmButtonText: 'Ya, Masukkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-primary/20',
+                    cancelButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
                     Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: data.message,
-                        showCancelButton: true,
-                        confirmButtonColor: '#00A651',
-                        cancelButtonColor: '#f26522',
-                        confirmButtonText: 'Lihat Keranjang',
-                        cancelButtonText: 'Lanjut Belanja'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '{{ route('cart.index') }}';
+                        title: 'Menambahkan ke keranjang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
                     });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        text: data.message || 'Terjadi kesalahan.'
+
+                    fetch('{{ route('cart.add') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            medicine_id: id,
+                            quantity: 1
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            // Update badge
+                            const badge = document.getElementById('cart-badge');
+                            if (badge) {
+                                badge.innerText = data.cart_count;
+                            }
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: data.message,
+                                showCancelButton: true,
+                                confirmButtonColor: '#00A651',
+                                cancelButtonColor: '#f26522',
+                                confirmButtonText: 'Lihat Keranjang',
+                                cancelButtonText: 'Lanjut Belanja',
+                                customClass: {
+                                    popup: 'rounded-2xl'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '{{ route('cart.index') }}';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Terjadi kesalahan.',
+                                customClass: {
+                                    popup: 'rounded-2xl'
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kesalahan Sistem',
+                            text: 'Gagal menghubungi server.',
+                            customClass: {
+                                popup: 'rounded-2xl'
+                            }
+                        });
                     });
                 }
-            })
-            .catch(err => {
-                Swal.close();
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Kesalahan Sistem',
-                    text: 'Gagal menghubungi server.'
-                });
             });
         }
     </script>

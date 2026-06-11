@@ -61,6 +61,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/medicines/{id}/edit', [AdminController::class, 'editMedicine'])->name('admin.medicines.edit');
     Route::put('/medicines/{id}', [AdminController::class, 'updateMedicine'])->name('admin.medicines.update');
     Route::delete('/medicines/{id}', [AdminController::class, 'deleteMedicine'])->name('admin.medicines.destroy');
+    Route::post('/medicines/generate-description', [AdminController::class, 'generateDescription'])->name('admin.medicines.generate_description');
 
     // Laporan Penjualan
     Route::get('/laporan-penjualan', [AdminController::class, 'laporanPenjualan'])->name('admin.laporan');

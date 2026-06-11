@@ -44,6 +44,16 @@
             </div>
             
             <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-semibold text-text-main">Deskripsi Obat</label>
+                    <button type="button" id="btn-generate-ai" onclick="generateAIDescription()" class="px-3 py-1.5 hover:brightness-105 active:scale-[0.98] text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1.5 shadow-sm" style="background-color: #00A651; color: #ffffff; border: none; cursor: pointer;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Generate dengan AI
+                    </button>
+                </div>
+                <textarea name="description" id="description-field" rows="4" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition" placeholder="Tuliskan deskripsi obat atau biarkan kosong untuk di-generate otomatis dengan AI..."></textarea>
+            </div>
+
+            <div>
                 <label class="block text-sm font-semibold text-text-main mb-2">Foto Obat</label>
                 <div class="border-2 border-dashed border-border-muted rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
                     <input type="file" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -61,4 +71,63 @@
         </form>
     </div>
 </div>
+
+<script>
+    function generateAIDescription() {
+        const nameInput = document.querySelector('input[name="name"]');
+        const categorySelect = document.querySelector('select[name="category_id"]');
+        const descTextarea = document.getElementById('description-field');
+        const aiBtn = document.getElementById('btn-generate-ai');
+
+        if (!nameInput.value.trim()) {
+            alert('Silakan isi Nama Obat terlebih dahulu.');
+            nameInput.focus();
+            return;
+        }
+
+        // Set loading state
+        const originalBtnText = aiBtn.innerHTML;
+        aiBtn.disabled = true;
+        aiBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Menulis Deskripsi...';
+        aiBtn.classList.add('opacity-75');
+
+        const csrfToken = document.querySelector('input[name="_token"]').value;
+
+        fetch('{{ route('admin.medicines.generate_description') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                name: nameInput.value,
+                category_id: categorySelect.value || null
+            })
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(err => { throw new Error(err.message || 'Terjadi kesalahan sistem.') });
+            }
+            return res.json();
+        })
+        .then(data => {
+            if (data.success) {
+                descTextarea.value = data.description;
+            } else {
+                alert('Gagal generate deskripsi: ' + (data.message || 'Error tidak diketahui.'));
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Error: ' + err.message);
+        })
+        .finally(() => {
+            // Restore button state
+            aiBtn.disabled = false;
+            aiBtn.innerHTML = originalBtnText;
+            aiBtn.classList.remove('opacity-75');
+        });
+    }
+</script>
 @endsection

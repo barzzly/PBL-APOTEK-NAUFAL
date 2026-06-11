@@ -182,6 +182,12 @@
                             </div>
                         @endif
                     </div>
+
+                    <!-- Deskripsi Obat -->
+                    <div class="mt-6 pt-5 border-t border-gray-100">
+                        <h3 class="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-file-prescription text-primary"></i> Deskripsi Obat</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">{{ $medicine->description ?? 'Tidak ada deskripsi untuk obat ini.' }}</p>
+                    </div>
                 </div>
             </div>
 

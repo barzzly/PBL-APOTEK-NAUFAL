@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Services\GeminiService;
 
 class AdminController extends Controller
 {
@@ -133,7 +134,8 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string'
         ]);
 
         $imageName = null;
@@ -149,6 +151,7 @@ class AdminController extends Controller
             'price' => $request->price,
             'stock' => $request->stock,
             'image' => $imageName ? '/images/' . $imageName : null,
+            'description' => $request->description,
         ]);
 
         return redirect()->route('admin.medicines')->with('success', 'Obat berhasil ditambahkan!');
@@ -169,7 +172,8 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string'
         ]);
 
         if ($request->hasFile('image')) {
@@ -183,6 +187,7 @@ class AdminController extends Controller
         $medicine->slug = Str::slug($request->name);
         $medicine->price = $request->price;
         $medicine->stock = $request->stock;
+        $medicine->description = $request->description;
         $medicine->save();
 
         return redirect()->route('admin.medicines')->with('success', 'Obat berhasil diperbarui!');
@@ -192,6 +197,33 @@ class AdminController extends Controller
     {
         Medicine::findOrFail($id)->delete();
         return back()->with('success', 'Obat berhasil dihapus!');
+    }
+
+    public function generateDescription(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
+
+        $category = null;
+        if ($request->category_id) {
+            $category = Category::find($request->category_id);
+        }
+
+        try {
+            $geminiService = new GeminiService();
+            $description = $geminiService->generateDescription($request->name, $category ? $category->name : null);
+            return response()->json([
+                'success' => true,
+                'description' => $description
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // --- Laporan Penjualan ---
