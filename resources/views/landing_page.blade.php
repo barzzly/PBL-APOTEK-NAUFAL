@@ -98,6 +98,26 @@
 
     <!-- Main Content -->
     <main class="flex-grow">
+        <!-- Alerts -->
+        <div class="max-w-7xl mx-auto px-4 mt-5">
+            @if(session('success'))
+            <div class="p-4 bg-green-50 border-l-4 border-primary rounded-r-lg flex items-center justify-between text-green-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-primary text-lg"></i>
+                    <span class="text-sm font-medium">{{ session('success') }}</span>
+                </div>
+            </div>
+            @endif
+
+            @if(session('error'))
+            <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-center justify-between text-red-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-red-500 text-lg"></i>
+                    <span class="text-sm font-medium">{{ session('error') }}</span>
+                </div>
+            </div>
+            @endif
+        </div>
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 py-5">
             <div class="w-full h-48 md:h-[350px] rounded-2xl overflow-hidden relative shadow-md bg-primary-light">
@@ -162,15 +182,15 @@
                 <!-- Product Card -->
                 <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition flex flex-col relative group border border-gray-100">
                     <div class="absolute top-2 left-2 bg-primary-light text-primary text-[10px] font-bold px-2 py-1 rounded z-10">{{ $medicine->category->name ?? 'Umum' }}</div>
-                    <a href="#" class="h-40 p-4 flex items-center justify-center bg-white">
+                    <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 p-4 flex items-center justify-center bg-white">
                         @if($medicine->image)
                         <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="max-w-full max-h-full object-contain">
                         @else
                         <div class="text-gray-300 text-4xl"><i class="fa-solid fa-pills"></i></div>
                         @endif
                     </a>
-                    <div class="p-4 flex flex-col flex-grow">
-                        <a href="#" class="text-sm font-medium text-text-main mb-2 line-clamp-2 h-10 group-hover:text-primary transition">{{ $medicine->name }}</a>
+                    <div class="p-4 flex flex-col flex-grow text-left">
+                        <a href="{{ route('product.detail', $medicine->slug) }}" class="text-sm font-semibold text-text-main mb-2 line-clamp-2 h-10 group-hover:text-primary transition">{{ $medicine->name }}</a>
                         @if($medicine->price_before_discount)
                         <div class="text-xs text-text-muted line-through mb-0.5">Rp {{ number_format($medicine->price_before_discount, 0, ',', '.') }}</div>
                         @endif

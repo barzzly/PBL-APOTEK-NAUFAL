@@ -24,4 +24,12 @@ class HomeController extends Controller
         
         return view('category', compact('category', 'categories', 'medicines'));
     }
+
+    public function show($slug)
+    {
+        $medicine = Medicine::with('category')->where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $categories = Category::all();
+        
+        return view('product_detail', compact('medicine', 'categories'));
+    }
 }
