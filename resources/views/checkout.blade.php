@@ -12,6 +12,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Leaflet.js Map Assets -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -121,8 +126,8 @@
                                 <input type="radio" name="order_type" value="pickup" checked onchange="toggleOrderType('pickup')" class="mt-1 accent-primary">
                                 <div class="flex flex-col">
                                     <span class="font-semibold text-sm text-text-main">Ambil di Apotek (Pickup)</span>
-                                    <span class="text-xs text-text-muted mt-1">Gratis Biaya Pengiriman</span>
-                                    <span class="text-[10px] text-primary font-semibold mt-2"><i class="fa-solid fa-location-dot"></i> Jl. Kesehatan No. 123</span>
+                                    <span class="text-xs text-text-muted mt-1">Tanpa Biaya Pengiriman</span>
+                                    <span class="text-[10px] text-primary font-semibold mt-2"><i class="fa-solid fa-location-dot"></i> Jl. Andalas Raya No. 125, Padang</span>
                                 </div>
                             </label>
                             
@@ -131,59 +136,59 @@
                                 <input type="radio" name="order_type" value="delivery" onchange="toggleOrderType('delivery')" class="mt-1 accent-primary">
                                 <div class="flex flex-col">
                                     <span class="font-semibold text-sm text-text-main">Kirim ke Alamat (Delivery)</span>
-                                    <span class="text-xs text-text-muted mt-1">Biaya Flat: Rp 15.000</span>
+                                    <span class="text-xs text-text-muted mt-1">Tarif Jarak: Rp 2.500/km (Min. Rp 10.000)</span>
                                     <span class="text-[10px] text-secondary font-semibold mt-2"><i class="fa-solid fa-motorcycle"></i> Pengiriman Instant / Reguler</span>
                                 </div>
                             </label>
                         </div>
                         
                         <!-- Shipping Address Container -->
-                        <div id="address-container" class="hidden space-y-2 mt-4 pt-2 border-t border-gray-100">
-                            <label class="text-xs font-semibold text-text-main block">Alamat Pengiriman Lengkap <span class="text-red-500">*</span></label>
-                            <textarea name="shipping_address" id="shipping_address" placeholder="Tuliskan alamat lengkap pengiriman, beserta kelurahan, kecamatan, dan kode pos..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-24">{{ old('shipping_address') }}</textarea>
+                        <div id="address-container" class="hidden space-y-4 mt-4 pt-2 border-t border-gray-100">
+                            <label class="text-xs font-semibold text-text-main block">Pilih Titik Antar di Peta <span class="text-red-500">*</span></label>
+                            
+                            <!-- Leaflet Map Container -->
+                            <div class="relative w-full rounded-xl border border-gray-200 overflow-hidden" style="height: 320px;">
+                                <div id="map" class="w-full h-full" style="z-index: 1;"></div>
+                                <!-- Overlay indicator when loading geocode -->
+                                <div id="map-loader" class="absolute inset-0 bg-white/70 z-[1000] flex items-center justify-center hidden">
+                                    <div class="flex items-center gap-2 text-xs font-semibold text-primary">
+                                        <i class="fa-solid fa-spinner fa-spin text-lg"></i> Mencari alamat...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden Fields for Location Coords and Distance -->
+                            <input type="hidden" name="delivery_latitude" id="delivery_latitude" value="{{ old('delivery_latitude') }}">
+                            <input type="hidden" name="delivery_longitude" id="delivery_longitude" value="{{ old('delivery_longitude') }}">
+                            <input type="hidden" name="delivery_distance" id="delivery_distance" value="{{ old('delivery_distance') }}">
+
+                            <!-- Delivery Info Badge -->
+                            <div id="delivery-info-badge" class="p-3 bg-gray-50 border border-gray-200 rounded-xl text-xs flex flex-wrap gap-4 items-center justify-between hidden">
+                                <div class="flex items-center gap-1.5 text-text-main">
+                                    <i class="fa-solid fa-route text-primary text-sm"></i>
+                                    <span>Jarak Pengiriman: <strong id="display-distance">0.0 km</strong></span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-text-main">
+                                    <i class="fa-solid fa-money-bill-wave text-secondary text-sm"></i>
+                                    <span>Ongkir Terhitung: <strong id="display-shipping" class="text-secondary">Rp 0</strong></span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-text-main block">Alamat Pengiriman Lengkap <span class="text-red-500">*</span></label>
+                                <textarea name="shipping_address" id="shipping_address" placeholder="Pilih lokasi pada peta di atas untuk mengisi alamat secara otomatis, lalu tambahkan detail (No. Rumah, RT/RW, Patokan)..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-24">{{ old('shipping_address') }}</textarea>
+                                <p class="text-[10px] text-text-muted">Alamat di atas akan terisi otomatis saat Anda mengklik peta. Anda dapat menyuntingnya jika diperlukan.</p>
+                            </div>
+
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-text-main block">Detail Lokasi seperti warna pagar dan cat rumah <span class="text-red-500">*</span></label>
+                                <input type="text" name="location_details" id="location_details" placeholder="Contoh: Pagar besi hitam, cat rumah kuning, depan warung..." value="{{ old('location_details') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
+                                <p class="text-[10px] text-text-muted">Membantu kurir menemukan lokasi Anda dengan lebih mudah.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 2. Informasi Resep Dokter (Conditional) -->
-                    @if($requiresPrescription)
-                    <div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6 space-y-4 bg-amber-50/20">
-                        <h3 class="text-base font-bold text-amber-800 flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center text-xs"><i class="fa-solid fa-prescription"></i></span>
-                            Informasi Resep Dokter
-                        </h3>
-                        <p class="text-xs text-amber-700 leading-relaxed">Keranjang Anda mengandung obat keras yang memerlukan verifikasi resep dokter. Silakan isi form di bawah ini dan unggah foto resep dokter yang valid.</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-text-main block">Nama Dokter <span class="text-red-500">*</span></label>
-                                <input type="text" name="doctor_name" value="{{ old('doctor_name') }}" placeholder="Dr. Nama Dokter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-text-main block">Tanggal Resep <span class="text-red-500">*</span></label>
-                                <input type="date" name="prescription_date" value="{{ old('prescription_date') ?? date('Y-m-d') }}" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-text-main block">Nama Pasien <span class="text-red-500">*</span></label>
-                                <input type="text" name="patient_name" value="{{ old('patient_name') ?? $user->name }}" placeholder="Nama Pasien" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
-                            </div>
-                            <div class="space-y-1">
-                                <label class="text-xs font-semibold text-text-main block">Umur Pasien (Tahun)</label>
-                                <input type="number" name="patient_age" value="{{ old('patient_age') }}" placeholder="Contoh: 25" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
-                            </div>
-                        </div>
 
-                        <div class="space-y-1">
-                            <label class="text-xs font-semibold text-text-main block">Rumah Sakit / Klinik</label>
-                            <input type="text" name="hospital_clinic" value="{{ old('hospital_clinic') }}" placeholder="Contoh: RS Nama Rumah Sakit" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
-                        </div>
-
-                        <div class="space-y-2 pt-2">
-                            <label class="text-xs font-semibold text-text-main block">Unggah Foto / Scan Resep Dokter <span class="text-red-500">*</span></label>
-                            <input type="file" name="prescription_image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200 cursor-pointer">
-                            <p class="text-[10px] text-text-muted">Format file: JPG, PNG, JPEG. Ukuran maksimum: 2MB.</p>
-                        </div>
-                    </div>
-                    @endif
 
                     <!-- 3. Metode Pembayaran -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
@@ -371,7 +376,7 @@
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Hubungi Kami</h3>
                     <ul class="flex flex-col gap-3 text-left">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Kesehatan No. 123, Jakarta</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Andalas Raya No. 125, Padang</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> cs@apoteknaufal.com</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center"></i> +62 812-3456-7890</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> (021) 1500-123</a></li>
@@ -389,11 +394,46 @@
     <script>
         const subtotal = {{ $subtotal }};
         
-        function toggleOrderType(type) {
-            const addressContainer = document.getElementById('address-container');
+        let currentShippingFee = 15000; // default initial fee
+        
+        function calculateShippingFee(distance) {
+            if (distance <= 0) return 0;
+            // Rp 2.500 per km, minimal Rp 10.000
+            let fee = Math.ceil(distance) * 2500;
+            return Math.max(fee, 10000);
+        }
+
+        function updateTotals() {
             const shippingCostLabel = document.getElementById('shipping-cost-label');
             const totalAmountLabel = document.getElementById('total-amount-label');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            const isDelivery = document.querySelector('input[name="order_type"]:checked').value === 'delivery';
+            
+            if (isDelivery && currentDistance > 50) {
+                shippingCostLabel.innerHTML = `<span class="text-red-500 font-semibold">Jarak Terlalu Jauh</span>`;
+                totalAmountLabel.innerHTML = `<span class="text-red-500 font-bold">Jarak Terlalu Jauh</span>`;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerText = 'Jarak Pengiriman Terlalu Jauh';
+                }
+            } else {
+                const fee = isDelivery ? currentShippingFee : 0;
+                shippingCostLabel.innerText = fee > 0 ? formatRupiah(fee) : "Rp 0";
+                totalAmountLabel.innerText = formatRupiah(subtotal + fee);
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    submitBtn.innerText = 'Buat Pesanan Sekarang';
+                }
+            }
+        }
+
+        function toggleOrderType(type) {
+            const addressContainer = document.getElementById('address-container');
             const inputAddress = document.getElementById('shipping_address');
+            const inputDetails = document.getElementById('location_details');
 
             const labelPickup = document.getElementById('label-pickup');
             const labelDelivery = document.getElementById('label-delivery');
@@ -401,27 +441,226 @@
             if (type === 'delivery') {
                 addressContainer.classList.remove('hidden');
                 inputAddress.setAttribute('required', 'required');
+                if (inputDetails) inputDetails.setAttribute('required', 'required');
                 
                 // Styling labels
                 labelDelivery.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelPickup.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 
-                // Pricing
-                const total = subtotal + 15000;
-                shippingCostLabel.innerText = "Rp 15.000";
-                totalAmountLabel.innerText = formatRupiah(total);
+                // Initialize Leaflet map
+                initMap();
             } else {
                 addressContainer.classList.add('hidden');
                 inputAddress.removeAttribute('required');
+                if (inputDetails) inputDetails.removeAttribute('required');
                 
                 // Styling labels
                 labelPickup.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelDelivery.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
-                
-                // Pricing
-                shippingCostLabel.innerText = "Rp 0";
-                totalAmountLabel.innerText = formatRupiah(subtotal);
             }
+            updateTotals();
+        }
+
+        // --- Leaflet Map Logic ---
+        let map, pharmacyMarker, userMarker, routeLayer = null, currentDistance = 0;
+        const pharmacyCoords = [-0.937722, 100.3878982]; // Apotek Naufal coordinates
+        let mapInitialized = false;
+
+        function initMap() {
+            if (mapInitialized) {
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+                return;
+            }
+
+            // Create Leaflet map centered at Apotek Naufal
+            map = L.map('map').setView(pharmacyCoords, 15);
+
+            // Load OSM tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Add Pharmacy Marker (Red Icon)
+            pharmacyMarker = L.marker(pharmacyCoords).addTo(map)
+                .bindPopup('<strong>Apotek Naufal</strong><br>Jl. Andalas Raya No. 125')
+                .openPopup();
+
+            // Default position of delivery marker is Apotek Naufal initially
+            let initialUserCoords = pharmacyCoords;
+            
+            const oldLat = document.getElementById('delivery_latitude').value;
+            const oldLng = document.getElementById('delivery_longitude').value;
+            if (oldLat && oldLng) {
+                initialUserCoords = [parseFloat(oldLat), parseFloat(oldLng)];
+            }
+
+            // Create Draggable Delivery Marker
+            userMarker = L.marker(initialUserCoords, {
+                draggable: true
+            }).addTo(map);
+
+            userMarker.bindPopup('<strong>Titik Pengantaran Anda</strong><br>Geser/Klik peta untuk memilih titik.').openPopup();
+
+            // On drag end: recalculate distance and address
+            userMarker.on('dragend', function (e) {
+                const position = userMarker.getLatLng();
+                updateDeliveryLocation(position.lat, position.lng);
+            });
+
+            // On map click: move marker and recalculate
+            map.on('click', function (e) {
+                userMarker.setLatLng(e.latlng);
+                updateDeliveryLocation(e.latlng.lat, e.latlng.lng);
+            });
+
+            mapInitialized = true;
+
+            // If we have old values, calculate initial distance
+            if (oldLat && oldLng) {
+                updateDeliveryLocation(parseFloat(oldLat), parseFloat(oldLng), false);
+            }
+        }
+
+        // Calculate Haversine distance in km
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of earth in km
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c; // Distance in km
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI/180);
+        }
+
+        // Update location, calculate distance, and geocode address via OpenStreetMap Nominatim
+        function updateDeliveryLocation(lat, lng, doGeocode = true) {
+            document.getElementById('delivery_latitude').value = lat;
+            document.getElementById('delivery_longitude').value = lng;
+            document.getElementById('delivery-info-badge').classList.remove('hidden');
+
+            const loader = document.getElementById('map-loader');
+            if (loader && doGeocode) {
+                loader.classList.remove('hidden');
+            }
+
+            // Fetch from local calculation route
+            fetch(`/checkout/calculate-distance?latitude=${lat}&longitude=${lng}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        applyDistanceAndShipping(data.distance, data.shipping_cost, data.formatted_shipping_cost);
+
+                        // Draw routing geometry
+                        if (data.geometry) {
+                            if (routeLayer) {
+                                map.removeLayer(routeLayer);
+                            }
+                            routeLayer = L.geoJSON(data.geometry, {
+                                style: {
+                                    color: '#2563eb', // Premium blue color
+                                    weight: 4,
+                                    opacity: 0.8
+                                }
+                            }).addTo(map);
+
+                            // Fit map bounds to show route
+                            const bounds = routeLayer.getBounds();
+                            map.fitBounds(bounds, { padding: [30, 30] });
+                        }
+                    } else {
+                        fallbackDistanceCalculation(lat, lng);
+                    }
+                })
+                .catch(err => {
+                    console.error("Local route calculation error: ", err);
+                    fallbackDistanceCalculation(lat, lng);
+                })
+                .then(() => {
+                    if (doGeocode) {
+                        return fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data && data.display_name) {
+                                    document.getElementById('shipping_address').value = data.display_name;
+                                }
+                            });
+                    }
+                })
+                .catch(err => {
+                    console.error("Geocoding error: ", err);
+                })
+                .finally(() => {
+                    if (loader && doGeocode) {
+                        loader.classList.add('hidden');
+                    }
+                });
+        }
+
+        function fallbackDistanceCalculation(lat, lng) {
+            const distance = getDistance(pharmacyCoords[0], pharmacyCoords[1], lat, lng);
+            const calculatedFee = calculateShippingFee(distance);
+            applyDistanceAndShipping(distance, calculatedFee, formatRupiah(calculatedFee));
+
+            // Draw straight line fallback route
+            const fallbackGeometry = {
+                type: 'LineString',
+                coordinates: [
+                    [pharmacyCoords[1], pharmacyCoords[0]],
+                    [lng, lat]
+                ]
+            };
+            if (routeLayer) {
+                map.removeLayer(routeLayer);
+            }
+            routeLayer = L.geoJSON(fallbackGeometry, {
+                style: {
+                    color: '#9ca3af', // gray color for fallback
+                    weight: 3,
+                    opacity: 0.6,
+                    dashArray: '5, 5'
+                }
+            }).addTo(map);
+        }
+
+        function applyDistanceAndShipping(distance, shippingCost, formattedCost) {
+            document.getElementById('delivery_distance').value = distance.toFixed(2);
+            
+            // Update global distance state
+            currentDistance = distance;
+
+            const displayDistance = document.getElementById('display-distance');
+            const displayShipping = document.getElementById('display-shipping');
+            const deliveryLabel = document.querySelector('#label-delivery .text-text-muted');
+
+            if (distance > 50) {
+                displayDistance.innerHTML = `<span class="text-red-500 font-bold">${distance.toFixed(2)} km (Terlalu Jauh)</span>`;
+                displayShipping.innerHTML = `<span class="text-red-500 font-bold">Jarak Terlalu Jauh</span>`;
+                
+                if (deliveryLabel) {
+                    deliveryLabel.innerHTML = `<span class="text-red-500 font-semibold">Jarak Terlalu Jauh (Maks. 50 km)</span>`;
+                }
+                
+                currentShippingFee = 0;
+            } else {
+                displayDistance.innerText = distance.toFixed(2) + " km";
+                displayShipping.innerText = formattedCost;
+                
+                if (deliveryLabel) {
+                    deliveryLabel.innerText = "Ongkir Jarak: " + formattedCost + " (" + distance.toFixed(2) + " km)";
+                }
+                
+                currentShippingFee = shippingCost;
+            }
+
+            updateTotals();
         }
 
         function togglePaymentMethod(method) {

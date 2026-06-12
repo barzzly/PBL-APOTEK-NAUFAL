@@ -233,9 +233,17 @@
                     @if($order->order_type === 'delivery')
                     <div>
                         <span class="text-text-muted block mb-1">Alamat Penerima</span>
-                        <p class="text-text-main leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
-                            {{ $order->shipping_address }}
-                        </p>
+                        <div class="text-text-main leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-2">
+                            <p>{{ $order->shipping_address }}</p>
+                            @if($order->delivery_latitude && $order->delivery_longitude)
+                            <div class="pt-2 border-t border-gray-200 mt-2 flex flex-col gap-1.5 text-[11px]">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-route text-primary"></i> Jarak: <strong>{{ number_format($order->delivery_distance, 2) }} km</strong></span>
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $order->delivery_latitude }},{{ $order->delivery_longitude }}" target="_blank" class="text-primary hover:underline flex items-center gap-1.5 mt-1 font-semibold">
+                                    <i class="fa-solid fa-map-location-dot"></i> Buka Rute di Google Maps <i class="fa-solid fa-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                            @endif
+                        </div>
                     </div>
                     @else
                     <div>

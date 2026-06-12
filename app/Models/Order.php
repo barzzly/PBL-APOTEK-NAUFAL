@@ -12,6 +12,7 @@ class Order extends Model
         'order_number', 'user_id', 'status', 'order_type',
         'subtotal', 'shipping_cost', 'discount', 'total_amount',
         'payment_method', 'payment_status', 'paid_at', 'payment_proof',
+        'delivery_latitude', 'delivery_longitude', 'delivery_distance',
         'shipping_address', 'notes', 'pharmacist_note',
     ];
 

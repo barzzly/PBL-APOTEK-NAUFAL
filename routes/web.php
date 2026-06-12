@@ -71,6 +71,15 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
     Route::post('/orders/{id}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.update_status');
+
+    // Admin Prescription Routes
+    Route::get('/prescriptions', [\App\Http\Controllers\AdminPrescriptionController::class, 'index'])->name('admin.prescriptions.index');
+    Route::get('/prescriptions/{id}', [\App\Http\Controllers\AdminPrescriptionController::class, 'show'])->name('admin.prescriptions.show');
+    Route::post('/prescriptions/{id}/message', [\App\Http\Controllers\AdminPrescriptionController::class, 'sendMessage'])->name('admin.prescriptions.message');
+    Route::post('/prescriptions/{id}/status', [\App\Http\Controllers\AdminPrescriptionController::class, 'changeStatus'])->name('admin.prescriptions.status');
+    Route::post('/prescriptions/{id}/add-medicine', [\App\Http\Controllers\AdminPrescriptionController::class, 'addMedicine'])->name('admin.prescriptions.add_medicine');
+    Route::delete('/prescriptions/{id}/remove-medicine/{itemId}', [\App\Http\Controllers\AdminPrescriptionController::class, 'removeMedicine'])->name('admin.prescriptions.remove_medicine');
+    Route::get('/prescriptions/{id}/messages', [\App\Http\Controllers\AdminPrescriptionController::class, 'getMessages'])->name('admin.prescriptions.messages');
 });
 
 // Cart routes
@@ -82,12 +91,20 @@ Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remov
 // Checkout and customer orders (protected by auth)
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('/checkout/calculate-distance', [CheckoutController::class, 'calculateDistance'])->name('checkout.calculate_distance');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/orders/success', [CheckoutController::class, 'success'])->name('orders.success');
     Route::get('/orders', [CheckoutController::class, 'history'])->name('orders.history');
     Route::get('/orders/{id}', [CheckoutController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/upload-payment', [CheckoutController::class, 'uploadPaymentProof'])->name('orders.upload_payment');
     Route::post('/obat/{slug}/review', [HomeController::class, 'storeReview'])->name('medicine.review.store');
+    // Customer Prescription Routes
+    Route::get('/prescriptions/upload', [\App\Http\Controllers\PrescriptionController::class, 'create'])->name('prescriptions.create');
+    Route::post('/prescriptions/upload', [\App\Http\Controllers\PrescriptionController::class, 'store'])->name('prescriptions.store');
+    Route::get('/prescriptions/history', [\App\Http\Controllers\PrescriptionController::class, 'history'])->name('prescriptions.history');
+    Route::get('/prescriptions/ticket/{id}', [\App\Http\Controllers\PrescriptionController::class, 'show'])->name('prescriptions.show');
+    Route::post('/prescriptions/ticket/{id}/message', [\App\Http\Controllers\PrescriptionController::class, 'sendMessage'])->name('prescriptions.message');
+    Route::get('/prescriptions/ticket/{id}/messages', [\App\Http\Controllers\PrescriptionController::class, 'getMessages'])->name('prescriptions.messages');
     Route::get('/prescriptions/{filename}', [CheckoutController::class, 'viewPrescription'])->name('prescriptions.view');
 });
 

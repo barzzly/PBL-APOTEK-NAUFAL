@@ -65,6 +65,7 @@
                             <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
                             <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
+                            <a href="{{ route('prescriptions.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-file-prescription"></i> Resep Saya</a>
                             <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
                                 {{ auth()->user()->name }}
@@ -126,6 +127,25 @@
                     <h2 class="text-2xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-md">Kesehatan Anda Adalah Prioritas Kami</h2>
                     <p class="text-sm md:text-base mb-6 drop-shadow-md hidden md:block">Beli obat asli, lengkap, dan terpercaya secara online dengan pengiriman cepat.</p>
                     <a href="#" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition w-max">Belanja Sekarang</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prescription Banner Section -->
+        <section class="max-w-7xl mx-auto px-4 py-2">
+            <div class="bg-gradient-to-r from-primary to-[#008f45] text-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden group">
+                <div class="absolute -right-10 -bottom-10 text-white/10 text-9xl font-bold select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                    <i class="fa-solid fa-file-prescription"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-3">Layanan Tebus Resep</span>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">Tebus Resep Dokter via Konsultasi Chat</h3>
+                    <p class="text-sm text-white/95 leading-relaxed">Punya resep dokter dari rumah sakit atau klinik? Cukup unggah resep Anda di sini. Apoteker kami akan memeriksa resep, berkonsultasi via chat, dan memasukkan obat yang sesuai langsung ke keranjang Anda.</p>
+                </div>
+                <div class="relative z-10 shrink-0 w-full md:w-auto">
+                    <a href="{{ route('prescriptions.create') }}" class="w-full md:w-auto text-center px-6 py-3.5 bg-white text-primary font-bold rounded-xl hover:bg-bg-body hover:-translate-y-0.5 transition shadow-sm inline-block">
+                        <i class="fa-solid fa-upload mr-2"></i> Unggah Resep Dokter
+                    </a>
                 </div>
             </div>
         </section>

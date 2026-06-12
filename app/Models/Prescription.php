@@ -20,6 +20,7 @@ class Prescription extends Model
         'patient_age',
         'status',
         'image',
+        'customer_notes',
         'notes',
         'verified_by',
         'verified_at',
@@ -78,5 +79,10 @@ class Prescription extends Model
             'rejected'   => 'Ditolak',
             default      => ucfirst($this->status),
         };
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(PrescriptionMessage::class)->orderBy('id', 'asc');
     }
 }
