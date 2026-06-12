@@ -88,5 +88,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', [CheckoutController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/upload-payment', [CheckoutController::class, 'uploadPaymentProof'])->name('orders.upload_payment');
     Route::post('/obat/{slug}/review', [HomeController::class, 'storeReview'])->name('medicine.review.store');
+    Route::get('/prescriptions/{filename}', [CheckoutController::class, 'viewPrescription'])->name('prescriptions.view');
 });
 

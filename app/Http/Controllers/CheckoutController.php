@@ -10,6 +10,7 @@ use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends Controller
 {
@@ -110,19 +111,17 @@ class CheckoutController extends Controller
                     'notes' => $request->notes,
                 ]);
 
-                // 3. Process payment proof if uploaded
+                // 3. Process payment proof if uploaded (Public storage)
                 if ($request->hasFile('payment_proof')) {
-                    $imageName = 'pay_' . $order->id . '_' . time() . '.' . $request->payment_proof->extension();
-                    $request->payment_proof->move(public_path('uploads/payment_proofs'), $imageName);
+                    $imagePath = $request->file('payment_proof')->store('payment_proofs', 'public');
                     $order->update([
-                        'payment_proof' => '/uploads/payment_proofs/' . $imageName
+                        'payment_proof' => '/storage/' . $imagePath
                     ]);
                 }
 
-                // 4. Process prescription if required
+                // 4. Process prescription if required (Private storage)
                 if ($requiresPrescription) {
-                    $imageName = 'rx_' . $order->id . '_' . time() . '.' . $request->prescription_image->extension();
-                    $request->prescription_image->move(public_path('uploads/prescriptions'), $imageName);
+                    $imagePath = $request->file('prescription_image')->store('prescriptions', 'local');
 
                     Prescription::create([
                         'user_id' => auth()->id(),
@@ -134,7 +133,7 @@ class CheckoutController extends Controller
                         'patient_name' => $request->patient_name,
                         'patient_age' => $request->patient_age,
                         'status' => 'pending',
-                        'image' => '/uploads/prescriptions/' . $imageName,
+                        'image' => $imagePath,
                     ]);
                 }
 
@@ -221,16 +220,33 @@ class CheckoutController extends Controller
         $order = Order::where('user_id', auth()->id())->findOrFail($id);
 
         if ($request->hasFile('payment_proof')) {
-            $imageName = 'pay_' . $order->id . '_' . time() . '.' . $request->payment_proof->extension();
-            $request->payment_proof->move(public_path('uploads/payment_proofs'), $imageName);
+            $imagePath = $request->file('payment_proof')->store('payment_proofs', 'public');
             
             $order->update([
-                'payment_proof' => '/uploads/payment_proofs/' . $imageName
+                'payment_proof' => '/storage/' . $imagePath
             ]);
 
             return back()->with('success', 'Bukti pembayaran berhasil diunggah! Admin akan segera memverifikasinya.');
         }
 
         return back()->with('error', 'Gagal mengunggah bukti pembayaran.');
+    }
+
+    // Secure view prescription file
+    public function viewPrescription($filename)
+    {
+        $prescription = Prescription::where('image', 'prescriptions/' . $filename)->firstOrFail();
+
+        // Admin or the user who owns the prescription can access it
+        if (auth()->user()->role !== 'admin' && auth()->id() !== $prescription->user_id) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat berkas resep ini.');
+        }
+
+        $path = 'prescriptions/' . $filename;
+        if (!Storage::disk('local')->exists($path)) {
+            abort(404, 'Berkas resep tidak ditemukan.');
+        }
+
+        return response()->file(storage_path('app/private/' . $path));
     }
 }

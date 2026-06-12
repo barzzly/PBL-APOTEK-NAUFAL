@@ -313,7 +313,7 @@
                     </div>
                     <div>
                         <span class="text-text-muted block mb-1">Foto Resep</span>
-                        <a href="{{ $prescription->image }}" target="_blank" class="text-amber-800 hover:underline font-semibold flex items-center gap-1.5">
+                        <a href="{{ route('prescriptions.view', basename($prescription->image)) }}" target="_blank" class="text-amber-800 hover:underline font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-file-image"></i> Lihat Resep Dokter
                         </a>
                     </div>

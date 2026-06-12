@@ -118,9 +118,9 @@
             <div class="pt-2">
                 <span class="text-text-muted text-xs block mb-1">Unggahan Foto Resep Dokter:</span>
                 <div class="w-full max-w-sm border border-amber-100 rounded-lg overflow-hidden bg-white">
-                    <img src="{{ $prescription->image }}" alt="Resep Dokter" class="w-full max-h-64 object-contain p-2">
+                    <img src="{{ route('prescriptions.view', basename($prescription->image)) }}" alt="Resep Dokter" class="w-full max-h-64 object-contain p-2">
                     <div class="p-3 bg-gray-50 border-t border-amber-100 text-center">
-                        <a href="{{ $prescription->image }}" target="_blank" class="text-xs text-primary hover:underline font-semibold flex items-center justify-center gap-1.5">
+                        <a href="{{ route('prescriptions.view', basename($prescription->image)) }}" target="_blank" class="text-xs text-primary hover:underline font-semibold flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-up-right-from-square"></i> Buka Gambar Resep Ukuran Penuh
                         </a>
                     </div>

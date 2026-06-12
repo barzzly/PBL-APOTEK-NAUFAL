@@ -30,6 +30,29 @@ class Prescription extends Model
         'verified_at' => 'datetime',
     ];
 
+    public ?string $oldImageToCleanUp = null;
+
+    protected static function booted()
+    {
+        static::updating(function ($model) {
+            if ($model->isDirty('image')) {
+                $model->oldImageToCleanUp = $model->getOriginal('image');
+            }
+        });
+
+        static::updated(function ($model) {
+            if (!empty($model->oldImageToCleanUp) && str_starts_with($model->oldImageToCleanUp, 'prescriptions/')) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($model->oldImageToCleanUp);
+            }
+        });
+
+        static::deleted(function ($model) {
+            if ($model->image && str_starts_with($model->image, 'prescriptions/')) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($model->image);
+            }
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

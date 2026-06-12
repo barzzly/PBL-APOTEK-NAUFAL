@@ -8,6 +8,7 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Services\GeminiService;
 
@@ -70,16 +71,15 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required|string|max:255']);
         
-        $imageName = null;
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
+            $imagePath = $request->file('image')->store('categories', 'public');
         }
 
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'image' => $imageName ? '/images/' . $imageName : null,
+            'image' => $imagePath ? '/storage/' . $imagePath : null,
         ]);
 
         return redirect()->route('admin.categories')->with('success', 'Kategori berhasil ditambahkan!');
@@ -97,9 +97,8 @@ class AdminController extends Controller
         $request->validate(['name' => 'required|string|max:255']);
         
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $category->image = '/images/' . $imageName;
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $category->image = '/storage/' . $imagePath;
         }
 
         $category->name = $request->name;
@@ -111,7 +110,8 @@ class AdminController extends Controller
 
     public function deleteCategory($id)
     {
-        Category::findOrFail($id)->delete();
+        $category = Category::findOrFail($id);
+        $category->delete();
         return back()->with('success', 'Kategori berhasil dihapus!');
     }
 
@@ -172,10 +172,9 @@ class AdminController extends Controller
             'description' => 'nullable|string'
         ]);
 
-        $imageName = null;
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
+            $imagePath = $request->file('image')->store('medicines', 'public');
         }
 
         Medicine::create([
@@ -184,7 +183,7 @@ class AdminController extends Controller
             'slug' => Str::slug($request->name),
             'price' => $request->price,
             'stock' => $request->stock,
-            'image' => $imageName ? '/images/' . $imageName : null,
+            'image' => $imagePath ? '/storage/' . $imagePath : null,
             'description' => $request->description,
         ]);
 
@@ -211,9 +210,8 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $medicine->image = '/images/' . $imageName;
+            $imagePath = $request->file('image')->store('medicines', 'public');
+            $medicine->image = '/storage/' . $imagePath;
         }
 
         $medicine->category_id = $request->category_id;
@@ -229,7 +227,8 @@ class AdminController extends Controller
 
     public function deleteMedicine($id)
     {
-        Medicine::findOrFail($id)->delete();
+        $medicine = Medicine::findOrFail($id);
+        $medicine->delete();
         return back()->with('success', 'Obat berhasil dihapus!');
     }
 
