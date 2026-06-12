@@ -42,13 +42,13 @@
                 <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
             </a>
 
-            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
-                <input type="text" placeholder="Cari obat, vitamin, atau suplemen..." 
+            <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari obat, vitamin, atau suplemen..." 
                     class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
-                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
+                <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-            </div>
+            </form>
 
             <div class="flex items-center gap-5">
                 <a href="#" class="text-text-main hover:text-primary text-xl relative transition">
@@ -167,9 +167,16 @@
         </section>
 
         <!-- Products Section -->
-        <section class="max-w-7xl mx-auto px-4 py-8">
+        <section id="products-section" class="max-w-7xl mx-auto px-4 py-8">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-bold text-text-main">Produk Apotek Naufal</h3>
+                @if(request('search'))
+                    <div class="flex flex-col gap-1">
+                        <h3 class="text-xl font-bold text-text-main">Hasil Pencarian untuk: <span class="text-primary">"{{ request('search') }}"</span></h3>
+                        <a href="{{ route('home') }}" class="text-xs text-secondary hover:underline flex items-center gap-1 w-fit"><i class="fa-solid fa-circle-xmark"></i> Hapus Pencarian</a>
+                    </div>
+                @else
+                    <h3 class="text-xl font-bold text-text-main">Produk Apotek Naufal</h3>
+                @endif
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
                 
@@ -200,7 +207,12 @@
                     </div>
                 </div>
                 @empty
-                <div class="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center text-text-muted py-8">Belum ada produk yang ditambahkan.</div>
+                <div class="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center text-text-muted py-12 bg-white rounded-xl border border-gray-100 shadow-sm w-full">
+                    <div class="text-5xl mb-4 text-gray-200"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                    <p class="text-sm font-medium">
+                        Tidak ditemukan obat dengan kata kunci "{{ request('search') }}".
+                    </p>
+                </div>
                 @endforelse
 
             </div>
@@ -286,7 +298,7 @@
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Hubungi Kami</h3>
                     <ul class="flex flex-col gap-3">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Kesehatan No. 123, Jakarta</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Andalas</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> cs@apoteknaufal.com</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center"></i> +62 812-3456-7890</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> (021) 1500-123</a></li>
@@ -295,10 +307,130 @@
             </div>
             
             <div class="text-center pt-6 border-t border-border-muted text-sm text-text-muted">
-                <p>&copy; 2026 Apotek Naufal. All rights reserved. SIPA: 123/SIPA/2026.</p>
+                <p>&copy; 2026 Apotek Naufal. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Search Scripts -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInputs = document.querySelectorAll('input[name="search"]');
+        
+        searchInputs.forEach(input => {
+            const form = input.closest('form');
+            if (!form) return;
+            
+            // Ensure parent form has relative positioning
+            form.classList.add('relative');
+            
+            // Create suggestions container
+            const dropdown = document.createElement('div');
+            dropdown.className = 'absolute left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50 max-h-80 overflow-y-auto divide-y divide-gray-50 hidden';
+            form.appendChild(dropdown);
+            
+            let debounceTimer;
+            
+            input.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = input.value.trim();
+                
+                if (query.length < 2) {
+                    dropdown.innerHTML = '';
+                    dropdown.classList.add('hidden');
+                    return;
+                }
+                
+                debounceTimer = setTimeout(() => {
+                    fetch(`/search-suggestions?q=${encodeURIComponent(query)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            dropdown.innerHTML = '';
+                            
+                            if (data.length === 0) {
+                                const emptyItem = document.createElement('div');
+                                emptyItem.className = 'p-4 text-center text-xs text-text-muted';
+                                emptyItem.textContent = 'Tidak ditemukan obat yang cocok';
+                                dropdown.appendChild(emptyItem);
+                            } else {
+                                data.forEach(item => {
+                                    const a = document.createElement('a');
+                                    a.href = `/obat/${item.slug}`;
+                                    a.className = 'flex items-center gap-3 p-3 hover:bg-gray-50 transition text-left';
+                                    
+                                    const imgWrapper = document.createElement('div');
+                                    imgWrapper.className = 'w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-gray-100';
+                                    
+                                    if (item.image) {
+                                        const img = document.createElement('img');
+                                        img.src = item.image;
+                                        img.alt = item.name;
+                                        img.className = 'w-full h-full object-contain';
+                                        imgWrapper.appendChild(img);
+                                    } else {
+                                        imgWrapper.innerHTML = '<i class="fa-solid fa-pills text-gray-300 text-sm"></i>';
+                                    }
+                                    
+                                    const infoWrapper = document.createElement('div');
+                                    infoWrapper.className = 'flex-grow min-w-0';
+                                    
+                                    const nameSpan = document.createElement('span');
+                                    nameSpan.className = 'text-sm font-semibold text-text-main block truncate';
+                                    nameSpan.textContent = item.name;
+                                    
+                                    const catSpan = document.createElement('span');
+                                    catSpan.className = 'text-[10px] text-text-muted block mt-0.5';
+                                    catSpan.textContent = item.category_name;
+                                    
+                                    infoWrapper.appendChild(nameSpan);
+                                    infoWrapper.appendChild(catSpan);
+                                    
+                                    const priceSpan = document.createElement('span');
+                                    priceSpan.className = 'text-xs font-bold text-secondary text-right shrink-0';
+                                    priceSpan.textContent = `Rp ${item.price}`;
+                                    
+                                    a.appendChild(imgWrapper);
+                                    a.appendChild(infoWrapper);
+                                    a.appendChild(priceSpan);
+                                    
+                                    dropdown.appendChild(a);
+                                });
+                            }
+                            dropdown.classList.remove('hidden');
+                        })
+                        .catch(err => console.error('Error fetching suggestions:', err));
+                }, 300);
+            });
+            
+            // Hide dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!form.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+            
+            // Show dropdown again when input is focused and has text
+            input.addEventListener('focus', function() {
+                if (input.value.trim().length >= 2 && dropdown.children.length > 0) {
+                    dropdown.classList.remove('hidden');
+                }
+            });
+        });
+    });
+    </script>
+
+    @if(request('search'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productSection = document.getElementById('products-section');
+            if (productSection) {
+                setTimeout(() => {
+                    productSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        });
+    </script>
+    @endif
 
 </body>
 </html>
