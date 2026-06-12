@@ -18,7 +18,7 @@ class CheckoutController extends Controller
     public function index()
     {
         $categories = Category::all();
-        $cart = session()->get('cart', []);
+        $cart = (new CartController())->getCartItems();
 
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong.');
@@ -28,6 +28,13 @@ class CheckoutController extends Controller
         $requiresPrescription = false;
 
         foreach ($cart as $item) {
+            if ($item['stock'] == 0) {
+                return redirect()->route('cart.index')->with('error', "Obat '{$item['name']}' sedang habis (Out of Stock). Mohon hapus dari keranjang sebelum melanjutkan.");
+            }
+            if ($item['quantity'] > $item['stock']) {
+                return redirect()->route('cart.index')->with('error', "Stok obat '{$item['name']}' tidak mencukupi (Tersedia: {$item['stock']}). Mohon kurangi jumlahnya sebelum melanjutkan.");
+            }
+
             $subtotal += $item['price'] * $item['quantity'];
             if ($item['requires_prescription']) {
                 $requiresPrescription = true;
@@ -42,7 +49,7 @@ class CheckoutController extends Controller
     // Place order
     public function store(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $cart = (new CartController())->getCartItems();
 
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Keranjang belanja Anda kosong.');
@@ -163,8 +170,8 @@ class CheckoutController extends Controller
                 return $order;
             });
 
-            // Clear session cart
-            session()->forget('cart');
+            // Clear database cart items
+            \App\Models\CartItem::where('user_id', auth()->id())->delete();
 
             return redirect()->route('orders.success', ['order_number' => $order->order_number])
                 ->with('success', 'Pesanan Anda berhasil dibuat!');

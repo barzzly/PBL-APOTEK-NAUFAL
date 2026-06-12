@@ -26,6 +26,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+        $this->syncSessionCartToDatabase();
 
         return redirect('/');
     }
@@ -36,6 +37,7 @@ class AuthController extends Controller
         
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            $this->syncSessionCartToDatabase();
             
             if (Auth::user()->role === 'admin') {
                 return redirect()->intended('/admin/dashboard');
@@ -55,5 +57,33 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');
+    }
+
+    private function syncSessionCartToDatabase()
+    {
+        if (session()->has('cart')) {
+            $sessionCart = session()->get('cart', []);
+            foreach ($sessionCart as $medicineId => $item) {
+                $cartItem = \App\Models\CartItem::where('user_id', Auth::id())
+                    ->where('medicine_id', $medicineId)
+                    ->first();
+                
+                if ($cartItem) {
+                    $newQty = $cartItem->quantity + $item['quantity'];
+                    $medicine = \App\Models\Medicine::find($medicineId);
+                    if ($medicine && $newQty > $medicine->stock) {
+                        $newQty = $medicine->stock;
+                    }
+                    $cartItem->update(['quantity' => $newQty]);
+                } else {
+                    \App\Models\CartItem::create([
+                        'user_id' => Auth::id(),
+                        'medicine_id' => $medicineId,
+                        'quantity' => $item['quantity'],
+                    ]);
+                }
+            }
+            session()->forget('cart');
+        }
     }
 }

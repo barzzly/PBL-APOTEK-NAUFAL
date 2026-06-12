@@ -44,7 +44,7 @@
                 <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cart-badge" class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ array_sum(array_column(session('cart', []), 'quantity')) }}
+                        {{ $cartCount }}
                     </span>
                 </a>
                 <div class="hidden sm:flex items-center gap-3">
@@ -156,7 +156,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-text-main block">Nama Dokter <span class="text-red-500">*</span></label>
-                                <input type="text" name="doctor_name" value="{{ old('doctor_name') }}" placeholder="Dr. John Doe" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
+                                <input type="text" name="doctor_name" value="{{ old('doctor_name') }}" placeholder="Dr. Nama Dokter" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
                             </div>
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-text-main block">Tanggal Resep <span class="text-red-500">*</span></label>
@@ -174,7 +174,7 @@
 
                         <div class="space-y-1">
                             <label class="text-xs font-semibold text-text-main block">Rumah Sakit / Klinik</label>
-                            <input type="text" name="hospital_clinic" value="{{ old('hospital_clinic') }}" placeholder="Contoh: RS Medika" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
+                            <input type="text" name="hospital_clinic" value="{{ old('hospital_clinic') }}" placeholder="Contoh: RS Nama Rumah Sakit" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition">
                         </div>
 
                         <div class="space-y-2 pt-2">

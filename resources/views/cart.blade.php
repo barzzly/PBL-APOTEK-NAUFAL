@@ -52,7 +52,7 @@
                 <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cart-badge" class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ array_sum(array_column(session('cart', []), 'quantity')) }}
+                        {{ $cartCount }}
                     </span>
                 </a>
                 <div class="hidden sm:flex items-center gap-3">
@@ -145,6 +145,16 @@
                                     @if($item['requires_prescription'])
                                         <span class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 w-max"><i class="fa-solid fa-prescription"></i> Butuh Resep</span>
                                     @endif
+                                    
+                                    @if($item['stock'] == 0)
+                                        <span class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200 w-max">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> Stok Habis (Out of Stock)
+                                        </span>
+                                    @elseif($item['quantity'] > $item['stock'])
+                                        <span class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 w-max">
+                                            <i class="fa-solid fa-triangle-exclamation"></i> Sisa Stok: {{ $item['stock'] }} (Mohon kurangi jumlah)
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                             
@@ -203,8 +213,29 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('checkout.index') }}" class="w-full block py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md">
-                        Lanjutkan ke Checkout
+                    @php
+                        $hasStockIssue = false;
+                        foreach($cart as $item) {
+                            if($item['stock'] == 0 || $item['quantity'] > $item['stock']) {
+                                $hasStockIssue = true;
+                                break;
+                            }
+                        }
+                    @endphp
+
+                    @if($hasStockIssue)
+                        <button disabled class="w-full block py-3.5 bg-gray-300 text-gray-500 font-bold rounded-xl text-center text-sm cursor-not-allowed">
+                            Lanjutkan ke Checkout
+                        </button>
+                        <p class="text-[11px] text-red-500 text-center mt-2">Ada produk dalam keranjang yang kehabisan stok atau melebihi stok tersedia. Mohon sesuaikan keranjang belanja Anda.</p>
+                    @else
+                        <a href="{{ route('checkout.index') }}" class="w-full block py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md">
+                            Lanjutkan ke Checkout
+                        </a>
+                    @endif
+
+                    <a href="/" class="w-full block mt-3 py-3 bg-white hover:bg-gray-50 border border-primary text-primary font-bold rounded-xl text-center text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Lanjutkan Berbelanja
                     </a>
                 </div>
                 
@@ -316,11 +347,24 @@
             .then(data => {
                 Swal.close();
                 if (data.success) {
-                    input.value = newQty;
+                    input.value = data.quantity;
                     document.getElementById(`item-subtotal-${medicineId}`).innerText = `Rp ${data.item_subtotal}`;
                     document.getElementById('cart-subtotal').innerText = `Rp ${data.cart_subtotal}`;
                     document.getElementById('cart-total').innerText = `Rp ${data.cart_total}`;
                     document.getElementById('cart-badge').innerText = data.cart_count;
+
+                    if (data.message.includes('disesuaikan')) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Penyesuaian Stok',
+                            text: data.message,
+                            confirmButtonColor: '#00A651',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        window.location.reload();
+                    }
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -392,8 +436,10 @@
                                 icon: 'success',
                                 title: 'Terhapus',
                                 text: data.message,
-                                timer: 1500,
+                                timer: 1000,
                                 showConfirmButton: false
+                            }).then(() => {
+                                window.location.reload();
                             });
                         }
                     })
