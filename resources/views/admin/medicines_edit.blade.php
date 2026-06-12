@@ -64,11 +64,18 @@
                 </div>
                 @endif
                 
-                <div class="border-2 border-dashed border-border-muted rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative">
-                    <input type="file" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div class="text-4xl text-gray-300 mb-3"><i class="fa-solid fa-cloud-arrow-up"></i></div>
-                    <p class="text-sm font-semibold text-text-main mb-1">Upload foto baru untuk mengganti</p>
-                    <p class="text-xs text-text-muted">Biarkan kosong jika tidak ingin mengubah foto</p>
+                <div class="border-2 border-dashed border-border-muted rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative" id="upload-zone">
+                    <input type="file" name="image" id="image-input" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <div id="upload-placeholder">
+                        <div class="text-4xl text-gray-300 mb-3"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                        <p class="text-sm font-semibold text-text-main mb-1">Upload foto baru untuk mengganti</p>
+                        <p class="text-xs text-text-muted">Biarkan kosong jika tidak ingin mengubah foto</p>
+                    </div>
+                    <div id="image-preview-container" class="hidden flex flex-col items-center justify-center gap-2 relative">
+                        <img id="image-preview" src="#" alt="Pratinjau Foto" class="w-32 h-32 object-cover rounded-lg border border-border-muted shadow-sm">
+                        <p id="file-name" class="text-xs font-semibold text-text-main max-w-xs truncate"></p>
+                        <span class="px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary/20 text-xs rounded-lg font-bold mt-1 transition">Ganti Foto Pilihan</span>
+                    </div>
                 </div>
             </div>
             
@@ -176,5 +183,29 @@
             aiBtn.classList.remove('opacity-75');
         });
     }
+
+    document.getElementById('image-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const placeholder = document.getElementById('upload-placeholder');
+        const previewContainer = document.getElementById('image-preview-container');
+        const previewImg = document.getElementById('image-preview');
+        const fileName = document.getElementById('file-name');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                previewImg.src = event.target.result;
+                fileName.textContent = file.name;
+                placeholder.classList.add('hidden');
+                previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImg.src = '#';
+            fileName.textContent = '';
+            placeholder.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+        }
+    });
 </script>
 @endsection

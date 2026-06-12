@@ -4,37 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keranjang Belanja - Apotek Naufal</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Apotek Naufal adalah apotek online terpercaya yang menyediakan berbagai macam obat, vitamin, dan alat kesehatan dengan harga terbaik dan pengiriman cepat.">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
+    <!-- Topbar -->
+    <div class="bg-white border-b border-border-muted text-xs py-2 text-text-muted">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span><i class="fa-solid fa-truck"></i> Gratis Ongkir ke Seluruh Indonesia</span>
+            </div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:text-primary transition">Bantuan</a>
+                <a href="#" class="hover:text-primary transition">Lacak Pesanan</a>
+                <a href="#" class="hover:text-primary transition">Download App</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm border-b border-border-muted">
+    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
             </a>
 
-            <div class="flex items-center gap-5 ml-auto">
-                <a href="{{ route('cart.index') }}" class="text-primary hover:text-primary-dark text-xl relative transition">
+            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
+                <input type="text" placeholder="Cari obat, vitamin, atau suplemen..." 
+                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
+                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-5">
+                <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span id="cart-badge" class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
                         {{ array_sum(array_column(session('cart', []), 'quantity')) }}
                     </span>
                 </a>
-                <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-3">
                     @auth
                         @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
+                            <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
                             <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
                                 {{ auth()->user()->name }}
@@ -61,6 +87,7 @@
                 @foreach($categories->take(5) as $navCat)
                 <li><a href="{{ route('category.show', $navCat->slug) }}" class="text-text-main hover:text-primary font-medium text-sm transition">{{ $navCat->name }}</a></li>
                 @endforeach
+                <li><a href="#" class="text-text-main hover:text-primary font-medium text-sm transition">Promo</a></li>
             </ul>
         </div>
     </nav>
@@ -200,9 +227,60 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-12 pb-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-text-muted">
-            <p>&copy; 2026 Apotek Naufal. All rights reserved.</p>
+    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10 text-left">
+                <div class="lg:col-span-2">
+                    <div class="mb-4 text-left">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-notes-medical"></i> Apotek Naufal</h2>
+                    </div>
+                    <p class="text-sm text-text-muted mb-5 leading-relaxed pr-0 md:pr-10">
+                        Apotek Naufal adalah platform kesehatan terpercaya yang menyediakan akses mudah untuk mendapatkan obat, vitamin, dan kebutuhan kesehatan lainnya dengan layanan konsultasi apoteker profesional.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Layanan</h3>
+                    <ul class="flex flex-col gap-3 text-left">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Dokter</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cek Lab</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Artikel Kesehatan</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Promo Menarik</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Bantuan & Panduan</h3>
+                    <ul class="flex flex-col gap-3 text-left">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Hubungi Kami</h3>
+                    <ul class="flex flex-col gap-3 text-left">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Kesehatan No. 123, Jakarta</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> cs@apoteknaufal.com</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center"></i> +62 812-3456-7890</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> (021) 1500-123</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-6 border-t border-border-muted text-sm text-text-muted">
+                <p>&copy; 2026 Apotek Naufal. All rights reserved. SIPA: 123/SIPA/2026.</p>
+            </div>
         </div>
     </footer>
 

@@ -182,11 +182,11 @@
                 <!-- Product Card -->
                 <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition flex flex-col relative group border border-gray-100">
                     <div class="absolute top-2 left-2 bg-primary-light text-primary text-[10px] font-bold px-2 py-1 rounded z-10">{{ $medicine->category->name ?? 'Umum' }}</div>
-                    <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 p-4 flex items-center justify-center bg-white">
+                    <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 flex items-center justify-center bg-white w-full overflow-hidden">
                         @if($medicine->image)
-                        <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="max-w-full max-h-full object-contain">
+                        <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="w-full h-full object-cover">
                         @else
-                        <div class="text-gray-300 text-4xl"><i class="fa-solid fa-pills"></i></div>
+                        <div class="text-gray-300 text-4xl flex items-center justify-center w-full h-full bg-gray-50"><i class="fa-solid fa-pills"></i></div>
                         @endif
                     </a>
                     <div class="p-4 flex flex-col flex-grow text-left">
