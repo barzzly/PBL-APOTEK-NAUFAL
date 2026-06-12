@@ -2,6 +2,9 @@
 @section('header_title', 'Dashboard')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <span class="text-gray-600 font-bold"><i class="fa-solid fa-gauge-high"></i> Dashboard</span>
+</div>
 
 {{-- ── GREETING BANNER ── --}}
 <div class="bg-gradient-to-r from-primary to-emerald-400 rounded-2xl p-6 mb-6 text-white relative overflow-hidden">

@@ -24,15 +24,12 @@ class PrescriptionController extends Controller
         $request->validate([
             'doctor_name' => 'required|string|max:255',
             'hospital_clinic' => 'nullable|string|max:255',
-            'prescription_date' => 'required|date|before_or_equal:today',
             'patient_name' => 'required|string|max:255',
             'patient_age' => 'nullable|integer|min:0|max:150',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'customer_notes' => 'nullable|string|max:1000',
         ], [
             'doctor_name.required' => 'Nama dokter wajib diisi.',
-            'prescription_date.required' => 'Tanggal resep wajib diisi.',
-            'prescription_date.before_or_equal' => 'Tanggal resep tidak boleh di masa depan.',
             'patient_name.required' => 'Nama pasien wajib diisi.',
             'image.required' => 'Foto atau scan resep wajib diunggah.',
             'image.image' => 'Berkas harus berupa foto.',
@@ -43,7 +40,7 @@ class PrescriptionController extends Controller
             // Store file securely using local disk (root is app/private)
             $imagePath = $request->file('image')->store('prescriptions', 'local');
 
-            // Generate unique prescription ticket number: RX-YYYYMMDD-XXXXX
+            // Generate unique ticket number: RX-YYYYMMDD-XXXXX
             $datePart = date('Ymd');
             $randomPart = strtoupper(Str::random(5));
             $prescriptionNumber = "RX-{$datePart}-{$randomPart}";
@@ -51,9 +48,9 @@ class PrescriptionController extends Controller
             Prescription::create([
                 'user_id' => auth()->id(),
                 'prescription_number' => $prescriptionNumber,
+                'type' => 'prescription',
                 'doctor_name' => $request->doctor_name,
                 'hospital_clinic' => $request->hospital_clinic,
-                'prescription_date' => $request->prescription_date,
                 'patient_name' => $request->patient_name,
                 'patient_age' => $request->patient_age,
                 'image' => $imagePath,
@@ -61,14 +58,63 @@ class PrescriptionController extends Controller
                 'status' => 'pending',
             ]);
 
-            return redirect()->route('prescriptions.history')
-                ->with('success', 'Resep Anda berhasil diunggah! Apoteker akan segera memeriksa dan membalas melalui ruang obrolan tiket resep Anda.');
+            return redirect()->route('tickets.history')
+                ->with('success', 'Resep Anda berhasil diunggah! Apoteker akan segera memeriksa dan membalas melalui ruang obrolan tiket Anda.');
         }
 
         return back()->withInput()->with('error', 'Gagal mengunggah foto resep.');
     }
 
-    // Show customer's uploaded prescription tickets list
+    // Show general chat consultation form
+    public function createConsult()
+    {
+        $categories = Category::all();
+        return view('prescriptions.consult', compact('categories'));
+    }
+
+    // Save general chat consultation ticket
+    public function storeConsult(Request $request)
+    {
+        $request->validate([
+            'patient_name' => 'required|string|max:255',
+            'patient_age' => 'nullable|integer|min:0|max:150',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'customer_notes' => 'required|string|max:1000',
+        ], [
+            'patient_name.required' => 'Nama pasien wajib diisi.',
+            'customer_notes.required' => 'Detail keluhan wajib diisi.',
+            'image.image' => 'Berkas harus berupa foto.',
+            'image.max' => 'Ukuran foto tidak boleh lebih dari 2MB.',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('prescriptions', 'local');
+        }
+
+        // Generate unique ticket number: TK-YYYYMMDD-XXXXX
+        $datePart = date('Ymd');
+        $randomPart = strtoupper(Str::random(5));
+        $ticketNumber = "TK-{$datePart}-{$randomPart}";
+
+        Prescription::create([
+            'user_id' => auth()->id(),
+            'prescription_number' => $ticketNumber,
+            'type' => 'consultation',
+            'doctor_name' => null,
+            'hospital_clinic' => null,
+            'patient_name' => $request->patient_name,
+            'patient_age' => $request->patient_age,
+            'image' => $imagePath,
+            'customer_notes' => $request->customer_notes,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->route('tickets.history')
+            ->with('success', 'Konsultasi chat Anda berhasil dibuat! Apoteker akan segera menjawab dan membalas melalui ruang obrolan tiket Anda.');
+    }
+
+    // Show customer's uploaded tickets list
     public function history()
     {
         $categories = Category::all();

@@ -2,6 +2,11 @@
 @section('header_title', 'Kategori Obat')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Kategori Obat</span>
+</div>
 <div class="bg-white rounded-xl shadow-sm border border-border-muted overflow-hidden">
     <!-- Header: Title and Actions side-by-side -->
     <div class="p-5 border-b border-border-muted bg-gray-50" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; width: 100%; box-sizing: border-box; text-align: left;">

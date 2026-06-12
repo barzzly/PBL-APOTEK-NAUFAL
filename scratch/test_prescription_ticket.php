@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
-echo "--- STARTING STANDALONE PRESCRIPTION TICKET SYSTEM TEST ---\n\n";
+echo "--- STARTING STANDALONE PRESCRIPTION & CONSULTATION TICKET SYSTEM TEST ---\n\n";
 
 // 1. Setup Users
 $customer = User::firstOrCreate(
@@ -65,15 +65,14 @@ echo "        Customer: {$customer->name} ({$customer->email})\n";
 echo "        Admin: {$admin->name} ({$admin->email})\n";
 echo "        Medicine: {$medicine->name} (Stock: {$medicine->stock})\n\n";
 
-// 2. Customer Uploads a Prescription
+// 2. Customer Uploads a Prescription Ticket
 Auth::login($customer);
 
 $fakeImage = UploadedFile::fake()->image('resep_dokter_anak.jpg');
 
-$requestStore = Request::create('/prescriptions/upload', 'POST', [
+$requestStore = Request::create('/tickets/upload', 'POST', [
     'doctor_name' => 'dr. John Doe, Sp.A',
     'hospital_clinic' => 'RSUD M. Djamil Padang',
-    'prescription_date' => date('Y-m-d'),
     'patient_name' => 'Adit Pratama',
     'patient_age' => 8,
     'customer_notes' => 'Tolong ditebus obat flu dan batuk generik.',
@@ -84,14 +83,14 @@ $requestStore->files->set('image', $fakeImage);
 $prescriptionController = new PrescriptionController();
 $responseStore = $prescriptionController->store($requestStore);
 
-$prescription = Prescription::where('user_id', $customer->id)->latest()->first();
+$prescription = Prescription::where('user_id', $customer->id)->where('type', 'prescription')->latest()->first();
 
 if (!$prescription) {
     echo "[FAILED] Prescription ticket was not created in database.\n";
     exit(1);
 }
 
-echo "Step 2: Prescription uploaded successfully!\n";
+echo "Step 2: Prescription ticket uploaded successfully!\n";
 echo "        Ticket Number: {$prescription->prescription_number}\n";
 echo "        Patient: {$prescription->patient_name}\n";
 echo "        Status: {$prescription->status} ({$prescription->status_label})\n";
@@ -104,18 +103,50 @@ if (Storage::disk('local')->exists($prescription->image)) {
     echo "        [WARNING] Image file not found in storage disk. Check filesystem configurations.\n\n";
 }
 
-// 3. Customer Sends Consultation Message
-$requestMsg1 = Request::create("/prescriptions/ticket/{$prescription->id}/message", 'POST', [
+// 2.1 Customer submits a General Consultation Ticket (TK-prefix, no doctor details, optional image)
+$requestConsult = Request::create('/tickets/consult', 'POST', [
+    'patient_name' => 'Fadhil Naufal',
+    'patient_age' => 20,
+    'customer_notes' => 'Saya merasa demam dan pusing sejak kemarin malam.',
+]);
+
+$responseConsult = $prescriptionController->storeConsult($requestConsult);
+
+$consultTicket = Prescription::where('user_id', $customer->id)->where('type', 'consultation')->latest()->first();
+
+if (!$consultTicket) {
+    echo "[FAILED] Consultation ticket was not created in database.\n";
+    exit(1);
+}
+
+echo "Step 2.1: Consultation ticket created successfully!\n";
+echo "        Ticket Number: {$consultTicket->prescription_number}\n";
+echo "        Patient: {$consultTicket->patient_name}\n";
+echo "        Type: {$consultTicket->type}\n";
+echo "        Status: {$consultTicket->status} ({$consultTicket->status_label})\n\n";
+
+// 3. Customer Sends Consultation Message (AJAX/JSON)
+$requestMsg1 = Request::create("/tickets/room/{$prescription->id}/message", 'POST', [
     'message' => 'Halo apoteker, apakah resep anak saya sudah bisa disiapkan?'
 ]);
-$prescriptionController->sendMessage($requestMsg1, $prescription->id);
+$requestMsg1->headers->set('Accept', 'application/json');
+$responseJson1 = $prescriptionController->sendMessage($requestMsg1, $prescription->id);
 
-$msg1 = PrescriptionMessage::where('prescription_id', $prescription->id)->latest()->first();
-if ($msg1 && $msg1->message === 'Halo apoteker, apakah resep anak saya sudah bisa disiapkan?') {
-    echo "Step 3: Customer sent message successfully.\n";
-    echo "        Customer Message: \"{$msg1->message}\"\n\n";
+$json1 = json_decode($responseJson1->getContent(), true);
+if ($json1 && isset($json1['success']) && $json1['success'] === true) {
+    echo "Step 3.1: Customer sent AJAX message successfully and received correct JSON response.\n";
 } else {
-    echo "[FAILED] Customer message was not stored.\n";
+    echo "[FAILED] Customer AJAX message response invalid.\n";
+    exit(1);
+}
+
+// Fetch messages (AJAX/JSON)
+$responseFetchCustomer = $prescriptionController->getMessages($prescription->id);
+$fetchCustomerData = json_decode($responseFetchCustomer->getContent(), true);
+if ($fetchCustomerData && count($fetchCustomerData['messages']) > 0) {
+    echo "Step 3.2: Customer fetched messages via API successfully. Messages count: " . count($fetchCustomerData['messages']) . "\n\n";
+} else {
+    echo "[FAILED] Customer could not fetch messages via API.\n";
     exit(1);
 }
 
@@ -125,7 +156,7 @@ Auth::login($admin);
 $adminController = new AdminPrescriptionController();
 
 // Change status to processing
-$requestStatus1 = Request::create("/admin/prescriptions/{$prescription->id}/status", 'POST', [
+$requestStatus1 = Request::create("/admin/tickets/{$prescription->id}/status", 'POST', [
     'status' => 'processing'
 ]);
 $adminController->changeStatus($requestStatus1, $prescription->id);
@@ -142,26 +173,32 @@ if ($prescription->status === 'processing') {
     exit(1);
 }
 
-// Send Chat from Admin
-$requestAdminMsg = Request::create("/admin/prescriptions/{$prescription->id}/message", 'POST', [
+// Send Chat from Admin (AJAX/JSON)
+$requestAdminMsg = Request::create("/admin/tickets/{$prescription->id}/message", 'POST', [
     'message' => 'Halo Ibu/Bapak, resep sedang kami periksa. Kami akan menambahkan Paracetamol ke keranjang belanja Anda.'
 ]);
-$adminController->sendMessage($requestAdminMsg, $prescription->id);
-
-$adminMsg = PrescriptionMessage::where('prescription_id', $prescription->id)
-    ->where('user_id', $admin->id)
-    ->orderBy('id', 'desc')
-    ->first();
-if ($adminMsg) {
-    echo "Step 4.2: Admin chat message successfully stored.\n";
-    echo "            Admin Message: \"{$adminMsg->message}\"\n\n";
+$requestAdminMsg->headers->set('Accept', 'application/json');
+$responseAdminJson = $adminController->sendMessage($requestAdminMsg, $prescription->id);
+$adminJson = json_decode($responseAdminJson->getContent(), true);
+if ($adminJson && isset($adminJson['success']) && $adminJson['success'] === true) {
+    echo "Step 4.2: Admin sent AJAX message successfully and received correct JSON response.\n";
 } else {
-    echo "[FAILED] Admin message was not stored.\n";
+    echo "[FAILED] Admin AJAX message response invalid.\n";
+    exit(1);
+}
+
+// Fetch messages from Admin side (AJAX/JSON)
+$responseFetchAdmin = $adminController->getMessages($prescription->id);
+$fetchAdminData = json_decode($responseFetchAdmin->getContent(), true);
+if ($fetchAdminData && count($fetchAdminData['messages']) > 0) {
+    echo "Step 4.3: Admin fetched messages via API successfully. Messages count: " . count($fetchAdminData['messages']) . "\n\n";
+} else {
+    echo "[FAILED] Admin could not fetch messages via API.\n";
     exit(1);
 }
 
 // 5. Admin Adds Medicine to Customer's Cart
-$requestAddMed = Request::create("/admin/prescriptions/{$prescription->id}/add-medicine", 'POST', [
+$requestAddMed = Request::create("/admin/tickets/{$prescription->id}/add-medicine", 'POST', [
     'medicine_id' => $medicine->id,
     'quantity' => 2
 ]);
@@ -182,7 +219,7 @@ if ($cartItem && $cartItem->quantity === 2) {
 }
 
 // 6. Admin Marks Ticket as Completed (Closes Ticket)
-$requestStatus2 = Request::create("/admin/prescriptions/{$prescription->id}/status", 'POST', [
+$requestStatus2 = Request::create("/admin/tickets/{$prescription->id}/status", 'POST', [
     'status' => 'completed'
 ]);
 $adminController->changeStatus($requestStatus2, $prescription->id);
@@ -209,6 +246,8 @@ if ($imagePathToClean && Storage::disk('local')->exists($imagePathToClean)) {
     Storage::disk('local')->delete($imagePathToClean);
     echo "Step 7: Cleaned up uploaded test image file: {$imagePathToClean}\n";
 }
-echo "        Cleaned up test database records.\n\n";
+
+$consultTicket->delete();
+echo "        Cleaned up test database records (including consultation ticket).\n\n";
 
 echo "--- ALL INTEGRATION TESTS COMPLETED SUCCESSFULLY! ---\n";

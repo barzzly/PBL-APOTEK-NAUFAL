@@ -2,6 +2,11 @@
 @section('header_title', 'Manajemen Pesanan')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Pesanan</span>
+</div>
 @if(session('success'))
     <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
         <i class="fa-solid fa-circle-check text-lg"></i>

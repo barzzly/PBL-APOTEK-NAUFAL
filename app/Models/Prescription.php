@@ -13,9 +13,9 @@ class Prescription extends Model
         'user_id',
         'order_id',
         'prescription_number',
+        'type',
         'doctor_name',
         'hospital_clinic',
-        'prescription_date',
         'patient_name',
         'patient_age',
         'status',
@@ -27,7 +27,6 @@ class Prescription extends Model
     ];
 
     protected $casts = [
-        'prescription_date' => 'date',
         'verified_at' => 'datetime',
     ];
 

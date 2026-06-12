@@ -72,14 +72,14 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
     Route::post('/orders/{id}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.update_status');
 
-    // Admin Prescription Routes
-    Route::get('/prescriptions', [\App\Http\Controllers\AdminPrescriptionController::class, 'index'])->name('admin.prescriptions.index');
-    Route::get('/prescriptions/{id}', [\App\Http\Controllers\AdminPrescriptionController::class, 'show'])->name('admin.prescriptions.show');
-    Route::post('/prescriptions/{id}/message', [\App\Http\Controllers\AdminPrescriptionController::class, 'sendMessage'])->name('admin.prescriptions.message');
-    Route::post('/prescriptions/{id}/status', [\App\Http\Controllers\AdminPrescriptionController::class, 'changeStatus'])->name('admin.prescriptions.status');
-    Route::post('/prescriptions/{id}/add-medicine', [\App\Http\Controllers\AdminPrescriptionController::class, 'addMedicine'])->name('admin.prescriptions.add_medicine');
-    Route::delete('/prescriptions/{id}/remove-medicine/{itemId}', [\App\Http\Controllers\AdminPrescriptionController::class, 'removeMedicine'])->name('admin.prescriptions.remove_medicine');
-    Route::get('/prescriptions/{id}/messages', [\App\Http\Controllers\AdminPrescriptionController::class, 'getMessages'])->name('admin.prescriptions.messages');
+    // Admin Ticket Routes
+    Route::get('/tickets', [\App\Http\Controllers\AdminPrescriptionController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/tickets/{id}', [\App\Http\Controllers\AdminPrescriptionController::class, 'show'])->name('admin.tickets.show');
+    Route::post('/tickets/{id}/message', [\App\Http\Controllers\AdminPrescriptionController::class, 'sendMessage'])->name('admin.tickets.message');
+    Route::post('/tickets/{id}/status', [\App\Http\Controllers\AdminPrescriptionController::class, 'changeStatus'])->name('admin.tickets.status');
+    Route::post('/tickets/{id}/add-medicine', [\App\Http\Controllers\AdminPrescriptionController::class, 'addMedicine'])->name('admin.tickets.add_medicine');
+    Route::delete('/tickets/{id}/remove-medicine/{itemId}', [\App\Http\Controllers\AdminPrescriptionController::class, 'removeMedicine'])->name('admin.tickets.remove_medicine');
+    Route::get('/tickets/{id}/messages', [\App\Http\Controllers\AdminPrescriptionController::class, 'getMessages'])->name('admin.tickets.messages');
 });
 
 // Cart routes
@@ -98,13 +98,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/orders/{id}', [CheckoutController::class, 'show'])->name('orders.show');
     Route::post('/orders/{id}/upload-payment', [CheckoutController::class, 'uploadPaymentProof'])->name('orders.upload_payment');
     Route::post('/obat/{slug}/review', [HomeController::class, 'storeReview'])->name('medicine.review.store');
-    // Customer Prescription Routes
-    Route::get('/prescriptions/upload', [\App\Http\Controllers\PrescriptionController::class, 'create'])->name('prescriptions.create');
-    Route::post('/prescriptions/upload', [\App\Http\Controllers\PrescriptionController::class, 'store'])->name('prescriptions.store');
-    Route::get('/prescriptions/history', [\App\Http\Controllers\PrescriptionController::class, 'history'])->name('prescriptions.history');
-    Route::get('/prescriptions/ticket/{id}', [\App\Http\Controllers\PrescriptionController::class, 'show'])->name('prescriptions.show');
-    Route::post('/prescriptions/ticket/{id}/message', [\App\Http\Controllers\PrescriptionController::class, 'sendMessage'])->name('prescriptions.message');
-    Route::get('/prescriptions/ticket/{id}/messages', [\App\Http\Controllers\PrescriptionController::class, 'getMessages'])->name('prescriptions.messages');
-    Route::get('/prescriptions/{filename}', [CheckoutController::class, 'viewPrescription'])->name('prescriptions.view');
+    // Customer Ticket Routes
+    Route::get('/tickets/upload', [\App\Http\Controllers\PrescriptionController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets/upload', [\App\Http\Controllers\PrescriptionController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/consult', [\App\Http\Controllers\PrescriptionController::class, 'createConsult'])->name('tickets.consult.create');
+    Route::post('/tickets/consult', [\App\Http\Controllers\PrescriptionController::class, 'storeConsult'])->name('tickets.consult.store');
+    Route::get('/tickets/history', [\App\Http\Controllers\PrescriptionController::class, 'history'])->name('tickets.history');
+    Route::get('/tickets/room/{id}', [\App\Http\Controllers\PrescriptionController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/room/{id}/message', [\App\Http\Controllers\PrescriptionController::class, 'sendMessage'])->name('tickets.message');
+    Route::get('/tickets/room/{id}/messages', [\App\Http\Controllers\PrescriptionController::class, 'getMessages'])->name('tickets.messages');
+    Route::get('/tickets/file/{filename}', [CheckoutController::class, 'viewPrescription'])->name('tickets.view');
 });
 

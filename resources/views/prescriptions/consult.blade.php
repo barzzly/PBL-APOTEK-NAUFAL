@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unggah Resep Dokter - Apotek Naufal</title>
+    <title>Konsultasi Chat dengan Apoteker - Apotek Naufal</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -63,18 +63,18 @@
                 <i class="fa-solid fa-chevron-right text-xs text-text-muted"></i>
                 <a href="{{ route('tickets.history') }}" class="text-text-muted hover:text-primary transition text-sm">Ticket Saya</a>
                 <i class="fa-solid fa-chevron-right text-xs text-text-muted"></i>
-                <span class="text-text-main font-semibold text-sm">Unggah Resep</span>
+                <span class="text-text-main font-semibold text-sm">Konsultasi Chat</span>
             </div>
 
             <div class="bg-white rounded-3xl overflow-hidden border border-border-muted shadow-xl">
                 <!-- Form Header -->
                 <div class="bg-primary p-6 md:p-8 text-white relative overflow-hidden">
-                    <h1 class="text-xl md:text-2xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-file-prescription"></i> Unggah Resep Dokter</h1>
-                    <p class="text-xs md:text-sm text-white/90">Layanan tebus resep digital yang langsung dilayani oleh apoteker kami melalui konsultasi chat interaktif.</p>
+                    <h1 class="text-xl md:text-2xl font-bold mb-2 flex items-center gap-2"><i class="fa-solid fa-comments"></i> Konsultasi Chat dengan Apoteker</h1>
+                    <p class="text-xs md:text-sm text-white/90">Silakan tanyakan keluhan penyakit, dosis obat, atau kebutuhan obat Anda langsung kepada apoteker kami melalui tiket obrolan konsultasi.</p>
                 </div>
 
                 <!-- Form Content -->
-                <form action="{{ route('tickets.store') }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
+                <form action="{{ route('tickets.consult.store') }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-6">
                     @csrf
 
                     @if($errors->any())
@@ -105,35 +105,19 @@
                                 placeholder="Contoh: 25">
                         </div>
 
-                        <!-- Doctor Name -->
-                        <div>
-                            <label for="doctor_name" class="text-xs font-semibold text-text-main block mb-2">Nama Dokter Penulis Resep <span class="text-red-500">*</span></label>
-                            <input type="text" name="doctor_name" id="doctor_name" value="{{ old('doctor_name') }}" required
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition"
-                                placeholder="Contoh: dr. Naufal, Sp.PD">
-                        </div>
-
-                        <!-- Hospital / Clinic -->
-                        <div>
-                            <label for="hospital_clinic" class="text-xs font-semibold text-text-main block mb-2">Rumah Sakit / Klinik</label>
-                            <input type="text" name="hospital_clinic" id="hospital_clinic" value="{{ old('hospital_clinic') }}"
-                                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition"
-                                placeholder="Contoh: RS. Andalas Padang">
-                        </div>
-
-                        <!-- Customer Notes -->
+                        <!-- Complaints / Symptoms -->
                         <div class="md:col-span-2">
-                            <label class="text-xs font-semibold text-text-main block mb-2">Detail Keluhan / Catatan Tambahan (Opsional)</label>
-                            <textarea name="customer_notes" id="customer_notes" rows="3"
+                            <label for="customer_notes" class="text-xs font-semibold text-text-main block mb-2">Detail Keluhan / Pertanyaan Konsultasi <span class="text-red-500">*</span></label>
+                            <textarea name="customer_notes" id="customer_notes" rows="4" required
                                 class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition resize-none"
-                                placeholder="Tuliskan keluhan atau instruksi tambahan untuk apoteker kami, misalnya: 'Saya hanya butuh obat batuknya saja yang ditebus', atau 'Harap dicarikan obat generiknya saja'." >{{ old('customer_notes') }}</textarea>
+                                placeholder="Tuliskan gejala yang Anda rasakan, atau pertanyaan mengenai kebutuhan obat Anda secara detail agar apoteker kami dapat memberikan rekomendasi obat yang tepat.">{{ old('customer_notes') }}</textarea>
                         </div>
 
-                        <!-- Prescription Image Upload Zone -->
+                        <!-- Optional Photo Upload Zone -->
                         <div class="md:col-span-2">
-                            <label class="text-xs font-semibold text-text-main block mb-2">Foto / Scan Resep Dokter <span class="text-red-500">*</span></label>
+                            <label class="text-xs font-semibold text-text-main block mb-2">Foto Gejala / Obat yang Ditanyakan (Opsional)</label>
                             <div id="drop-zone" class="w-full border-2 border-dashed border-border-muted rounded-xl p-6 text-center hover:bg-gray-50 transition cursor-pointer relative flex flex-col items-center justify-center">
-                                <input type="file" name="image" id="file-input" accept="image/*" required class="hidden">
+                                <input type="file" name="image" id="file-input" accept="image/*" class="hidden">
                                 
                                 <div id="upload-prompt" class="flex flex-col items-center justify-center">
                                     <div class="text-4xl text-gray-300 mb-3">
@@ -145,10 +129,10 @@
 
                                 <div id="upload-preview" class="hidden w-full flex flex-col items-center space-y-3">
                                     <div class="w-full max-h-64 rounded-xl overflow-hidden shadow-md bg-white border border-border-muted p-2 flex items-center justify-center">
-                                        <img id="preview-img" src="#" alt="Preview Resep" class="w-full h-full object-contain max-h-56">
+                                        <img id="preview-img" src="#" alt="Preview" class="w-full h-full object-contain max-h-56">
                                     </div>
                                     <div class="flex items-center gap-3">
-                                        <span id="preview-filename" class="text-xs font-semibold text-gray-650 truncate max-w-xs">resep.jpg</span>
+                                        <span id="preview-filename" class="text-xs font-semibold text-gray-650 truncate max-w-xs">foto.jpg</span>
                                         <button type="button" id="remove-file-btn" class="text-xs font-bold text-red-500 hover:text-red-600 flex items-center gap-1"><i class="fa-solid fa-trash-can"></i> Ganti Foto</button>
                                     </div>
                                 </div>
@@ -159,7 +143,7 @@
                     <div class="pt-4 flex flex-col sm:flex-row gap-3">
                         <a href="{{ route('tickets.history') }}" class="w-full sm:w-1/3 text-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition">Batal</a>
                         <button type="submit" class="w-full sm:w-2/3 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition shadow-md shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-paper-plane"></i> Kirim Resep Ke Apoteker
+                            <i class="fa-solid fa-paper-plane"></i> Mulai Konsultasi
                         </button>
                     </div>
                 </form>
@@ -219,7 +203,7 @@
             if (files && files[0]) {
                 const file = files[0];
                 if (!file.type.startsWith('image/')) {
-                    alert('Mohon pilih berkas gambar/foto resep.');
+                    alert('Mohon pilih berkas gambar/foto.');
                     return;
                 }
                 

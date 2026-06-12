@@ -1,7 +1,12 @@
 @extends('admin.layout')
-@section('header_title', 'Konsultasi Resep')
+@section('header_title', 'Tiket Layanan & Konsultasi')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Tiket</span>
+</div>
 @if(session('success'))
     <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
         <i class="fa-solid fa-circle-check text-lg"></i>
@@ -13,7 +18,7 @@
     <!-- Header: Title and Actions side-by-side -->
     <div class="p-5 border-b border-border-muted bg-gray-50" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; width: 100%; box-sizing: border-box; text-align: left;">
         <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-            <h2 class="text-lg font-bold text-text-main" style="margin: 0; text-align: left;">Daftar Tiket Resep Masuk</h2>
+            <h2 class="text-lg font-bold text-text-main" style="margin: 0; text-align: left;">Daftar Tiket Masuk</h2>
             <span class="text-xs bg-gray-100 border border-gray-200 text-text-muted px-2.5 py-0.5 rounded-full font-semibold" style="white-space: nowrap;">
                 <span id="ticket-count-display">{{ $prescriptions->count() }}</span> Tiket
             </span>
@@ -34,7 +39,7 @@
 
             <!-- Client-Side Instant Search -->
             <div style="position: relative; display: inline-block; width: 100%; min-width: 200px; max-width: 320px; box-sizing: border-box;">
-                <input type="text" id="search-input" oninput="filterTickets()" placeholder="Cari tiket resep..." 
+                <input type="text" id="search-input" oninput="filterTickets()" placeholder="Cari tiket..." 
                        style="width: 100%; padding: 8px 36px 8px 14px; border: 1px solid #e0e0e0; border-radius: 9999px; font-size: 13px; outline: none; transition: all 0.2s; box-sizing: border-box; background-color: #fff;" 
                        onfocus="this.style.borderColor='#00A651'; this.style.boxShadow='0 0 0 3px rgba(0, 166, 81, 0.15)';" 
                        onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
@@ -51,8 +56,8 @@
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">No. Tiket</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Pelanggan</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Pasien (Umur)</th>
+                    <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Tipe Tiket</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Dokter</th>
-                    <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Tanggal Resep</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider">Tanggal Upload</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider text-center">Status</th>
                     <th class="py-4 px-5 text-xs font-bold text-text-muted uppercase tracking-wider text-right">Aksi</th>
@@ -77,14 +82,18 @@
                         {{ $p->patient_name }} ({{ $p->patient_age ?? '-' }} th)
                     </td>
 
-                    <!-- Doctor Info -->
-                    <td class="py-4 px-5 font-medium text-gray-700 doctor-name">
-                        {{ $p->doctor_name }}
+                    <!-- Ticket Type -->
+                    <td class="py-4 px-5 font-semibold ticket-type">
+                        @if($p->type === 'consultation')
+                            <span class="text-secondary"><i class="fa-solid fa-comments"></i> Konsultasi Umum</span>
+                        @else
+                            <span class="text-emerald-600"><i class="fa-solid fa-file-prescription"></i> Tebus Resep</span>
+                        @endif
                     </td>
 
-                    <!-- Prescription Issue Date -->
-                    <td class="py-4 px-5 text-text-muted font-medium prescription-date">
-                        {{ $p->prescription_date->isoFormat('D MMM YYYY') }}
+                    <!-- Doctor Info -->
+                    <td class="py-4 px-5 font-medium text-gray-700 doctor-name">
+                        {{ $p->doctor_name ?? '-' }}
                     </td>
 
                     <!-- Upload Timestamp -->
@@ -98,7 +107,7 @@
                             $badgeColors = [
                                 'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                 'verified' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                                'processing' => 'bg-orange-50 text-orange-700 border-orange-200',
                                 'completed' => 'bg-green-50 text-green-700 border-green-200',
                                 'rejected' => 'bg-red-50 text-red-700 border-red-200',
                             ];
@@ -111,7 +120,7 @@
 
                     <!-- Actions -->
                     <td class="py-4 px-5 text-right">
-                        <a href="{{ route('admin.prescriptions.show', $p->id) }}" class="px-3 py-2 rounded-xl bg-primary text-white text-[11px] font-bold hover:bg-primary-dark transition inline-flex items-center gap-1 shadow-sm shadow-primary/10">
+                        <a href="{{ route('admin.tickets.show', $p->id) }}" class="px-3 py-2 rounded-xl bg-primary text-white text-[11px] font-bold hover:bg-primary-dark transition inline-flex items-center gap-1 shadow-sm shadow-primary/10">
                             <i class="fa-solid fa-comments"></i> Layani Konsultasi
                         </a>
                     </td>
@@ -120,7 +129,7 @@
                 <tr>
                     <td colspan="8" class="py-12 text-center text-text-muted">
                         <div class="text-4xl mb-3 opacity-30"><i class="fa-solid fa-file-prescription"></i></div>
-                        <p class="text-sm">Belum ada tiket resep dokter.</p>
+                        <p class="text-sm">Belum ada tiket konsultasi atau resep masuk.</p>
                     </td>
                 </tr>
                 @endforelse
@@ -129,7 +138,7 @@
                 <tr id="empty-state-row" style="display: none;">
                     <td colspan="8" class="py-12 text-center text-text-muted">
                         <div class="text-4xl mb-3 opacity-30"><i class="fa-solid fa-magnifying-glass"></i></div>
-                        <p class="text-sm">Tidak ditemukan tiket resep dengan kata kunci "<span id="search-query-span" class="font-bold text-text-main"></span>".</p>
+                        <p class="text-sm">Tidak ditemukan tiket dengan kata kunci "<span id="search-query-span" class="font-bold text-text-main"></span>".</p>
                     </td>
                 </tr>
             </tbody>

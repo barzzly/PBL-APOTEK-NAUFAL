@@ -72,13 +72,45 @@ class AdminPrescriptionController extends Controller
             'message' => 'required|string|max:1000',
         ]);
 
-        PrescriptionMessage::create([
+        $msg = PrescriptionMessage::create([
             'prescription_id' => $prescription->id,
             'user_id' => auth()->id(),
             'message' => $request->message,
         ]);
 
-        return back()->with('success', 'Pesan terkirim.');
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pesan terkirim.',
+                'data' => [
+                    'message' => $msg->message,
+                    'created_at' => $msg->created_at->isoFormat('D MMMM HH:mm'),
+                    'user_id' => $msg->user_id,
+                ]
+            ]);
+        }
+
+        return back();
+    }
+
+    // Get messages via API JSON for sync
+    public function getMessages($id)
+    {
+        $prescription = Prescription::findOrFail($id);
+        $messages = $prescription->messages()->with('user')->get();
+
+        return response()->json([
+            'status' => $prescription->status,
+            'status_label' => $prescription->status_label,
+            'messages' => $messages->map(function ($msg) {
+                return [
+                    'message' => $msg->message,
+                    'created_at' => $msg->created_at->isoFormat('D MMMM HH:mm'),
+                    'user_id' => $msg->user_id,
+                    'user_name' => $msg->user->name,
+                ];
+            })
+        ]);
     }
 
     // Change status of the ticket

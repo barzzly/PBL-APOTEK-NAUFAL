@@ -64,9 +64,9 @@
                 <i class="fa-solid fa-receipt w-5 {{ request()->routeIs('admin.orders*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Pesanan</span>
             </a>
-            <a href="{{ route('admin.prescriptions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.prescriptions*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
-                <i class="fa-solid fa-file-prescription w-5 {{ request()->routeIs('admin.prescriptions*') ? 'text-white/90' : 'text-gray-400' }}"></i>
-                <span class="sidebar-text">Resep Obat</span>
+            <a href="{{ route('admin.tickets.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.tickets*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-ticket w-5 {{ request()->routeIs('admin.tickets*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Ticket</span>
             </a>
             <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>

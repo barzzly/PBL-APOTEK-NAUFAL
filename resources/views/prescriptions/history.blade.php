@@ -29,7 +29,7 @@
                     </span>
                 </a>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('prescriptions.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-file-prescription"></i> Resep Saya</a>
+                    <a href="{{ route('tickets.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-ticket"></i> Ticket Saya</a>
                     <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
                         <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
                         {{ auth()->user()->name }}
@@ -61,15 +61,20 @@
             <div class="flex items-center gap-3">
                 <a href="/" class="text-text-muted hover:text-primary transition text-sm"><i class="fa-solid fa-house"></i> Beranda</a>
                 <i class="fa-solid fa-chevron-right text-xs text-text-muted"></i>
-                <span class="text-text-main font-semibold text-sm">Resep Saya</span>
+                <span class="text-text-main font-semibold text-sm">Ticket Saya</span>
             </div>
             
-            <a href="{{ route('prescriptions.create') }}" class="px-5 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-plus"></i> Tebus Resep Baru
-            </a>
+            <div class="flex flex-wrap gap-2.5">
+                <a href="{{ route('tickets.consult.create') }}" class="px-5 py-3 bg-secondary hover:bg-[#d85517] text-white text-sm font-bold rounded-xl shadow-md flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-comments"></i> Konsultasi Apoteker
+                </a>
+                <a href="{{ route('tickets.create') }}" class="px-5 py-3 bg-primary hover:bg-primary-dark text-white text-sm font-bold rounded-xl shadow-md shadow-primary/20 flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-file-prescription"></i> Tebus Resep Baru
+                </a>
+            </div>
         </div>
 
-        <h1 class="text-2xl font-bold text-text-main mb-6">Tiket Konsultasi Resep Saya</h1>
+        <h1 class="text-2xl font-bold text-text-main mb-6">Tiket Konsultasi & Resep Saya</h1>
 
         @if(session('success'))
         <div class="p-4 bg-green-50 border-l-4 border-primary rounded-r-lg flex items-center justify-between text-green-800 shadow-sm mb-6">
@@ -83,11 +88,14 @@
         @if($prescriptions->isEmpty())
         <div class="text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
             <div class="w-24 h-24 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center mx-auto text-4xl mb-5 shadow-inner">
-                <i class="fa-solid fa-file-prescription"></i>
+                <i class="fa-solid fa-ticket"></i>
             </div>
-            <h3 class="text-lg font-bold text-text-main mb-2">Belum Ada Tiket Resep</h3>
+            <h3 class="text-lg font-bold text-text-main mb-2">Belum Ada Tiket</h3>
             <p class="text-sm text-text-muted mb-8 max-w-sm mx-auto">Anda belum pernah mengunggah resep dokter atau membuat tiket konsultasi apoteker.</p>
-            <a href="{{ route('prescriptions.create') }}" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg text-sm transition">Unggah Resep Sekarang</a>
+            <div class="flex justify-center gap-4">
+                <a href="{{ route('tickets.consult.create') }}" class="px-6 py-3 bg-secondary hover:bg-[#d85517] text-white font-semibold rounded-lg text-sm transition">Konsultasi Apoteker</a>
+                <a href="{{ route('tickets.create') }}" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg text-sm transition">Unggah Resep Sekarang</a>
+            </div>
         </div>
         @else
         <div class="space-y-4">
@@ -109,13 +117,21 @@
                             <strong class="text-text-main">{{ $p->patient_name }} ({{ $p->patient_age ?? '-' }} th)</strong>
                         </div>
                         <div>
+                            <span class="text-xs text-text-muted block">Tipe Tiket:</span>
+                            <strong class="text-text-main">
+                                @if($p->type === 'consultation')
+                                    <span class="text-secondary"><i class="fa-solid fa-comments"></i> Konsultasi Umum</span>
+                                @else
+                                    <span class="text-emerald-600"><i class="fa-solid fa-file-prescription"></i> Tebus Resep</span>
+                                @endif
+                            </strong>
+                        </div>
+                        @if($p->type === 'prescription')
+                        <div>
                             <span class="text-xs text-text-muted block">Dokter Penulis:</span>
                             <strong class="text-text-main">{{ $p->doctor_name }}</strong>
                         </div>
-                        <div>
-                            <span class="text-xs text-text-muted block">Tanggal Resep:</span>
-                            <strong class="text-text-main">{{ $p->prescription_date->isoFormat('D MMMM YYYY') }}</strong>
-                        </div>
+                        @endif
                     </div>
 
                     @if($p->customer_notes)
@@ -133,7 +149,7 @@
                             $badgeColors = [
                                 'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                 'verified' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                                'processing' => 'bg-orange-50 text-orange-700 border-orange-200',
                                 'completed' => 'bg-green-50 text-green-700 border-green-200',
                                 'rejected' => 'bg-red-50 text-red-700 border-red-200',
                             ];
@@ -145,7 +161,7 @@
                         </span>
                     </div>
 
-                    <a href="{{ route('prescriptions.show', $p->id) }}" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs transition shadow-sm text-center flex items-center justify-center gap-1.5 cursor-pointer">
+                    <a href="{{ route('tickets.show', $p->id) }}" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs transition shadow-sm text-center flex items-center justify-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-comments"></i> Konsultasi Chat
                     </a>
                 </div>

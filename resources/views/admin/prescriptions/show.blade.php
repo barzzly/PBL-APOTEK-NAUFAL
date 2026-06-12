@@ -1,5 +1,5 @@
 @extends('admin.layout')
-@section('header_title', 'Workspace Pelayanan Resep')
+@section('header_title', 'Workspace Pelayanan Tiket')
 
 @section('content')
 @if(session('success'))
@@ -19,18 +19,18 @@
 <div class="flex items-center gap-3 mb-6 text-xs">
     <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
     <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
-    <a href="{{ route('admin.prescriptions.index') }}" class="text-gray-400 hover:text-primary transition">Resep Obat</a>
+    <a href="{{ route('admin.tickets.index') }}" class="text-gray-400 hover:text-primary transition">Tiket</a>
     <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
     <span class="text-gray-600 font-bold">Workspace Pelayanan ({{ $prescription->prescription_number }})</span>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
     
-    <!-- Left Column: Prescription & Patient Details -->
+    <!-- Left Column: Ticket & Patient Details -->
     <div class="space-y-6">
         <!-- Patient metadata -->
-        <div class="bg-white rounded-2xl border border-gray-150 p-5 shadow-sm space-y-4">
-            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Informasi Resep</h3>
+        <div class="bg-white rounded-2xl border border-border-muted p-5 shadow-sm space-y-4">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Informasi Tiket</h3>
             
             <div class="space-y-3 text-xs">
                 <div>
@@ -38,17 +38,25 @@
                     <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->patient_name }} ({{ $prescription->patient_age ?? '-' }} th)</strong>
                 </div>
                 <div>
+                    <span class="text-gray-400 block">Tipe Tiket:</span>
+                    <strong class="text-sm block mt-0.5">
+                        @if($prescription->type === 'consultation')
+                            <span class="text-primary font-bold"><i class="fa-solid fa-comments"></i> Konsultasi Umum</span>
+                        @else
+                            <span class="text-emerald-600 font-bold"><i class="fa-solid fa-file-prescription"></i> Tebus Resep</span>
+                        @endif
+                    </strong>
+                </div>
+                @if($prescription->type === 'prescription')
+                <div>
                     <span class="text-gray-400 block">Dokter Penulis:</span>
-                    <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->doctor_name }}</strong>
+                    <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->doctor_name ?? '-' }}</strong>
                 </div>
                 <div>
                     <span class="text-gray-400 block">Rumah Sakit / Klinik:</span>
                     <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->hospital_clinic ?? '-' }}</strong>
                 </div>
-                <div>
-                    <span class="text-gray-400 block">Tanggal Resep:</span>
-                    <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->prescription_date->isoFormat('D MMMM YYYY') }}</strong>
-                </div>
+                @endif
                 <div>
                     <span class="text-gray-400 block">Pelanggan Pengunggah:</span>
                     <strong class="text-gray-700 text-sm block mt-0.5">{{ $prescription->user->name }}</strong>
@@ -80,31 +88,33 @@
             </div>
         </div>
 
+        @if($prescription->image)
         <!-- Prescription Image Viewer -->
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
+        <div class="bg-white rounded-2xl border border-border-muted p-4 shadow-sm">
             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Berkas Foto Resep</h3>
-            <div class="relative rounded-xl overflow-hidden bg-gray-50 border border-gray-100 max-h-72 flex items-center justify-center p-2 group">
-                <img src="{{ route('prescriptions.view', ['filename' => basename($prescription->image)]) }}" 
+            <div class="relative rounded-xl overflow-hidden bg-gray-50 border border-border-muted max-h-72 flex items-center justify-center p-2 group">
+                <img src="{{ route('tickets.view', ['filename' => basename($prescription->image)]) }}" 
                      alt="Resep Dokter" 
                      class="max-h-60 object-contain w-full rounded-lg hover:scale-[1.03] transition-transform duration-300 cursor-zoom-in"
                      onclick="showFullImage(this.src)">
-                <div class="absolute bottom-2 right-2 bg-black/60 text-white rounded p-1.5 text-[10px] font-semibold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background-color: rgba(0,0,0,0.65); color: white; padding: 0.25rem 0.5rem; border-radius: 0.375rem; font-size: 10px; font-weight: 600; display: flex; align-items: center; gap: 0.25rem; pointer-events: none;">
                     <i class="fa-solid fa-magnifying-glass-plus"></i> Klik perbesar
                 </div>
             </div>
             <div class="mt-3 text-center">
-                <a href="{{ route('prescriptions.view', ['filename' => basename($prescription->image)]) }}" target="_blank" class="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1">
+                <a href="{{ route('tickets.view', ['filename' => basename($prescription->image)]) }}" target="_blank" class="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1">
                     <i class="fa-solid fa-up-right-from-square"></i> Buka di Tab Baru
                 </a>
             </div>
         </div>
+        @endif
     </div>
 
     <!-- Middle Column: Chat Consultation Thread -->
-    <div class="flex flex-col bg-white rounded-2xl border border-gray-150 shadow-sm overflow-hidden h-[620px]">
+    <div class="flex flex-col bg-white rounded-2xl border border-border-muted shadow-sm overflow-hidden h-[620px]">
         <!-- Chat Header -->
-        <div class="px-5 py-4 bg-gray-50 border-b border-gray-150 flex items-center gap-3 shrink-0">
-            <div class="w-10 h-10 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold">
+        <div class="px-5 py-4 bg-gray-50 border-b border-border-muted flex items-center gap-3 shrink-0">
+            <div class="w-10 h-10 rounded-xl bg-primary-light text-primary flex items-center justify-center font-bold shrink-0">
                 {{ substr($prescription->user->name, 0, 1) }}
             </div>
             <div>
@@ -119,9 +129,9 @@
         <!-- Chat Area -->
         <div id="chat-messages" class="flex-grow p-5 overflow-y-auto bg-gray-50/50 space-y-4">
             
-            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-[11px] text-blue-900 leading-relaxed shadow-sm">
-                <strong class="font-bold flex items-center gap-1.5 mb-1"><i class="fa-solid fa-info-circle"></i> Chat Konsultasi Aktif</strong>
-                Gunakan ruang obrolan ini untuk bertanya kepada pelanggan mengenai dosis obat, alergi obat, atau mengkonfirmasi obat alternatif jika stok resep asli habis. Semua penambahan obat ke keranjang akan tercatat di log obrolan secara otomatis.
+            <div class="bg-white border border-border-muted rounded-xl p-4 text-[11px] text-text-main leading-relaxed shadow-sm">
+                <strong class="font-bold flex items-center gap-1.5 mb-1.5 text-primary"><i class="fa-solid fa-circle-info text-primary"></i> Chat Konsultasi Aktif</strong>
+                <p class="text-text-muted">Gunakan ruang obrolan ini untuk berkomunikasi secara langsung dengan pelanggan. Anda dapat mengonfirmasi keluhan, menawarkan obat alternatif, atau menanyakan dosis. Obat yang ditambahkan ke keranjang belanja pelanggan akan tercatat di log obrolan secara otomatis.</p>
             </div>
 
             @foreach($prescription->messages as $msg)
@@ -133,21 +143,22 @@
                 
                 @if($isSystem)
                     <!-- System log bubble -->
-                    <div class="flex justify-center my-2">
-                        <div class="px-3.5 py-1.5 bg-gray-200 border border-gray-300 rounded-xl text-[10px] font-semibold text-gray-600 max-w-[90%] text-center">
-                            <i class="fa-solid fa-gears mr-1"></i> {{ str_replace('[SISTEM APOTEK]:', '', $msg->message) }}
+                    <div class="flex justify-center my-3 w-full">
+                        <div class="px-6 py-2.5 bg-white border border-border-muted rounded-xl text-[10px] font-semibold text-text-muted max-w-[85%] text-center shadow-sm flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-bell text-secondary text-xs" style="margin-right: 8px;"></i>
+                            <span>{{ trim(str_replace('[SISTEM APOTEK]:', '', $msg->message)) }}</span>
                         </div>
                     </div>
                 @else
                     <div class="flex {{ $isAdminMessage ? 'justify-end' : 'justify-start' }} gap-2">
                         @if(!$isAdminMessage)
-                            <div class="w-7 h-7 rounded-full bg-primary-light text-primary flex items-center justify-center text-[10px] font-bold shrink-0 self-end mb-1">
+                            <div class="w-7 h-7 rounded-lg bg-primary-light text-primary flex items-center justify-center text-[10px] font-bold shrink-0 self-end mb-1">
                                 {{ substr($prescription->user->name, 0, 1) }}
                             </div>
                         @endif
 
                         <div class="max-w-[80%]">
-                            <div class="px-3.5 py-2.5 rounded-2xl shadow-sm text-xs leading-relaxed {{ $isAdminMessage ? 'bg-indigo-650 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-150 rounded-bl-none' }}">
+                            <div class="px-3.5 py-2.5 rounded-2xl shadow-sm text-xs leading-relaxed {{ $isAdminMessage ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted' }}">
                                 {!! nl2br(e($msg->message)) !!}
                             </div>
                             <span class="text-[9px] text-gray-400 block mt-1 {{ $isAdminMessage ? 'text-right' : 'text-left' }} px-1">
@@ -161,18 +172,18 @@
 
         <!-- Chat Input Form -->
         @if($prescription->status !== 'completed' && $prescription->status !== 'rejected')
-        <form action="{{ route('admin.prescriptions.message', $prescription->id) }}" method="POST" class="p-3 bg-white border-t border-gray-150 flex gap-2 shrink-0 items-center">
+        <form id="chat-form" action="{{ route('admin.tickets.message', $prescription->id) }}" method="POST" class="p-3 bg-white border-t border-border-muted flex gap-2 shrink-0 items-center">
             @csrf
-            <input type="text" name="message" required autocomplete="off"
-                class="flex-grow px-3 py-2 bg-gray-50 border border-gray-250 rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition"
+            <input id="chat-input" type="text" name="message" required autocomplete="off"
+                class="flex-grow px-3 py-2 bg-gray-50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition"
                 placeholder="Balas konsultasi pelanggan...">
             <button type="submit" class="w-10 h-10 rounded-xl bg-primary hover:bg-primary-dark text-white flex items-center justify-center text-sm transition shadow-md shrink-0 cursor-pointer">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
         @else
-        <div class="p-3 bg-gray-150 text-center text-xs text-gray-500 font-semibold shrink-0">
-            <i class="fa-solid fa-lock mr-1"></i> Tiket konsultasi resep ini telah ditutup.
+        <div class="p-3 bg-gray-100 text-center text-xs text-gray-500 font-semibold shrink-0 border-t border-border-muted">
+            <i class="fa-solid fa-lock mr-1"></i> Tiket konsultasi ini telah ditutup.
         </div>
         @endif
     </div>
@@ -181,7 +192,7 @@
     <div class="space-y-6">
         
         <!-- Live Cart Manager -->
-        <div class="bg-white rounded-2xl border border-gray-150 shadow-sm p-5 space-y-4">
+        <div class="bg-white rounded-2xl border border-border-muted shadow-sm p-5 space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Keranjang Belanja Pelanggan</h3>
                 <span class="text-[10px] bg-primary-light text-primary px-2 py-0.5 rounded-full font-bold">Live Sync</span>
@@ -190,8 +201,8 @@
             <!-- Cart Items List -->
             <div class="space-y-3 max-h-60 overflow-y-auto">
                 @forelse($cartItems as $item)
-                <div class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-100 rounded-xl">
-                    <div class="w-10 h-10 rounded bg-white border border-gray-150 flex items-center justify-center overflow-hidden shrink-0">
+                <div class="flex items-center gap-3 p-3 bg-gray-50 border border-border-muted rounded-xl">
+                    <div class="w-10 h-10 rounded bg-white border border-border-muted flex items-center justify-center overflow-hidden shrink-0">
                         @if($item->medicine && $item->medicine->image)
                         <img src="{{ $item->medicine->image }}" alt="" class="w-full h-full object-cover">
                         @else
@@ -206,10 +217,10 @@
                         </div>
                     </div>
                     @if($prescription->status !== 'completed' && $prescription->status !== 'rejected')
-                    <form action="{{ route('admin.prescriptions.remove_medicine', ['id' => $prescription->id, 'itemId' => $item->id]) }}" method="POST" class="shrink-0 ml-1">
+                    <form action="{{ route('admin.tickets.remove_medicine', ['id' => $prescription->id, 'itemId' => $item->id]) }}" method="POST" class="shrink-0 ml-1">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-6 h-6 rounded bg-red-50 hover:bg-red-150 text-red-500 flex items-center justify-center transition" title="Hapus Obat">
+                        <button type="submit" class="w-6 h-6 rounded bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition" title="Hapus Obat">
                             <i class="fa-solid fa-trash text-[10px]"></i>
                         </button>
                     </form>
@@ -225,14 +236,14 @@
 
             <!-- Add Medicine Form -->
             @if($prescription->status !== 'completed' && $prescription->status !== 'rejected')
-            <div class="pt-4 border-t border-gray-100 space-y-3">
-                <h4 class="text-xs font-bold text-gray-700">Tambah Obat Rekep ke Keranjang</h4>
+            <div class="pt-4 border-t border-border-muted space-y-3">
+                <h4 class="text-xs font-bold text-gray-700">Tambah Obat ke Keranjang</h4>
                 
-                <form action="{{ route('admin.prescriptions.add_medicine', $prescription->id) }}" method="POST" class="space-y-3 text-xs">
+                <form action="{{ route('admin.tickets.add_medicine', $prescription->id) }}" method="POST" class="space-y-3 text-xs">
                     @csrf
                     <div>
                         <label class="block text-gray-400 mb-1">Pilih Obat:</label>
-                        <select name="medicine_id" required class="w-full px-3 py-2 border border-gray-250 rounded-xl bg-white outline-none focus:border-primary">
+                        <select name="medicine_id" required class="w-full px-3 py-2 border border-border-muted rounded-xl bg-white outline-none focus:border-primary">
                             <option value="">-- Cari/Pilih Obat --</option>
                             @foreach($medicines as $med)
                             <option value="{{ $med->id }}">
@@ -245,7 +256,7 @@
                     <div class="flex items-center gap-3">
                         <div class="w-1/3">
                             <label class="block text-gray-400 mb-1">Kuantitas:</label>
-                            <input type="number" name="quantity" value="1" min="1" required class="w-full px-3 py-2 border border-gray-250 rounded-xl outline-none focus:border-primary">
+                            <input type="number" name="quantity" value="1" min="1" required class="w-full px-3 py-2 border border-border-muted rounded-xl outline-none focus:border-primary">
                         </div>
                         <div class="w-2/3 self-end">
                             <button type="submit" class="w-full py-2 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition shadow-sm shadow-primary/10 flex items-center justify-center gap-1.5 cursor-pointer">
@@ -259,7 +270,7 @@
         </div>
 
         <!-- Action Center: Status update actions -->
-        <div class="bg-white rounded-2xl border border-gray-150 p-5 shadow-sm space-y-4">
+        <div class="bg-white rounded-2xl border border-border-muted p-5 shadow-sm space-y-4">
             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Aksi Pelayanan</h3>
 
             @if($prescription->status !== 'completed' && $prescription->status !== 'rejected')
@@ -267,18 +278,18 @@
                 
                 <!-- If status is pending, show Start Processing button -->
                 @if($prescription->status === 'pending')
-                <form action="{{ route('admin.prescriptions.status', $prescription->id) }}" method="POST" class="w-full">
+                <form action="{{ route('admin.tickets.status', $prescription->id) }}" method="POST" class="w-full">
                     @csrf
                     <input type="hidden" name="status" value="processing">
-                    <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-indigo-600/10">
-                        <i class="fa-solid fa-play"></i> Mulai Memproses Resep
+                    <button type="submit" class="w-full py-3 bg-secondary hover:bg-[#d85517] text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-secondary/15">
+                        <i class="fa-solid fa-play"></i> Mulai Memproses Tiket
                     </button>
                 </form>
                 @endif
 
                 <!-- Complete / Close ticket button -->
                 @if($prescription->status === 'processing' || $prescription->status === 'pending' || $prescription->status === 'verified')
-                <form action="{{ route('admin.prescriptions.status', $prescription->id) }}" method="POST" class="w-full">
+                <form action="{{ route('admin.tickets.status', $prescription->id) }}" method="POST" class="w-full">
                     @csrf
                     <input type="hidden" name="status" value="completed">
                     <button type="submit" class="w-full py-3 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-primary/15">
@@ -288,19 +299,19 @@
                 @endif
 
                 <!-- Reject prescription button -->
-                <form action="{{ route('admin.prescriptions.status', $prescription->id) }}" method="POST" class="w-full">
+                <form action="{{ route('admin.tickets.status', $prescription->id) }}" method="POST" class="w-full">
                     @csrf
                     <input type="hidden" name="status" value="rejected">
-                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menolak resep dokter ini?')" class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-650 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-red-150">
-                        <i class="fa-solid fa-circle-xmark"></i> Tolak Resep Dokter
+                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menolak tiket ini?')" class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-red-200">
+                        <i class="fa-solid fa-circle-xmark"></i> Tolak Tiket
                     </button>
                 </form>
 
             </div>
             @else
-            <div class="p-4 bg-gray-50 border border-gray-150 rounded-xl text-center text-xs text-gray-500 font-semibold">
+            <div class="p-4 bg-gray-50 border border-border-muted rounded-xl text-center text-xs text-gray-500 font-semibold">
                 <i class="fa-solid fa-circle-info text-primary mr-1 text-sm block mb-1"></i>
-                Pelayanan resep ini telah selesai diproses. Status saat ini: 
+                Pelayanan tiket ini telah selesai diproses. Status saat ini: 
                 <span class="block mt-1 font-bold text-gray-700 uppercase tracking-wide">{{ $prescription->status_label }}</span>
             </div>
             @endif
@@ -310,14 +321,14 @@
 </div>
 
 <!-- Modal Full Image View -->
-<div id="image-modal" class="fixed inset-0 z-[100] bg-black/90 hidden items-center justify-center p-4 backdrop-blur-sm transition-all duration-300">
-    <button onclick="closeFullImage()" class="absolute top-6 right-6 text-white hover:text-gray-300 text-3xl cursor-pointer transition focus:outline-none" title="Tutup">
+<div id="image-modal" style="display: none; position: fixed; inset: 0; z-index: 9999; background-color: rgba(0, 0, 0, 0.9); align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px); transition: all 0.3s ease;">
+    <button onclick="closeFullImage()" style="position: absolute; top: 1.5rem; right: 1.5rem; color: white; background: none; border: none; font-size: 2rem; cursor: pointer; transition: color 0.2s;" title="Tutup">
         <i class="fa-solid fa-xmark"></i>
     </button>
-    <div class="max-w-4xl max-h-[90vh] flex flex-col items-center">
-        <img id="modal-img" src="#" alt="Resep Full Screen" class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl">
+    <div style="max-width: 56rem; max-height: 90vh; display: flex; flex-direction: column; align-items: center;">
+        <img id="modal-img" src="#" alt="Resep Full Screen" style="max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 0.5rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55);">
         <div class="mt-4 text-center">
-            <a id="modal-download" href="#" download class="px-5 py-2.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-semibold flex items-center gap-2 backdrop-blur-md transition">
+            <a id="modal-download" href="#" download style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1.25rem; background-color: rgba(255, 255, 255, 0.2); color: white; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 600; text-decoration: none; transition: background 0.2s;" onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.backgroundColor='rgba(255, 255, 255, 0.2)'">
                 <i class="fa-solid fa-download"></i> Unduh Gambar Resep
             </a>
         </div>
@@ -325,12 +336,141 @@
 </div>
 
 <script>
-    // Scroll to the bottom of the chat box on page load
+    // Chat Polling and AJAX Submission
     document.addEventListener('DOMContentLoaded', () => {
+        const customerUserId = {{ $prescription->user_id }};
+        const prescriptionId = {{ $prescription->id }};
+        const messagesUrl = "{{ route('admin.tickets.messages', $prescription->id) }}";
+        let currentStatus = "{{ $prescription->status }}";
+        let lastMessageCount = {{ $prescription->messages->count() }};
+
         const chatMessages = document.getElementById('chat-messages');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+
+        // Scroll to the bottom of the chat box on page load
         if (chatMessages) {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+
+        if (chatForm && chatInput) {
+            chatForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                chatInput.value = '';
+                chatInput.focus();
+
+                fetch(chatForm.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        fetchMessages();
+                    }
+                })
+                .catch(err => {
+                    console.error('Error sending message:', err);
+                });
+            });
+        }
+
+        function fetchMessages() {
+            fetch(messagesUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== currentStatus) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    if (data.messages && data.messages.length !== lastMessageCount) {
+                        renderMessages(data.messages);
+                        lastMessageCount = data.messages.length;
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching messages:', err);
+                });
+        }
+
+        function renderMessages(messages) {
+            const welcomeBubble = chatMessages.firstElementChild;
+            chatMessages.innerHTML = '';
+            if (welcomeBubble) {
+                chatMessages.appendChild(welcomeBubble);
+            }
+
+            messages.forEach(msg => {
+                const isSystem = msg.message.startsWith('[SISTEM APOTEK]');
+                const isAdminMessage = (msg.user_id !== customerUserId);
+
+                if (isSystem) {
+                    const cleanMsg = msg.message.replace('[SISTEM APOTEK]:', '');
+                    const systemDiv = document.createElement('div');
+                    systemDiv.className = 'flex justify-center my-3 w-full';
+                    systemDiv.innerHTML = `
+                        <div class="px-6 py-2.5 bg-white border border-border-muted rounded-xl text-[10px] font-semibold text-text-muted max-w-[85%] text-center shadow-sm flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-bell text-secondary text-xs" style="margin-right: 8px;"></i>
+                            <span>${escapeHtml(cleanMsg.trim())}</span>
+                        </div>
+                    `;
+                    chatMessages.appendChild(systemDiv);
+                } else {
+                    const flexDiv = document.createElement('div');
+                    flexDiv.className = `flex ${isAdminMessage ? 'justify-end' : 'justify-start'} gap-2`;
+                    
+                    let userAvatar = '';
+                    if (!isAdminMessage) {
+                        const firstChar = msg.user_name ? msg.user_name.charAt(0) : 'U';
+                        userAvatar = `
+                            <div class="w-7 h-7 rounded-lg bg-primary-light text-primary flex items-center justify-center text-[10px] font-bold shrink-0 self-end mb-1">
+                                ${escapeHtml(firstChar)}
+                            </div>
+                        `;
+                    }
+
+                    const formattedMsg = escapeHtml(msg.message).replace(/\n/g, '<br>');
+
+                    flexDiv.innerHTML = `
+                        ${userAvatar}
+                        <div class="max-w-[80%]">
+                            <div class="px-3.5 py-2.5 rounded-2xl shadow-sm text-xs leading-relaxed ${isAdminMessage ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted'}">
+                                ${formattedMsg}
+                            </div>
+                            <span class="text-[9px] text-gray-400 block mt-1 ${isAdminMessage ? 'text-right' : 'text-left'} px-1">
+                                ${msg.created_at}
+                            </span>
+                        </div>
+                    `;
+                    chatMessages.appendChild(flexDiv);
+                }
+            });
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Poll every 3 seconds
+        setInterval(fetchMessages, 3000);
     });
 
     // Image viewer modal functions
@@ -341,13 +481,11 @@
     function showFullImage(src) {
         modalImg.src = src;
         modalDownload.href = src;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        modal.style.display = 'flex';
     }
 
     function closeFullImage() {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
+        modal.style.display = 'none';
     }
 
     modal.addEventListener('click', (e) => {

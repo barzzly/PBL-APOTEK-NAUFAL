@@ -2,6 +2,11 @@
 @section('header_title', 'Laporan Penjualan')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Laporan Penjualan</span>
+</div>
 {{-- ======================== FILTER BAR ======================== --}}
 <form method="GET" action="{{ route('admin.laporan') }}" id="filterForm">
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
