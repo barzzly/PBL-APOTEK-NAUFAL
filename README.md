@@ -31,6 +31,7 @@ Proyek ini dibuat dengan tujuan:
 * **Upload & Verifikasi Resep**: Pelanggan dapat mengunggah foto resep dokter, dan apoteker dapat memverifikasi atau menolak resep tersebut melalui panel khusus.
 * **Metode Pembayaran Variatif**: Mendukung pembayaran via *Cash*, *Transfer* (dengan unggah bukti bayar), *QRIS*, dan *BPJS*.
 * **Ekspor & Cetak Laporan**: Generate laporan penjualan format PDF, serta impor/ekspor data obat secara massal menggunakan format Excel.
+* **Pagination & Sorting Dinamis (Panel Admin)**: Batasan halaman dinamis (10, 25, 50, 100) serta fitur pengurutan data (*sorting*) interaktif pada header kolom tabel di halaman Riwayat Transaksi, Pesanan Masuk, dan Data Obat.
 
 ---
 
@@ -270,7 +271,7 @@ Aplikasi ini menggunakan beberapa paket open-source penting berikut untuk menduk
 ## 👥 Anggota Tim Pengembang (PBL)
 
 Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
-* **Farid Yahya**
 * **Hidayathul Fikri**
+* **Farid Yahya**
 * **Nabilla Fitricia Hernanda**
 * **Rury Fezriani Matari**
