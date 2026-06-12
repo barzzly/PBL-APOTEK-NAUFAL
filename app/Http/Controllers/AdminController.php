@@ -54,10 +54,11 @@ class AdminController extends Controller
     }
 
     // --- Categories ---
-    public function categories()
+    public function categories(Request $request)
     {
-        $categories = Category::all();
-        return view('admin.categories', compact('categories'));
+        $perPage = (int) $request->get('per_page', 10);
+        $categories = Category::latest()->paginate($perPage)->withQueryString();
+        return view('admin.categories', compact('categories', 'perPage'));
     }
 
     public function createCategory()
@@ -115,10 +116,43 @@ class AdminController extends Controller
     }
 
     // --- Medicines ---
-    public function medicines()
+    public function medicines(Request $request)
     {
-        $medicines = Medicine::with('category')->get();
-        return view('admin.medicines', compact('medicines'));
+        $perPage = (int) $request->get('per_page', 10);
+        
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSortBy = ['name', 'category_name', 'price', 'stock', 'created_at'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        $query = Medicine::with('category');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('medicines.name', 'like', '%' . $search . '%')
+                  ->orWhereHas('category', function($catQuery) use ($search) {
+                      $catQuery->where('categories.name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        if ($sortBy === 'category_name') {
+            $query->leftJoin('categories', 'medicines.category_id', '=', 'categories.id')
+                  ->select('medicines.*')
+                  ->orderBy('categories.name', $sortOrder);
+        } else {
+            $query->orderBy('medicines.' . $sortBy, $sortOrder);
+        }
+
+        $medicines = $query->paginate($perPage)->withQueryString();
+        return view('admin.medicines', compact('medicines', 'perPage', 'sortBy', 'sortOrder'));
     }
 
     public function createMedicine()
@@ -246,25 +280,52 @@ class AdminController extends Controller
         $statusFilter  = $request->get('status', 'all');
         $paymentFilter = $request->get('payment_method', 'all');
 
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSortBy = ['order_number', 'customer_name', 'created_at', 'order_type', 'payment_method', 'status', 'payment_status', 'total_amount'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
         // Base query builder
         $baseQuery = Order::with('user')
-            ->whereBetween('created_at', [$from, $to]);
+            ->whereBetween('orders.created_at', [$from, $to]);
 
         if ($statusFilter !== 'all') {
-            $baseQuery->where('status', $statusFilter);
+            $baseQuery->where('orders.status', $statusFilter);
         }
         if ($paymentFilter !== 'all') {
-            $baseQuery->where('payment_method', $paymentFilter);
+            $baseQuery->where('orders.payment_method', $paymentFilter);
         }
 
         // Summary cards
-        $totalPendapatan = (clone $baseQuery)->where('payment_status', 'paid')->sum('total_amount');
+        $totalPendapatan = (clone $baseQuery)->where('orders.payment_status', 'paid')->sum('orders.total_amount');
         $totalOrder      = (clone $baseQuery)->count();
-        $orderSelesai    = (clone $baseQuery)->where('status', 'delivered')->count();
-        $orderDibatalkan = (clone $baseQuery)->where('status', 'cancelled')->count();
+        $orderSelesai    = (clone $baseQuery)->where('orders.status', 'delivered')->count();
+        $orderDibatalkan = (clone $baseQuery)->where('orders.status', 'cancelled')->count();
 
-        // Orders list with pagination
-        $orders = (clone $baseQuery)->latest()->paginate(15)->withQueryString();
+        // Orders list with pagination (restricted to delivered and cancelled)
+        $perPage = (int) $request->get('per_page', 10);
+        $listQuery = (clone $baseQuery);
+        if ($statusFilter === 'all') {
+            $listQuery->whereIn('orders.status', ['delivered', 'cancelled']);
+        } else {
+            $listQuery->where('orders.status', $statusFilter);
+        }
+
+        if ($sortBy === 'customer_name') {
+            $listQuery->leftJoin('users', 'orders.user_id', '=', 'users.id')
+                      ->select('orders.*')
+                      ->orderBy('users.name', $sortOrder);
+        } else {
+            $listQuery->orderBy('orders.' . $sortBy, $sortOrder);
+        }
+
+        $orders = $listQuery->paginate($perPage)->withQueryString();
 
         // Top selling medicines in the date range
         $topMedicines = OrderItem::select(
@@ -287,7 +348,7 @@ class AdminController extends Controller
             'totalPendapatan', 'totalOrder', 'orderSelesai', 'orderDibatalkan',
             'orders', 'topMedicines',
             'period', 'dateFrom', 'dateTo', 'statusFilter', 'paymentFilter',
-            'from', 'to'
+            'from', 'to', 'perPage', 'sortBy', 'sortOrder'
         ));
     }
 
@@ -350,14 +411,32 @@ class AdminController extends Controller
     public function orders(Request $request)
     {
         $status = $request->get('status', 'all');
-        $query = Order::with('user')->latest();
+        $perPage = (int) $request->get('per_page', 10);
+        
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
 
-        if ($status !== 'all') {
-            $query->where('status', $status);
+        $allowedSortBy = ['order_number', 'customer_name', 'created_at', 'order_type', 'payment_status', 'total_amount', 'status'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
         }
 
-        $orders = $query->paginate(15)->withQueryString();
-        return view('admin.orders', compact('orders', 'status'));
+        $query = Order::with('user')
+            ->whereIn('orders.status', ['pending', 'confirmed', 'processing', 'ready_for_pickup', 'shipped']);
+
+        if ($sortBy === 'customer_name') {
+            $query->leftJoin('users', 'orders.user_id', '=', 'users.id')
+                  ->select('orders.*')
+                  ->orderBy('users.name', $sortOrder);
+        } else {
+            $query->orderBy('orders.' . $sortBy, $sortOrder);
+        }
+
+        $orders = $query->paginate($perPage)->withQueryString();
+        return view('admin.orders', compact('orders', 'status', 'perPage', 'sortBy', 'sortOrder'));
     }
 
     public function showOrder($id)

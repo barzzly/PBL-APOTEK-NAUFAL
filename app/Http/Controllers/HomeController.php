@@ -16,11 +16,18 @@ class HomeController extends Controller
         return view('landing_page', compact('categories', 'medicines'));
     }
 
-    public function category($slug)
+    public function category(Request $request, $slug)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
         $categories = Category::all();
-        $medicines = Medicine::with('category')->where('category_id', $category->id)->where('is_active', true)->get();
+        
+        $query = Medicine::with('category')->where('category_id', $category->id)->where('is_active', true);
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+        
+        $medicines = $query->get();
         
         return view('category', compact('category', 'categories', 'medicines'));
     }

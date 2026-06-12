@@ -89,7 +89,16 @@
         const aiBtn = document.getElementById('btn-generate-ai');
 
         if (!nameInput.value.trim()) {
-            alert('Silakan isi Nama Obat terlebih dahulu.');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Nama Obat Kosong',
+                text: 'Silakan isi Nama Obat terlebih dahulu.',
+                confirmButtonColor: '#00A651',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'rounded-2xl'
+                }
+            });
             nameInput.focus();
             return;
         }
@@ -123,13 +132,42 @@
         .then(data => {
             if (data.success) {
                 descTextarea.value = data.description;
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: 'Deskripsi obat berhasil ditulis oleh AI.',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'rounded-2xl'
+                    }
+                });
             } else {
-                alert('Gagal generate deskripsi: ' + (data.message || 'Error tidak diketahui.'));
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Menulis Deskripsi',
+                    text: data.message || 'Terjadi kesalahan saat generate deskripsi.',
+                    confirmButtonColor: '#f26522',
+                    confirmButtonText: 'Tutup',
+                    customClass: {
+                        popup: 'rounded-2xl'
+                    }
+                });
             }
         })
         .catch(err => {
             console.error(err);
-            alert('Error: ' + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal Menghubungi Gemini AI',
+                text: err.message || 'Terjadi kesalahan sistem.',
+                confirmButtonColor: '#f26522',
+                confirmButtonText: 'Tutup',
+                customClass: {
+                    popup: 'rounded-2xl'
+                }
+            });
         })
         .finally(() => {
             // Restore button state

@@ -277,6 +277,14 @@
             });
         })();
 
+        // Global pagination handler
+        function changePerPage(select) {
+            var u = new URL(window.location.href);
+            u.searchParams.set('per_page', select.value);
+            u.searchParams.set('page', 1);
+            window.location.href = u.toString();
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle notification dropdown
             const bellBtn = document.getElementById('notificationBellBtn');
