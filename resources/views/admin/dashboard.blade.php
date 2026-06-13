@@ -2,6 +2,9 @@
 @section('header_title', 'Dashboard')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <span class="text-gray-600 font-bold"><i class="fa-solid fa-gauge-high"></i> Dashboard</span>
+</div>
 
 {{-- ── GREETING BANNER ── --}}
 <div class="bg-gradient-to-r from-primary to-emerald-400 rounded-2xl p-6 mb-6 text-white relative overflow-hidden">
@@ -249,12 +252,12 @@
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h2 class="text-sm font-bold text-gray-800 mb-3">Akses Cepat</h2>
             <div class="grid grid-cols-2 gap-2.5">
-                <a href="{{ route('admin.medicines.create') }}"
+                <a href="{{ route('admin.orders') }}"
                    class="flex flex-col items-center gap-2 p-3 bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors text-center group">
                     <div class="w-9 h-9 bg-primary/10 text-primary rounded-lg flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                        <i class="fa-solid fa-plus text-sm"></i>
+                        <i class="fa-solid fa-receipt text-sm"></i>
                     </div>
-                    <span class="text-xs font-semibold text-gray-600">Tambah Obat</span>
+                    <span class="text-xs font-semibold text-gray-600">Pesanan</span>
                 </a>
                 <a href="{{ route('admin.categories') }}"
                    class="flex flex-col items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors text-center group">

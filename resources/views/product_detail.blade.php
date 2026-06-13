@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $medicine->name }} - Apotek Naufal</title>
     
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Apotek Naufal adalah apotek online terpercaya yang menyediakan berbagai macam obat, vitamin, dan alat kesehatan dengan harga terbaik dan pengiriman cepat.">
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,31 +18,12 @@
 
     <!-- Tailwind CSS (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <!-- Tailwind CSS CDN Fallback (For environments without Node.js/NPM) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-          theme: {
-            extend: {
-              colors: {
-                primary: {
-                  DEFAULT: '#00A651',
-                  dark: '#008f45',
-                  light: '#e6f6ec',
-                },
-                secondary: '#f26522',
-                'text-main': '#333333',
-                'text-muted': '#757575',
-                'bg-body': '#f4f7f6',
-                'border-muted': '#e0e0e0',
-              }
-            }
-          }
-        }
-    </script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
+
+
 
     <!-- Header -->
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
@@ -48,19 +32,19 @@
                 <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
             </a>
 
-            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative max-w-2xl">
+            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
                 <input type="text" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-2.5 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
+                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
                 <button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
             </div>
 
             <div class="flex items-center gap-5">
-                <a href="#" class="text-text-main hover:text-primary text-xl relative transition">
+                <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ session('cart') ? collect(session('cart'))->sum('quantity') : 0 }}
+                    <span id="cart-badge" class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        {{ $cartCount }}
                     </span>
                 </a>
                 <div class="hidden sm:flex items-center gap-3">
@@ -68,6 +52,7 @@
                         @if(auth()->user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
+                            <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
                             <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
                                 {{ auth()->user()->name }}
@@ -131,119 +116,216 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <!-- Left: Product Image (Sticky) -->
-            <div class="lg:col-span-4 lg:sticky lg:top-24">
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center aspect-square relative overflow-hidden">
-                    @if($medicine->requires_prescription)
-                        <div class="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1.5 z-10 animate-pulse">
-                            <i class="fa-solid fa-prescription-bottle-medical"></i> Resep Dokter
+            <!-- Left/Middle: Product Info & Image -->
+            <div class="lg:col-span-9 space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] flex flex-col md:flex-row justify-between items-start gap-8">
+                    <!-- Product Details -->
+                    <div class="flex-grow space-y-4">
+                        <span class="text-[10px] tracking-wider uppercase font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full w-fit block">{{ $medicine->category->name }}</span>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">{{ $medicine->name }}</h1>
+                        
+                        <!-- Rating and Sales Dynamic -->
+                        <div class="flex items-center gap-3 text-xs text-text-muted">
+                            <span class="bg-gray-100 px-2.5 py-1 rounded-lg text-gray-700 font-semibold">Terjual <span class="font-bold">{{ $medicine->sold_count }} obat</span></span>
+                            <span class="text-gray-200">|</span>
+                            <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-lg text-amber-800 font-bold">
+                                <i class="fa-solid fa-star text-amber-500"></i>
+                                <span>{{ number_format($medicine->average_rating, 1) }}</span>
+                                <span class="text-amber-600/70 font-normal text-[10px] ml-0.5">({{ $medicine->reviews_count }} rating)</span>
+                            </div>
                         </div>
-                    @endif
-                    <div class="w-full h-full flex items-center justify-center p-2">
-                        @if($medicine->image)
-                            <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-300">
-                        @else
-                            <div class="text-gray-300 text-6xl"><i class="fa-solid fa-pills"></i></div>
+
+                        @if($medicine->brand)
+                            <p class="text-xs text-text-muted">Merek: <span class="font-bold text-gray-800">{{ $medicine->brand }}</span></p>
                         @endif
-                    </div>
-                </div>
-            </div>
 
-            <!-- Middle: Product Info & Specifications -->
-            <div class="lg:col-span-5 space-y-5">
-                <!-- Name & Category (Flat) -->
-                <div class="px-2">
-                    <span class="text-[10px] tracking-wider uppercase font-bold text-primary bg-primary/10 border border-primary/20 px-3 py-1 rounded-full w-fit mb-4 block">{{ $medicine->category->name }}</span>
-                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2.5 leading-tight">{{ $medicine->name }}</h1>
-                    
-                    <!-- Rating and Sales Mock -->
-                    <div class="flex items-center gap-3 text-xs text-text-muted mb-4">
-                        <span class="bg-gray-100 px-2 py-0.5 rounded text-gray-700 font-medium">Terjual <span class="font-bold">100+ obat</span></span>
-                        <span class="text-gray-200">|</span>
-                        <div class="flex items-center gap-1 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded text-amber-800 font-semibold">
-                            <i class="fa-solid fa-star text-amber-500"></i>
-                            <span>4.9</span>
-                            <span class="text-amber-600/70 font-normal text-[10px] ml-0.5">(80+ rating)</span>
+                        <div class="pt-2">
+                            @if($medicine->price_before_discount)
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-xs text-gray-400 line-through">Rp{{ number_format($medicine->price_before_discount, 0, ',', '.') }}</span>
+                                    <span class="text-[10px] font-extrabold bg-rose-50 text-rose-600 border border-rose-100 px-2 py-0.5 rounded-md">
+                                        DISKON {{ round((($medicine->price_before_discount - $medicine->price) / $medicine->price_before_discount) * 100) }}%
+                                    </span>
+                                </div>
+                            @endif
+                            <span class="text-4xl font-extrabold text-primary tracking-tight">Rp{{ number_format($medicine->price, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
-                    @if($medicine->brand)
-                        <p class="text-xs text-text-muted mb-4">Merek: <a href="#" class="font-bold text-primary hover:text-primary-dark hover:underline transition">{{ $medicine->brand }}</a></p>
-                    @endif
-
-                    <div class="mt-6 pt-5 border-t border-gray-100">
-                        <span class="text-4xl font-extrabold text-gray-900 tracking-tight">Rp{{ number_format($medicine->price, 0, ',', '.') }}</span>
-                        @if($medicine->price_before_discount)
-                            <div class="flex items-center gap-2 mt-2">
-                                <span class="text-[10px] font-extrabold bg-rose-50 text-rose-600 border border-rose-100 px-2 py-0.5 rounded-md">
-                                    DISKON {{ round((($medicine->price_before_discount - $medicine->price) / $medicine->price_before_discount) * 100) }}%
-                                </span>
-                                <span class="text-sm text-gray-400 line-through">Rp{{ number_format($medicine->price_before_discount, 0, ',', '.') }}</span>
+                    <!-- Product Image -->
+                    <div class="flex items-center justify-center bg-gray-50 border border-gray-100 rounded-2xl relative overflow-hidden mx-auto md:mx-0 shrink-0 w-auto h-auto" style="max-width: 280px; max-height: 280px;">
+                        @if($medicine->requires_prescription)
+                            <div class="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-rose-600 text-white text-[9px] font-bold px-2 py-1.5 rounded-md shadow-sm flex items-center gap-1 z-10 animate-pulse">
+                                <i class="fa-solid fa-prescription-bottle-medical"></i> Resep Dokter
                             </div>
                         @endif
+                        <div class="flex items-center justify-center w-full h-full">
+                            @if($medicine->image)
+                                <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="object-contain hover:scale-105 transition-transform duration-300" style="max-width: 280px; max-height: 280px; width: auto; height: auto; display: block;">
+                            @else
+                                <div class="flex flex-col items-center justify-center text-center p-6 h-40 w-56">
+                                    <div class="w-12 h-12 rounded-full bg-emerald-100/80 text-primary flex items-center justify-center text-2xl mb-2 shadow-sm">
+                                        <i class="fa-solid fa-pills"></i>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-700">Gambar Belum Tersedia</span>
+                                    <span class="text-[10px] text-gray-400 mt-0.5">Sedang disiapkan</span>
+                                </div>
+                            @endif
+                        </div>
                     </div>
+                </div>
+
+                <!-- Description Only -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)]">
+                    <h3 class="text-base font-bold text-gray-900 mb-3">Deskripsi</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">{{ $medicine->description ?? 'Tidak ada deskripsi untuk obat ini.' }}</p>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.03)] space-y-6">
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4">
+                        <h3 class="text-base font-bold text-gray-900">Ulasan Pengguna</h3>
+                        <div class="flex items-center gap-1.5 text-sm font-bold text-amber-800">
+                            <i class="fa-solid fa-star text-amber-500"></i>
+                            <span>{{ number_format($medicine->average_rating, 1) }} / 5.0</span>
+                            <span class="text-gray-400 font-normal text-xs">({{ $medicine->reviews_count }} Ulasan)</span>
+                        </div>
+                    </div>
+
+                    <!-- Reviews List -->
+                    <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                        @forelse($ratings as $rating)
+                            <div class="p-4 bg-gray-50 rounded-xl space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center font-bold text-sm">
+                                            {{ strtoupper(substr($rating->user->name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-bold text-gray-800">{{ $rating->user->name }}</h4>
+                                            <span class="text-[10px] text-gray-400">{{ $rating->created_at->diffForHumans() }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-0.5 text-xs text-amber-500">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            @if($i <= $rating->rating)
+                                                <i class="fa-solid fa-star"></i>
+                                            @else
+                                                <i class="fa-regular fa-star text-gray-300"></i>
+                                            @endif
+                                        @endfor
+                                    </div>
+                                </div>
+                                @if($rating->review)
+                                    <p class="text-xs text-gray-600 leading-relaxed">{{ $rating->review }}</p>
+                                @endif
+                            </div>
+                        @empty
+                            <div class="text-center py-6 text-gray-400 text-xs">
+                                <i class="fa-solid fa-comments text-2xl mb-2 text-gray-300 block"></i>
+                                Belum ada ulasan untuk obat ini.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Review Form -->
+                    @auth
+                        @php
+                            $userHasReviewed = $ratings->contains('user_id', auth()->id());
+                        @endphp
+                        
+                        @if(!$userHasReviewed)
+                            <div class="border-t border-gray-100 pt-4">
+                                <h4 class="text-xs font-bold text-gray-800 mb-3"><i class="fa-solid fa-pen-to-square text-primary mr-1.5"></i>Tulis Ulasan Anda</h4>
+                                <form action="{{ route('medicine.review.store', $medicine->slug) }}" method="POST" class="space-y-4">
+                                    @csrf
+                                    <!-- Rating Input (Stars) -->
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-[11px] font-semibold text-gray-500">Rating Obat:</span>
+                                        <div class="flex items-center gap-1.5" id="star-selector">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <button type="button" onclick="setRating({{ $i }})" class="text-xl text-gray-300 hover:text-amber-500 star-btn transition cursor-pointer font-bold" style="background: none; border: none; padding: 0;" data-value="{{ $i }}">
+                                                    <i class="fa-solid fa-star"></i>
+                                                </button>
+                                            @endfor
+                                            <input type="hidden" name="rating" id="ratingValue" value="" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Review text input -->
+                                    <div class="space-y-1.5">
+                                        <label for="review" class="text-[11px] font-semibold text-gray-500 block">Ulasan Anda (Opsional):</label>
+                                        <textarea name="review" id="review" placeholder="Tuliskan pengalaman Anda menggunakan obat ini..." 
+                                                  class="w-full border border-gray-200 rounded-xl p-3 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none h-20 bg-white hover:border-gray-300"></textarea>
+                                    </div>
+
+                                    <button type="submit" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-lg text-xs transition duration-200 cursor-pointer shadow-sm">
+                                        Kirim Ulasan
+                                    </button>
+                                </form>
+                            </div>
+                        @else
+                            <div class="border-t border-gray-100 pt-4 text-center py-2 bg-emerald-50/50 rounded-xl border border-dashed border-emerald-100">
+                                <span class="text-xs font-semibold text-emerald-800"><i class="fa-solid fa-circle-check text-emerald-500 mr-1.5"></i>Anda sudah memberikan ulasan untuk obat ini. Terima kasih!</span>
+                            </div>
+                        @endif
+                    @else
+                        <div class="border-t border-gray-100 pt-4 text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                            <span class="text-xs text-gray-500">Silakan <a href="{{ route('login') }}" class="text-primary font-bold hover:underline">Masuk</a> untuk menulis ulasan untuk obat ini.</span>
+                        </div>
+                    @endauth
                 </div>
             </div>
 
             <!-- Right: Purchase Card (Sticky) -->
             <div class="lg:col-span-3 lg:sticky lg:top-24">
-                <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-[0_15px_35px_rgba(0,0,0,0.04)] space-y-5">
-                    <h3 class="text-xs tracking-wider uppercase font-bold text-gray-500 mb-1">Atur jumlah & catatan</h3>
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] space-y-4">
+                    <h3 class="text-sm font-bold text-gray-800">Atur Jumlah & Catatan</h3>
                     
-                    <form action="{{ route('cart.add', $medicine->id) }}" method="POST" id="purchaseForm">
+                    <form action="{{ route('cart.add') }}" method="POST" id="purchaseForm" class="space-y-4">
                         @csrf
-                        <!-- Selected variant/product mini card -->
-                        <div class="flex items-center gap-3 p-3 bg-gray-50/70 rounded-xl border border-gray-100">
-                            @if($medicine->image)
-                                <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="w-10 h-10 object-contain rounded-lg border border-gray-200/60 p-1 bg-white">
-                            @else
-                                <div class="w-10 h-10 rounded-lg bg-white text-gray-400 flex items-center justify-center border border-gray-200/60"><i class="fa-solid fa-pills text-sm"></i></div>
-                            @endif
-                            <div class="flex-grow min-w-0">
-                                <span class="text-xs text-gray-800 font-bold block truncate">{{ $medicine->name }}</span>
-                                <span class="text-[10px] text-text-muted block mt-0.5">Kemasan: {{ $medicine->unit ?? 'Pcs' }}</span>
-                            </div>
-                        </div>
+                        <input type="hidden" name="medicine_id" value="{{ $medicine->id }}">
 
-                        <div class="flex items-center justify-between gap-4 mb-4">
-                            <div class="flex items-center border border-gray-200 rounded-xl bg-white p-0.5 shadow-sm hover:border-gray-300 transition-colors">
-                                <button type="button" onclick="adjustQty(-1)" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition cursor-pointer">
+                        <!-- Quantity Selector & Stock -->
+                        <div class="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-xl">
+                            <div class="flex items-center bg-white border border-gray-200 rounded-lg p-0.5 shadow-sm">
+                                <button type="button" onclick="adjustQty(-1)" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition cursor-pointer font-bold text-sm">
                                     <i class="fa-solid fa-minus text-[10px]"></i>
                                 </button>
-                                <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $medicine->stock }}" class="w-10 text-center font-extrabold text-gray-800 bg-transparent outline-none pointer-events-none text-sm" readonly>
-                                <button type="button" onclick="adjustQty(1)" class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition cursor-pointer">
+                                <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $medicine->stock }}" oninput="handleManualQty(this)" class="w-12 text-center font-bold text-gray-800 bg-transparent border-0 outline-none text-sm focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                                <button type="button" onclick="adjustQty(1)" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition cursor-pointer font-bold text-sm">
                                     <i class="fa-solid fa-plus text-[10px]"></i>
                                 </button>
                             </div>
                             <div class="text-right">
-                                <span class="text-[10px] text-text-muted block">Sisa Stok</span>
-                                <span class="text-xs font-bold text-gray-800">{{ $medicine->stock }} {{ $medicine->unit ?? 'Pcs' }}</span>
+                                <span class="text-[10px] text-text-muted block">Stok Tersedia</span>
+                                <span class="text-xs font-semibold text-gray-800">{{ $medicine->stock }} {{ $medicine->unit ?? 'Pcs' }}</span>
                             </div>
                         </div>
 
-                        <div class="flex justify-between items-end border-t border-b border-gray-50 py-4 my-2">
-                            <span class="text-xs text-gray-500 font-medium">Subtotal</span>
-                            <span class="text-xl font-black text-gray-900 tracking-tight" id="subtotalDisplay">Rp{{ number_format($medicine->price, 0, ',', '.') }}</span>
+                        <!-- Catatan Pembelian -->
+                        <div class="space-y-1.5">
+                            <label for="notes" class="text-xs font-semibold text-gray-700 block">Catatan Pembelian (Opsional)</label>
+                            <textarea name="notes" id="notes" placeholder="Contoh: Sendok takar, dsb." 
+                                      class="w-full border border-gray-200 rounded-xl p-3 text-xs outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none h-14 bg-white hover:border-gray-300"></textarea>
                         </div>
 
-                        <div class="flex flex-col gap-2.5 mt-4">
-                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-[#00A651] to-[#008f45] hover:brightness-105 active:scale-[0.98] text-white font-bold rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-primary/20">
+                        <!-- Subtotal -->
+                        <div class="flex justify-between items-center py-1.5 border-t border-gray-100">
+                            <span class="text-xs text-gray-500 font-medium">Subtotal</span>
+                            <span class="text-xl font-bold text-primary tracking-tight" id="subtotalDisplay">Rp{{ number_format($medicine->price, 0, ',', '.') }}</span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col gap-2">
+                            <button type="submit" class="w-full py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs transition duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm shadow-primary/20">
                                 <i class="fa-solid fa-cart-plus"></i> + Keranjang
                             </button>
-                            <button type="submit" name="buy_now" value="1" class="w-full py-3 bg-white border-2 border-primary/95 text-primary hover:bg-primary/5 active:scale-[0.98] font-bold rounded-xl text-xs transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                            <button type="submit" name="buy_now" value="1" class="w-full py-3 bg-secondary hover:bg-[#d85517] text-white font-bold rounded-xl text-xs transition duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-sm">
                                 <i class="fa-solid fa-wallet"></i> Beli Langsung
                             </button>
                         </div>
                     </form>
-
-                    <!-- Footer actions: Chat, Wishlist, Share -->
-                    <div class="flex items-center justify-around pt-4 border-t border-gray-100 text-[11px] text-gray-500 font-bold mt-2">
-                        <a href="#" class="flex items-center gap-1.5 hover:text-primary transition-transform hover:-translate-y-0.5 duration-200"><i class="fa-regular fa-comment-dots text-sm"></i> Chat</a>
-                        <div class="w-px h-3.5 bg-gray-200"></div>
-                        <a href="#" class="flex items-center gap-1.5 hover:text-rose-500 transition-transform hover:-translate-y-0.5 duration-200"><i class="fa-regular fa-heart text-sm"></i> Wishlist</a>
-                        <div class="w-px h-3.5 bg-gray-200"></div>
-                        <a href="#" class="flex items-center gap-1.5 hover:text-primary transition-transform hover:-translate-y-0.5 duration-200"><i class="fa-solid fa-share-nodes text-sm"></i> Share</a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -263,11 +345,11 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
                     @foreach($relatedMedicines as $relMed)
                         <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition flex flex-col relative group border border-gray-100">
-                            <a href="{{ route('product.detail', $relMed->slug) }}" class="h-40 p-4 flex items-center justify-center bg-white">
+                            <a href="{{ route('product.detail', $relMed->slug) }}" class="h-40 flex items-center justify-center bg-white w-full overflow-hidden">
                                 @if($relMed->image)
-                                    <img src="{{ str_starts_with($relMed->image, '/') ? $relMed->image : '/' . $relMed->image }}" alt="{{ $relMed->name }}" class="max-w-full max-h-full object-contain">
+                                    <img src="{{ str_starts_with($relMed->image, '/') ? $relMed->image : '/' . $relMed->image }}" alt="{{ $relMed->name }}" class="w-full h-full object-cover">
                                 @else
-                                    <div class="text-gray-300 text-4xl"><i class="fa-solid fa-pills"></i></div>
+                                    <div class="text-gray-300 text-4xl flex items-center justify-center w-full h-full bg-gray-50"><i class="fa-solid fa-pills"></i></div>
                                 @endif
                             </a>
                             <div class="p-4 flex flex-col flex-grow">
@@ -288,10 +370,59 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-12 pb-6 mt-auto">
+    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center text-sm text-text-muted">
-                <p>&copy; 2026 Apotek Naufal. All rights reserved.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
+                <div class="lg:col-span-2">
+                    <div class="mb-4">
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-notes-medical"></i> Apotek Naufal</h2>
+                    </div>
+                    <p class="text-sm text-text-muted mb-5 leading-relaxed pr-0 md:pr-10">
+                        Apotek Naufal adalah platform kesehatan terpercaya yang menyediakan akses mudah untuk mendapatkan obat, vitamin, dan kebutuhan kesehatan lainnya dengan layanan konsultasi apoteker profesional.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-bg-body text-text-main flex items-center justify-center hover:bg-primary hover:text-white transition"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Layanan</h3>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Dokter</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cek Lab</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Artikel Kesehatan</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Promo Menarik</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Bantuan & Panduan</h3>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="text-base font-semibold text-text-main mb-5">Hubungi Kami</h3>
+                    <ul class="flex flex-col gap-3">
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Kesehatan No. 123, Jakarta</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> cs@apoteknaufal.com</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center"></i> +62 812-3456-7890</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> (021) 1500-123</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center pt-6 border-t border-border-muted text-sm text-text-muted">
+                <p>&copy; 2026 Apotek Naufal. All rights reserved. SIPA: 123/SIPA/2026.</p>
             </div>
         </div>
     </footer>
@@ -305,6 +436,7 @@
 
         function adjustQty(amount) {
             let currentQty = parseInt(qtyInput.value);
+            if (isNaN(currentQty)) currentQty = 1;
             let newQty = currentQty + amount;
 
             if (newQty >= 1 && newQty <= maxStock) {
@@ -314,7 +446,44 @@
             }
         }
 
+        function handleManualQty(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val)) {
+                subtotalDisplay.innerText = 'Rp0';
+                return;
+            }
+            if (val < 1) {
+                val = 1;
+            } else if (val > maxStock) {
+                val = maxStock;
+            }
+            input.value = val;
+            let subtotal = unitPrice * val;
+            subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
+        }
 
+        qtyInput.addEventListener('blur', function() {
+            let val = parseInt(qtyInput.value);
+            if (isNaN(val) || val < 1) {
+                qtyInput.value = 1;
+                let subtotal = unitPrice * 1;
+                subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
+            }
+        });
+
+        function setRating(val) {
+            document.getElementById('ratingValue').value = val;
+            const buttons = document.querySelectorAll('.star-btn');
+            buttons.forEach((btn, index) => {
+                if (index < val) {
+                    btn.classList.remove('text-gray-300');
+                    btn.classList.add('text-amber-500');
+                } else {
+                    btn.classList.remove('text-amber-500');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+        }
     </script>
 </body>
 </html>
