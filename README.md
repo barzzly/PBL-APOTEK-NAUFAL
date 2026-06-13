@@ -5,8 +5,8 @@ Sistem Informasi Apotek Naufal adalah aplikasi berbasis web yang dirancang untuk
 ---
 
 ## 👥 Tim Pengembang (PBL)
-* **Farid Yahya**
 * **Hidayathul Fikri**
+* **Farid Yahya**
 * **Nabilla Fitricia Hernanda**
 * **Rury Fezriani Matari**
 
@@ -68,6 +68,18 @@ Aplikasi ini menyediakan berbagai API internal berbasis JSON untuk mendukung int
 ### 4. API Dashboard & Administrasi
 * **`GET /admin/laporan-penjualan/chart-data`**: Mengambil data akumulasi transaksi bulanan dalam format JSON untuk dirender ke dalam Chart.js Dashboard.
 * **`POST /admin/medicines/generate-description`**: Menghasilkan deskripsi obat secara otomatis menggunakan integrasi AI.
+
+---
+
+## 🌐 Layanan API Eksternal (Third-Party APIs)
+Aplikasi ini memanfaatkan beberapa API eksternal pihak ketiga untuk menyediakan fitur kecerdasan buatan dan pemetaan:
+
+1. **Google Gemini AI API**:
+   - Digunakan oleh backend (melalui `GeminiService`) untuk menyusun deskripsi, komposisi, indikasi, dan efek samping obat secara otomatis berdasarkan nama produk yang diinput oleh Admin.
+2. **OSRM (Open Source Routing Machine) API**:
+   - Digunakan untuk menghitung rute mengemudi (*driving route*) secara real-time untuk memperoleh jarak tempuh jalan raya (km) dari lokasi Apotek Naufal ke pin koordinat alamat pengiriman pelanggan.
+3. **OpenStreetMap Tile Server (via Leaflet)**:
+   - Digunakan untuk memuat dan merender ubin peta (*map tiles*) interaktif pada halaman checkout agar pelanggan dapat memilih koordinat lintang/bujur alamat pengantaran secara akurat.
 
 ---
 
@@ -214,7 +226,7 @@ Menyimpan data tiket konsultasi / tebus resep dokter dari pelanggan.
 
 ---
 
-### 7. Tabel: `cart_items` [TABEL BARU]
+### 7. Tabel: `cart_items`
 Menyimpan data keranjang belanja pelanggan secara persisten di database (Live Sync).
 
 | Nama Kolom | Tipe Data | Keterangan |
@@ -228,7 +240,7 @@ Menyimpan data keranjang belanja pelanggan secara persisten di database (Live Sy
 
 ---
 
-### 8. Tabel: `ratings` [TABEL BARU]
+### 8. Tabel: `ratings`
 Menyimpan data ulasan dan rating bintang obat-obatan dari pelanggan.
 
 | Nama Kolom | Tipe Data | Keterangan |
@@ -243,7 +255,7 @@ Menyimpan data ulasan dan rating bintang obat-obatan dari pelanggan.
 
 ---
 
-### 9. Tabel: `prescription_messages` [TABEL BARU]
+### 9. Tabel: `prescription_messages`
 Menyimpan riwayat obrolan konsultasi di dalam masing-masing tiket pelayanan.
 
 | Nama Kolom | Tipe Data | Keterangan |
