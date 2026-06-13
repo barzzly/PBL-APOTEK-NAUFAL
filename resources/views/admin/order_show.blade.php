@@ -2,10 +2,12 @@
 @section('header_title', 'Detail Pesanan: ' . $order->order_number)
 
 @section('content')
-<div class="mb-4">
-    <a href="{{ route('admin.orders') }}" class="text-xs text-text-muted hover:text-primary transition font-semibold flex items-center gap-1.5 w-max">
-        <i class="fa-solid fa-arrow-left"></i> Kembali ke Daftar Pesanan
-    </a>
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <a href="{{ route('admin.orders') }}" class="text-gray-400 hover:text-primary transition">Pesanan</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Detail Pesanan (#{{ $order->order_number }})</span>
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -85,10 +87,6 @@
                         <span class="text-text-muted text-[10px] uppercase">Rumah Sakit / Klinik</span>
                         <strong class="text-text-main block">{{ $prescription->hospital_clinic ?? '-' }}</strong>
                     </div>
-                    <div>
-                        <span class="text-text-muted text-[10px] uppercase">Tanggal Resep</span>
-                        <strong class="text-text-main block">{{ $prescription->prescription_date->format('d MMMM YYYY') }}</strong>
-                    </div>
                 </div>
 
                 <div class="p-3 bg-white border border-amber-100 rounded-lg space-y-2">
@@ -106,7 +104,7 @@
                             @if($prescription->status === 'verified')
                                 <span class="text-green-600 font-semibold"><i class="fa-solid fa-circle-check"></i> Diverifikasi</span>
                             @elseif($prescription->status === 'rejected')
-                                <span class="text-red-600 font-semibold"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>
+                                <span class="text-red-650 font-semibold"><i class="fa-solid fa-circle-xmark"></i> Ditolak</span>
                             @else
                                 <span class="text-yellow-600 font-semibold"><i class="fa-solid fa-clock"></i> Menunggu Verifikasi</span>
                             @endif
@@ -118,9 +116,9 @@
             <div class="pt-2">
                 <span class="text-text-muted text-xs block mb-1">Unggahan Foto Resep Dokter:</span>
                 <div class="w-full max-w-sm border border-amber-100 rounded-lg overflow-hidden bg-white">
-                    <img src="{{ $prescription->image }}" alt="Resep Dokter" class="w-full max-h-64 object-contain p-2">
+                    <img src="{{ route('tickets.view', basename($prescription->image)) }}" alt="Resep Dokter" class="w-full max-h-64 object-contain p-2">
                     <div class="p-3 bg-gray-50 border-t border-amber-100 text-center">
-                        <a href="{{ $prescription->image }}" target="_blank" class="text-xs text-primary hover:underline font-semibold flex items-center justify-center gap-1.5">
+                        <a href="{{ route('tickets.view', basename($prescription->image)) }}" target="_blank" class="text-xs text-primary hover:underline font-semibold flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-up-right-from-square"></i> Buka Gambar Resep Ukuran Penuh
                         </a>
                     </div>
@@ -201,9 +199,17 @@
                 @if($order->order_type === 'delivery')
                 <div>
                     <span class="text-text-muted block mb-1">Alamat Penerima</span>
-                    <p class="p-3 bg-gray-50 border border-gray-150 rounded text-text-main leading-relaxed">
-                        {{ $order->shipping_address }}
-                    </p>
+                    <div class="p-3 bg-gray-50 border border-gray-150 rounded text-text-main leading-relaxed space-y-2">
+                        <p>{{ $order->shipping_address }}</p>
+                        @if($order->delivery_latitude && $order->delivery_longitude)
+                        <div class="pt-2 border-t border-gray-200 mt-2 flex flex-col gap-1.5 text-[10px]">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-route text-primary"></i> Jarak: <strong>{{ number_format($order->delivery_distance, 2) }} km</strong></span>
+                            <a href="https://www.google.com/maps/search/?api=1&query={{ $order->delivery_latitude }},{{ $order->delivery_longitude }}" target="_blank" class="text-primary hover:underline flex items-center gap-1.5 mt-1 font-semibold">
+                                <i class="fa-solid fa-map-location-dot"></i> Buka Titik Antar Kurir di Google Maps <i class="fa-solid fa-up-right-from-square text-[8px]"></i>
+                            </a>
+                        </div>
+                        @endif
+                    </div>
                 </div>
                 @endif
             </div>

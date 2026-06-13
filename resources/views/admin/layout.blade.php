@@ -64,6 +64,10 @@
                 <i class="fa-solid fa-receipt w-5 {{ request()->routeIs('admin.orders*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Pesanan</span>
             </a>
+            <a href="{{ route('admin.tickets.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.tickets*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-ticket w-5 {{ request()->routeIs('admin.tickets*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Ticket</span>
+            </a>
             <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Laporan Penjualan</span>
@@ -218,16 +222,16 @@
             font-size: 0.875rem !important;
             font-weight: 600 !important;
             border-radius: 0.625rem !important;
-            background-color: #00A651 !important;
+            background-color: #346739 !important;
             color: #fff !important;
             border: none !important;
-            box-shadow: 0 4px 12px rgba(0,166,81,0.3) !important;
+            box-shadow: 0 4px 12px rgba(52,103,57,0.3) !important;
             transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
             min-width: 120px !important;
         }
         .swal2-confirm:hover {
-            background-color: #008f45 !important;
-            box-shadow: 0 6px 16px rgba(0,166,81,0.4) !important;
+            background-color: #274E2B !important;
+            box-shadow: 0 6px 16px rgba(52,103,57,0.4) !important;
             transform: translateY(-1px) !important;
         }
         .swal2-cancel {
@@ -249,7 +253,7 @@
         }
         /* Progress bar for success */
         .swal2-timer-progress-bar {
-            background: #00A651 !important;
+            background: #346739 !important;
         }
         /* Error icon */
         .swal2-icon.swal2-error {
@@ -276,6 +280,14 @@
                 localStorage.setItem('sidebar_hidden', sidebar.classList.contains('sidebar-hidden') ? '1' : '0');
             });
         })();
+
+        // Global pagination handler
+        function changePerPage(select) {
+            var u = new URL(window.location.href);
+            u.searchParams.set('per_page', select.value);
+            u.searchParams.set('page', 1);
+            window.location.href = u.toString();
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle notification dropdown

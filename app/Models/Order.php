@@ -12,6 +12,7 @@ class Order extends Model
         'order_number', 'user_id', 'status', 'order_type',
         'subtotal', 'shipping_cost', 'discount', 'total_amount',
         'payment_method', 'payment_status', 'paid_at', 'payment_proof',
+        'delivery_latitude', 'delivery_longitude', 'delivery_distance',
         'shipping_address', 'notes', 'pharmacist_note',
     ];
 
@@ -22,6 +23,31 @@ class Order extends Model
         'discount' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
+
+    public ?string $oldPaymentProofToCleanUp = null;
+
+    protected static function booted()
+    {
+        static::updating(function ($model) {
+            if ($model->isDirty('payment_proof')) {
+                $model->oldPaymentProofToCleanUp = $model->getOriginal('payment_proof');
+            }
+        });
+
+        static::updated(function ($model) {
+            if (!empty($model->oldPaymentProofToCleanUp) && str_starts_with($model->oldPaymentProofToCleanUp, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $model->oldPaymentProofToCleanUp);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+        });
+
+        static::deleted(function ($model) {
+            if ($model->payment_proof && str_starts_with($model->payment_proof, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $model->payment_proof);
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+        });
+    }
 
     public function user()
     {

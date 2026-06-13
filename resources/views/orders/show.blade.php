@@ -26,7 +26,7 @@
                 <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
                     <span class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ array_sum(array_column(session('cart', []), 'quantity')) }}
+                        {{ $cartCount }}
                     </span>
                 </a>
                 <div class="flex items-center gap-3">
@@ -233,9 +233,17 @@
                     @if($order->order_type === 'delivery')
                     <div>
                         <span class="text-text-muted block mb-1">Alamat Penerima</span>
-                        <p class="text-text-main leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">
-                            {{ $order->shipping_address }}
-                        </p>
+                        <div class="text-text-main leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 space-y-2">
+                            <p>{{ $order->shipping_address }}</p>
+                            @if($order->delivery_latitude && $order->delivery_longitude)
+                            <div class="pt-2 border-t border-gray-200 mt-2 flex flex-col gap-1.5 text-[11px]">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid fa-route text-primary"></i> Jarak: <strong>{{ number_format($order->delivery_distance, 2) }} km</strong></span>
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ $order->delivery_latitude }},{{ $order->delivery_longitude }}" target="_blank" class="text-primary hover:underline flex items-center gap-1.5 mt-1 font-semibold">
+                                    <i class="fa-solid fa-map-location-dot"></i> Buka Rute di Google Maps <i class="fa-solid fa-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+                            @endif
+                        </div>
                     </div>
                     @else
                     <div>
@@ -303,17 +311,13 @@
                             <strong class="text-text-main">{{ $prescription->patient_name }}</strong>
                         </div>
                         <div>
-                            <span class="text-text-muted block">Tanggal Resep</span>
-                            <strong class="text-text-main">{{ $prescription->prescription_date->format('d/m/Y') }}</strong>
-                        </div>
-                        <div>
                             <span class="text-text-muted block">Status Resep</span>
                             <strong class="text-text-main">{{ $prescription->status_label }}</strong>
                         </div>
                     </div>
                     <div>
                         <span class="text-text-muted block mb-1">Foto Resep</span>
-                        <a href="{{ $prescription->image }}" target="_blank" class="text-amber-800 hover:underline font-semibold flex items-center gap-1.5">
+                        <a href="{{ route('tickets.view', basename($prescription->image)) }}" target="_blank" class="text-amber-800 hover:underline font-semibold flex items-center gap-1.5">
                             <i class="fa-solid fa-file-image"></i> Lihat Resep Dokter
                         </a>
                     </div>
