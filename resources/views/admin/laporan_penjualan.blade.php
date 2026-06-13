@@ -2,6 +2,11 @@
 @section('header_title', 'Laporan Penjualan')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Laporan Penjualan</span>
+</div>
 {{-- ======================== FILTER BAR ======================== --}}
 <form method="GET" action="{{ route('admin.laporan') }}" id="filterForm">
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
@@ -40,14 +45,9 @@
         <div class="flex flex-col gap-1.5">
             <label class="block text-xs font-semibold text-gray-400 uppercase tracking-widest mb-1">Status Order</label>
             <select name="status" class="min-w-[165px] border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition bg-white">
-                <option value="all"             {{ $statusFilter == 'all'             ? 'selected' : '' }}>Semua Status</option>
-                <option value="pending"         {{ $statusFilter == 'pending'         ? 'selected' : '' }}>Menunggu</option>
-                <option value="confirmed"       {{ $statusFilter == 'confirmed'       ? 'selected' : '' }}>Dikonfirmasi</option>
-                <option value="processing"      {{ $statusFilter == 'processing'      ? 'selected' : '' }}>Diproses</option>
-                <option value="ready_for_pickup"{{ $statusFilter == 'ready_for_pickup'? 'selected' : '' }}>Siap Diambil</option>
-                <option value="shipped"         {{ $statusFilter == 'shipped'         ? 'selected' : '' }}>Dikirim</option>
-                <option value="delivered"       {{ $statusFilter == 'delivered'       ? 'selected' : '' }}>Selesai</option>
-                <option value="cancelled"       {{ $statusFilter == 'cancelled'       ? 'selected' : '' }}>Dibatalkan</option>
+                <option value="all"       {{ $statusFilter == 'all'       ? 'selected' : '' }}>Semua Status (Selesai/Batal)</option>
+                <option value="delivered" {{ $statusFilter == 'delivered' ? 'selected' : '' }}>Selesai</option>
+                <option value="cancelled" {{ $statusFilter == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
             </select>
         </div>
 
@@ -287,14 +287,40 @@
 
 {{-- ======================== TRANSACTION TABLE ======================== --}}
 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
-    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <div class="flex items-center gap-3">
+    <!-- Header: Title and Search side-by-side -->
+    <div class="px-6 py-4 border-b border-gray-100 bg-white" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 16px; width: 100%; box-sizing: border-box; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
             <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0">
                 <i class="fa-solid fa-receipt"></i>
             </div>
             <div>
-                <h2 class="text-sm font-bold text-gray-800">Riwayat Transaksi</h2>
-                <p class="text-xs text-gray-400 mt-0.5">Total {{ $orders->total() }} transaksi ditemukan</p>
+                <h2 class="text-sm font-bold text-gray-800" style="margin: 0; text-align: left;">Riwayat Transaksi</h2>
+                <p class="text-xs text-gray-400 mt-0.5" style="margin: 0; text-align: left;">Total <span id="transaction-count-display">{{ $orders->total() }}</span> transaksi ditemukan</p>
+            </div>
+        </div>
+        
+        <!-- Actions: Search input -->
+        <div style="display: flex; align-items: center; gap: 12px; justify-content: flex-end; margin: 0; flex-wrap: wrap;">
+            <!-- Limit Dropdown -->
+            <div style="display: flex; align-items: center; gap: 8px; shrink-0;">
+                <span class="text-xs text-text-muted whitespace-nowrap" style="font-size: 12px; color: #9ca3af;">Tampilkan:</span>
+                <select onchange="changePerPage(this)" 
+                        style="padding: 6px 10px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 12px; outline: none; background-color: #fff; cursor: pointer; color: #4b5563;">
+                    @foreach([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}" {{ ($perPage ?? 10) == $size ? 'selected' : '' }}>{{ $size }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <!-- Client-Side Instant Search Input -->
+            <div style="position: relative; display: inline-block; width: 100%; min-width: 200px; max-width: 320px; box-sizing: border-box;">
+                <input type="text" id="search-input" oninput="filterTransactions()" placeholder="Cari transaksi..." 
+                       style="width: 100%; padding: 8px 36px 8px 14px; border: 1px solid #e0e0e0; border-radius: 9999px; font-size: 13px; outline: none; transition: all 0.2s; box-sizing: border-box; background-color: #fff;" 
+                       onfocus="this.style.borderColor='#346739'; this.style.boxShadow='0 0 0 3px rgba(52, 103, 57, 0.15)';" 
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #346739; font-size: 13px;"></i>
+                <button type="button" id="clear-btn" onclick="clearSearch()" style="display: none; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); color: #9ca3af; border: none; background: none; cursor: pointer; padding: 2px; font-size: 13px; align-items: center; justify-content: center; outline: none;" title="Hapus">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -303,44 +329,116 @@
         <table class="w-full text-sm" style="table-layout: fixed; min-width: 1000px;">
             <thead>
                 <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 bg-gray-50/50">
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 14%;">No. Order</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 18%;">Pelanggan</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">Tanggal</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 10%;">Jenis</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">Metode Bayar</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">Status Order</th>
-                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">Status Bayar</th>
-                    <th class="px-6 py-3.5 text-right" style="width: 12%;">Total</th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 14%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'order_number', 'sort_order' => ($sortBy === 'order_number' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            No. Order
+                            @if($sortBy === 'order_number')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 18%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'customer_name', 'sort_order' => ($sortBy === 'customer_name' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Pelanggan
+                            @if($sortBy === 'customer_name')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'created_at', 'sort_order' => ($sortBy === 'created_at' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Tanggal
+                            @if($sortBy === 'created_at')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 10%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'order_type', 'sort_order' => ($sortBy === 'order_type' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Jenis
+                            @if($sortBy === 'order_type')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 13%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'payment_method', 'sort_order' => ($sortBy === 'payment_method' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Metode Bayar
+                            @if($sortBy === 'payment_method')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'status', 'sort_order' => ($sortBy === 'status' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Status Order
+                            @if($sortBy === 'status')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 border-r border-gray-200/80" style="width: 15%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'payment_status', 'sort_order' => ($sortBy === 'payment_status' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center gap-1 hover:text-gray-700 transition">
+                            Status Bayar
+                            @if($sortBy === 'payment_status')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
+                    <th class="px-6 py-3.5 text-right" style="width: 12%;">
+                        <a href="{{ request()->fullUrlWithQuery(['sort_by' => 'total_amount', 'sort_order' => ($sortBy === 'total_amount' && $sortOrder === 'asc') ? 'desc' : 'asc', 'page' => 1]) }}" class="flex items-center justify-end gap-1 hover:text-gray-700 transition">
+                            Total
+                            @if($sortBy === 'total_amount')
+                                <i class="fa-solid {{ $sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down' }} text-primary"></i>
+                            @else
+                                <i class="fa-solid fa-sort text-gray-300"></i>
+                            @endif
+                        </a>
+                    </th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @forelse($orders as $order)
-                <tr class="hover:bg-gray-50/60 transition-colors">
+                <tr class="hover:bg-gray-50/60 transition-colors transaction-row">
                     <td class="px-6 py-4 border-r border-gray-100">
-                        <span class="font-mono text-xs font-semibold text-gray-700 bg-gray-100 px-2 py-1 rounded-lg whitespace-nowrap">
+                        <span class="font-mono text-xs font-semibold text-gray-700 bg-gray-100 px-2 py-1 rounded-lg whitespace-nowrap transaction-number">
                             {{ $order->order_number }}
                         </span>
                     </td>
                     <td class="px-6 py-4 border-r border-gray-100">
-                        <div class="font-medium text-gray-800">{{ $order->user->name ?? '-' }}</div>
-                        <div class="text-xs text-gray-400 mt-0.5">{{ $order->user->email ?? '' }}</div>
+                        <div class="font-medium text-gray-800 customer-name">{{ $order->user->name ?? '-' }}</div>
+                        <div class="text-xs text-gray-400 mt-0.5 customer-email">{{ $order->user->email ?? '' }}</div>
                     </td>
-                    <td class="px-6 py-4 text-gray-500 text-xs whitespace-nowrap border-r border-gray-100">
+                    <td class="px-6 py-4 text-gray-500 text-xs whitespace-nowrap border-r border-gray-100 transaction-date">
                         <div>{{ $order->created_at->isoFormat('DD MMM YYYY') }}</div>
                         <div class="text-gray-400 mt-0.5">{{ $order->created_at->format('H:i') }}</div>
                     </td>
                     <td class="px-6 py-4 border-r border-gray-100">
                         @if($order->order_type === 'delivery')
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full whitespace-nowrap shipping-type">
                                 <i class="fa-solid fa-truck text-[10px]"></i> Dikirim
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-full whitespace-nowrap shipping-type">
                                 <i class="fa-solid fa-store text-[10px]"></i> Ambil
                             </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-gray-600 text-xs font-medium whitespace-nowrap border-r border-gray-100">
+                    <td class="px-6 py-4 text-gray-600 text-xs font-medium whitespace-nowrap border-r border-gray-100 payment-method">
                         {{ $order->payment_method_label }}
                     </td>
                     <td class="px-6 py-4 border-r border-gray-100">
@@ -357,31 +455,31 @@
                             ];
                             $colorClass = $colorMap[$order->status_color] ?? $colorMap['gray'];
                         @endphp
-                        <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap {{ $colorClass }}">
+                        <span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full whitespace-nowrap order-status {{ $colorClass }}">
                             {{ $order->status_label }}
                         </span>
                     </td>
                     <td class="px-6 py-4 border-r border-gray-100">
                         @if($order->payment_status === 'paid')
-                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full whitespace-nowrap payment-status">
                                 <i class="fa-solid fa-check text-[10px]"></i> Lunas
                             </span>
                         @elseif($order->payment_status === 'refunded')
-                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full whitespace-nowrap">
-                                <i class="fa-solid fa-rotate-left text-[10px]"></i> Dikembalikan
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full whitespace-nowrap payment-status">
+                                <i class="fa-solid fa-rotate-left text-[10px]"></i> Dikembangkan
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full whitespace-nowrap">
+                            <span class="inline-flex items-center gap-1 text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full whitespace-nowrap payment-status">
                                 <i class="fa-regular fa-clock text-[10px]"></i> Belum Bayar
                             </span>
                         @endif
                     </td>
-                    <td class="px-6 py-4 text-right font-bold text-gray-800 whitespace-nowrap">
+                    <td class="px-6 py-4 text-right font-bold text-gray-800 whitespace-nowrap transaction-total">
                         Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                     </td>
                 </tr>
                 @empty
-                <tr>
+                <tr id="initial-empty-row">
                     <td colspan="8" class="px-6 py-16 text-center">
                         <div class="flex flex-col items-center gap-3 text-gray-400">
                             <i class="fa-solid fa-magnifying-glass text-4xl text-gray-200"></i>
@@ -393,6 +491,14 @@
                     </td>
                 </tr>
                 @endforelse
+
+                <!-- Dynamic Search Empty State Row -->
+                <tr id="empty-state-row" style="display: none;">
+                    <td colspan="8" class="px-6 py-16 text-center text-text-muted">
+                        <div class="text-4xl mb-3 opacity-30"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <p class="text-sm font-semibold text-gray-500">Tidak ditemukan transaksi dengan kata kunci "<span id="search-query-span" class="font-bold text-text-main"></span>".</p>
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -433,8 +539,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Gradient fill
         const gradient = ctx.createLinearGradient(0, 0, 0, 220);
-        gradient.addColorStop(0, 'rgba(0, 166, 81, 0.18)');
-        gradient.addColorStop(1, 'rgba(0, 166, 81, 0)');
+        gradient.addColorStop(0, 'rgba(52, 103, 57, 0.18)');
+        gradient.addColorStop(1, 'rgba(52, 103, 57, 0)');
 
         new Chart(ctx, {
             type: 'line',
@@ -443,10 +549,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Pendapatan (Rp)',
                     data: revenues,
-                    borderColor: '#00A651',
+                    borderColor: '#346739',
                     backgroundColor: gradient,
                     borderWidth: 2.5,
-                    pointBackgroundColor: '#00A651',
+                    pointBackgroundColor: '#346739',
                     pointBorderColor: '#fff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
@@ -542,5 +648,72 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+window.filterTransactions = function() {
+    const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('.transaction-row');
+    const clearBtn = document.getElementById('clear-btn');
+    let foundCount = 0;
+
+    if (clearBtn) {
+        clearBtn.style.display = searchVal.length > 0 ? 'flex' : 'none';
+    }
+
+    rows.forEach(row => {
+        const number = row.querySelector('.transaction-number').textContent.toLowerCase();
+        const name = row.querySelector('.customer-name') ? row.querySelector('.customer-name').textContent.toLowerCase() : '';
+        const email = row.querySelector('.customer-email') ? row.querySelector('.customer-email').textContent.toLowerCase() : '';
+        const date = row.querySelector('.transaction-date').textContent.toLowerCase();
+        const shipping = row.querySelector('.shipping-type').textContent.toLowerCase();
+        const paymentMethod = row.querySelector('.payment-method').textContent.toLowerCase();
+        const orderStatus = row.querySelector('.order-status').textContent.toLowerCase();
+        const paymentStatus = row.querySelector('.payment-status').textContent.toLowerCase();
+        const total = row.querySelector('.transaction-total').textContent.toLowerCase();
+
+        if (
+            number.includes(searchVal) || 
+            name.includes(searchVal) || 
+            email.includes(searchVal) || 
+            date.includes(searchVal) || 
+            shipping.includes(searchVal) || 
+            paymentMethod.includes(searchVal) || 
+            orderStatus.includes(searchVal) || 
+            paymentStatus.includes(searchVal) || 
+            total.includes(searchVal)
+        ) {
+            row.style.display = '';
+            foundCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+
+    const countDisplay = document.getElementById('transaction-count-display');
+    if (countDisplay) {
+        countDisplay.innerText = foundCount;
+    }
+
+    const emptyRow = document.getElementById('empty-state-row');
+    if (emptyRow) {
+        if (foundCount === 0 && rows.length > 0) {
+            emptyRow.style.display = '';
+            const querySpan = document.getElementById('search-query-span');
+            if (querySpan) {
+                querySpan.innerText = searchVal;
+            }
+        } else {
+            emptyRow.style.display = 'none';
+        }
+    }
+}
+
+window.clearSearch = function() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.value = '';
+        filterTransactions();
+        searchInput.focus();
+    }
+}
 </script>
 @endsection

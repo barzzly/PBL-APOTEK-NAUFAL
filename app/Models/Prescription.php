@@ -13,22 +13,45 @@ class Prescription extends Model
         'user_id',
         'order_id',
         'prescription_number',
+        'type',
         'doctor_name',
         'hospital_clinic',
-        'prescription_date',
         'patient_name',
         'patient_age',
         'status',
         'image',
+        'customer_notes',
         'notes',
         'verified_by',
         'verified_at',
     ];
 
     protected $casts = [
-        'prescription_date' => 'date',
         'verified_at' => 'datetime',
     ];
+
+    public ?string $oldImageToCleanUp = null;
+
+    protected static function booted()
+    {
+        static::updating(function ($model) {
+            if ($model->isDirty('image')) {
+                $model->oldImageToCleanUp = $model->getOriginal('image');
+            }
+        });
+
+        static::updated(function ($model) {
+            if (!empty($model->oldImageToCleanUp) && str_starts_with($model->oldImageToCleanUp, 'prescriptions/')) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($model->oldImageToCleanUp);
+            }
+        });
+
+        static::deleted(function ($model) {
+            if ($model->image && str_starts_with($model->image, 'prescriptions/')) {
+                \Illuminate\Support\Facades\Storage::disk('local')->delete($model->image);
+            }
+        });
+    }
 
     public function user()
     {
@@ -55,5 +78,10 @@ class Prescription extends Model
             'rejected'   => 'Ditolak',
             default      => ucfirst($this->status),
         };
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(PrescriptionMessage::class)->orderBy('id', 'asc');
     }
 }
