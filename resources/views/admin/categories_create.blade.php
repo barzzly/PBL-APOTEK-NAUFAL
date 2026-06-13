@@ -2,6 +2,13 @@
 @section('header_title', 'Tambah Kategori')
 
 @section('content')
+<div class="flex items-center gap-3 mb-6 text-xs">
+    <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-primary transition"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <a href="{{ route('admin.categories') }}" class="text-gray-400 hover:text-primary transition">Kategori Obat</a>
+    <i class="fa-solid fa-chevron-right text-[10px] text-gray-300"></i>
+    <span class="text-gray-600 font-bold">Tambah Kategori</span>
+</div>
 <div class="max-w-2xl mx-auto">
     <div class="bg-white rounded-xl shadow-sm border border-border-muted p-6 md:p-8">
         <div class="flex items-center gap-4 mb-6 pb-6 border-b border-border-muted">

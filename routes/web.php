@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-
-use App\Http\Controllers\CartController;
 
 // Auto-create admin user for testing
 if (php_sapi_name() !== 'cli') {
@@ -43,9 +43,6 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Cart Route (Action only)
-Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('cart.add');
-
 // Admin routes
 Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
@@ -65,8 +62,52 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/medicines/{id}/edit', [AdminController::class, 'editMedicine'])->name('admin.medicines.edit');
     Route::put('/medicines/{id}', [AdminController::class, 'updateMedicine'])->name('admin.medicines.update');
     Route::delete('/medicines/{id}', [AdminController::class, 'deleteMedicine'])->name('admin.medicines.destroy');
+    Route::post('/medicines/generate-description', [AdminController::class, 'generateDescription'])->name('admin.medicines.generate_description');
 
     // Laporan Penjualan
     Route::get('/laporan-penjualan', [AdminController::class, 'laporanPenjualan'])->name('admin.laporan');
     Route::get('/laporan-penjualan/chart-data', [AdminController::class, 'laporanChartData'])->name('admin.laporan.chart');
+
+    // Admin Orders
+    Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
+    Route::post('/orders/{id}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.update_status');
+
+    // Admin Ticket Routes
+    Route::get('/tickets', [\App\Http\Controllers\AdminPrescriptionController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/tickets/{id}', [\App\Http\Controllers\AdminPrescriptionController::class, 'show'])->name('admin.tickets.show');
+    Route::post('/tickets/{id}/message', [\App\Http\Controllers\AdminPrescriptionController::class, 'sendMessage'])->name('admin.tickets.message');
+    Route::post('/tickets/{id}/status', [\App\Http\Controllers\AdminPrescriptionController::class, 'changeStatus'])->name('admin.tickets.status');
+    Route::post('/tickets/{id}/add-medicine', [\App\Http\Controllers\AdminPrescriptionController::class, 'addMedicine'])->name('admin.tickets.add_medicine');
+    Route::delete('/tickets/{id}/remove-medicine/{itemId}', [\App\Http\Controllers\AdminPrescriptionController::class, 'removeMedicine'])->name('admin.tickets.remove_medicine');
+    Route::get('/tickets/{id}/messages', [\App\Http\Controllers\AdminPrescriptionController::class, 'getMessages'])->name('admin.tickets.messages');
 });
+
+// Cart routes
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Checkout and customer orders (protected by auth)
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('/checkout/calculate-distance', [CheckoutController::class, 'calculateDistance'])->name('checkout.calculate_distance');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/orders/success', [CheckoutController::class, 'success'])->name('orders.success');
+    Route::get('/orders', [CheckoutController::class, 'history'])->name('orders.history');
+    Route::get('/orders/{id}', [CheckoutController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{id}/upload-payment', [CheckoutController::class, 'uploadPaymentProof'])->name('orders.upload_payment');
+    Route::post('/obat/{slug}/review', [HomeController::class, 'storeReview'])->name('medicine.review.store');
+    // Customer Ticket Routes
+    Route::get('/tickets/upload', [\App\Http\Controllers\PrescriptionController::class, 'create'])->name('tickets.create');
+    Route::post('/tickets/upload', [\App\Http\Controllers\PrescriptionController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/consult', [\App\Http\Controllers\PrescriptionController::class, 'createConsult'])->name('tickets.consult.create');
+    Route::post('/tickets/consult', [\App\Http\Controllers\PrescriptionController::class, 'storeConsult'])->name('tickets.consult.store');
+    Route::get('/tickets/history', [\App\Http\Controllers\PrescriptionController::class, 'history'])->name('tickets.history');
+    Route::get('/tickets/room/{id}', [\App\Http\Controllers\PrescriptionController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/room/{id}/message', [\App\Http\Controllers\PrescriptionController::class, 'sendMessage'])->name('tickets.message');
+    Route::get('/tickets/room/{id}/messages', [\App\Http\Controllers\PrescriptionController::class, 'getMessages'])->name('tickets.messages');
+    Route::get('/tickets/file/{filename}', [CheckoutController::class, 'viewPrescription'])->name('tickets.view');
+});
+

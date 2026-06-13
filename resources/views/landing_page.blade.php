@@ -18,22 +18,12 @@
 
     <!-- Tailwind CSS (Vite) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
-    <!-- Topbar -->
-    <div class="bg-white border-b border-border-muted text-xs py-2 text-text-muted">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span><i class="fa-solid fa-truck"></i> Gratis Ongkir ke Seluruh Indonesia</span>
-            </div>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-primary transition">Bantuan</a>
-                <a href="#" class="hover:text-primary transition">Lacak Pesanan</a>
-                <a href="#" class="hover:text-primary transition">Download App</a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Header -->
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
@@ -51,10 +41,10 @@
             </form>
 
             <div class="flex items-center gap-5">
-                <a href="#" class="text-text-main hover:text-primary text-xl relative transition">
+                <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
                     <i class="fa-solid fa-cart-shopping"></i>
-                    <span class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                        {{ session('cart') ? collect(session('cart'))->sum('quantity') : 0 }}
+                    <span id="cart-badge" class="absolute -top-2 -right-2.5 bg-secondary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                        {{ $cartCount }}
                     </span>
                 </a>
                 <div class="hidden sm:flex items-center gap-3">
@@ -62,6 +52,8 @@
                         @if(auth()->user()->role === 'admin')
                             <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
+                            <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
+                            <a href="{{ route('tickets.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-ticket"></i> Ticket Saya</a>
                             <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
                                 <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
                                 {{ auth()->user()->name }}
@@ -95,24 +87,26 @@
 
     <!-- Main Content -->
     <main class="flex-grow">
-        <!-- Notification Area -->
-        <div class="max-w-7xl mx-auto px-4 mt-4">
+        <!-- Alerts -->
+        <div class="max-w-7xl mx-auto px-4 mt-5">
             @if(session('success'))
-                <div class="p-4 bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 rounded-r-lg flex items-center justify-between shadow-sm">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
-                        <span class="text-sm font-medium">{{ session('success') }}</span>
-                    </div>
+            <div class="p-4 bg-green-50 border-l-4 border-primary rounded-r-lg flex items-center justify-between text-green-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-check text-primary text-lg"></i>
+                    <span class="text-sm font-medium">{{ session('success') }}</span>
                 </div>
+            </div>
             @endif
+
             @if(session('error'))
-                <div class="p-4 bg-rose-50 border-l-4 border-rose-500 text-rose-800 rounded-r-lg flex items-center gap-3 shadow-sm">
-                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
+            <div class="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-center justify-between text-red-800 shadow-sm animate-fade-in mb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-red-500 text-lg"></i>
                     <span class="text-sm font-medium">{{ session('error') }}</span>
                 </div>
+            </div>
             @endif
         </div>
-
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 py-5">
             <div class="w-full h-48 md:h-[350px] rounded-2xl overflow-hidden relative shadow-md bg-primary-light">
@@ -121,6 +115,28 @@
                     <h2 class="text-2xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-md">Kesehatan Anda Adalah Prioritas Kami</h2>
                     <p class="text-sm md:text-base mb-6 drop-shadow-md hidden md:block">Beli obat asli, lengkap, dan terpercaya secara online dengan pengiriman cepat.</p>
                     <a href="#" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition w-max">Belanja Sekarang</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Prescription Banner Section -->
+        <section class="max-w-7xl mx-auto px-4 py-2">
+            <div class="bg-gradient-to-r from-primary to-[#008f45] text-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col lg:flex-row justify-between items-center gap-6 relative overflow-hidden group">
+                <div class="absolute -right-10 -bottom-10 text-white/10 text-9xl font-bold select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-3">Layanan Konsultasi & Resep</span>
+                    <h3 class="text-xl md:text-2xl font-bold mb-2">Tanya Apoteker & Tebus Resep Dokter</h3>
+                    <p class="text-sm text-white/95 leading-relaxed">Butuh saran obat untuk keluhan Anda atau ingin menebus resep dokter? Hubungi apoteker kami melalui live chat. Kami akan membantu mencarikan obat yang sesuai dan memasukkannya langsung ke keranjang belanja Anda.</p>
+                </div>
+                <div class="relative z-10 shrink-0 w-full lg:w-auto flex flex-col sm:flex-row gap-3">
+                    <a href="{{ route('tickets.create') }}" class="w-full sm:w-auto text-center px-6 py-3.5 bg-white text-primary font-bold rounded-xl hover:bg-bg-body hover:-translate-y-0.5 transition shadow-sm inline-block">
+                        <i class="fa-solid fa-upload mr-2"></i> Unggah Resep Dokter
+                    </a>
+                    <a href="{{ route('tickets.consult.create') }}" class="w-full sm:w-auto text-center px-6 py-3.5 bg-secondary text-white font-bold rounded-xl hover:bg-[#d85517] hover:-translate-y-0.5 transition shadow-sm inline-block">
+                        <i class="fa-solid fa-comments mr-2"></i> Konsultasi Chat (Tanya Apoteker)
+                    </a>
                 </div>
             </div>
         </section>
@@ -184,11 +200,11 @@
                 <!-- Product Card -->
                 <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition flex flex-col relative group border border-gray-100">
                     <div class="absolute top-2 left-2 bg-primary-light text-primary text-[10px] font-bold px-2 py-1 rounded z-10">{{ $medicine->category->name ?? 'Umum' }}</div>
-                    <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 p-4 flex items-center justify-center bg-white">
+                    <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 flex items-center justify-center bg-white w-full overflow-hidden">
                         @if($medicine->image)
-                        <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="max-w-full max-h-full object-contain">
+                        <img src="{{ str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image }}" alt="{{ $medicine->name }}" class="w-full h-full object-cover">
                         @else
-                        <div class="text-gray-300 text-4xl"><i class="fa-solid fa-pills"></i></div>
+                        <div class="text-gray-300 text-4xl flex items-center justify-center w-full h-full bg-gray-50"><i class="fa-solid fa-pills"></i></div>
                         @endif
                     </a>
                     <div class="p-4 flex flex-col flex-grow text-left">
@@ -197,13 +213,20 @@
                         <div class="text-xs text-text-muted line-through mb-0.5">Rp {{ number_format($medicine->price_before_discount, 0, ',', '.') }}</div>
                         @endif
                         <div class="text-base font-bold text-secondary mb-2 mt-auto">Rp {{ number_format($medicine->price, 0, ',', '.') }}</div>
-                        <div class="text-xs text-text-muted mb-4">Sisa stok: {{ $medicine->stock }}</div>
-                        
-                        <form action="{{ route('cart.add', $medicine->id) }}" method="POST" class="mt-auto w-full">
-                            @csrf
-                            <input type="hidden" name="quantity" value="1">
-                            <button type="submit" class="w-full py-2 bg-white border border-primary text-primary text-xs font-bold rounded-lg hover:bg-primary hover:text-white transition">Tambah ke Keranjang</button>
-                        </form>
+                        @if($medicine->stock > 0)
+                            <button onclick="addToCart(this)" 
+                                    class="mt-auto w-full py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-lg hover:bg-primary hover:text-white transition cursor-pointer"
+                                    data-id="{{ $medicine->id }}"
+                                    data-name="{{ $medicine->name }}"
+                                    data-price="Rp {{ number_format($medicine->price, 0, ',', '.') }}"
+                                    data-description="{{ $medicine->description ?? 'Tidak ada deskripsi obat.' }}"
+                                    data-unit="{{ $medicine->unit ?? 'Pcs' }}"
+                                    data-image="{{ $medicine->image ? (str_starts_with($medicine->image, '/') ? $medicine->image : '/' . $medicine->image) : '' }}">
+                                Tambah ke Keranjang
+                            </button>
+                        @else
+                            <button disabled class="mt-auto w-full py-2 bg-gray-150 border border-gray-200 text-gray-400 text-xs font-semibold rounded-lg cursor-not-allowed">Stok Habis</button>
+                        @endif
                     </div>
                 </div>
                 @empty
@@ -276,8 +299,8 @@
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Layanan</h3>
                     <ul class="flex flex-col gap-3">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Dokter</a></li>
+                        <li><a href="{{ route('tickets.create') }}" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
+                        <li><a href="{{ route('tickets.consult.create') }}" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Apoteker</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cek Lab</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Artikel Kesehatan</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Promo Menarik</a></li>

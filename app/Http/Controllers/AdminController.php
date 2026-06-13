@@ -8,7 +8,9 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use App\Services\GeminiService;
 
 class AdminController extends Controller
 {
@@ -53,10 +55,11 @@ class AdminController extends Controller
     }
 
     // --- Categories ---
-    public function categories()
+    public function categories(Request $request)
     {
-        $categories = Category::all();
-        return view('admin.categories', compact('categories'));
+        $perPage = (int) $request->get('per_page', 10);
+        $categories = Category::latest()->paginate($perPage)->withQueryString();
+        return view('admin.categories', compact('categories', 'perPage'));
     }
 
     public function createCategory()
@@ -68,16 +71,15 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required|string|max:255']);
         
-        $imageName = null;
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
+            $imagePath = $request->file('image')->store('categories', 'public');
         }
 
         Category::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'image' => $imageName ? '/images/' . $imageName : null,
+            'image' => $imagePath ? '/storage/' . $imagePath : null,
         ]);
 
         return redirect()->route('admin.categories')->with('success', 'Kategori berhasil ditambahkan!');
@@ -95,9 +97,8 @@ class AdminController extends Controller
         $request->validate(['name' => 'required|string|max:255']);
         
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $category->image = '/images/' . $imageName;
+            $imagePath = $request->file('image')->store('categories', 'public');
+            $category->image = '/storage/' . $imagePath;
         }
 
         $category->name = $request->name;
@@ -109,15 +110,49 @@ class AdminController extends Controller
 
     public function deleteCategory($id)
     {
-        Category::findOrFail($id)->delete();
+        $category = Category::findOrFail($id);
+        $category->delete();
         return back()->with('success', 'Kategori berhasil dihapus!');
     }
 
     // --- Medicines ---
-    public function medicines()
+    public function medicines(Request $request)
     {
-        $medicines = Medicine::with('category')->get();
-        return view('admin.medicines', compact('medicines'));
+        $perPage = (int) $request->get('per_page', 10);
+        
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSortBy = ['name', 'category_name', 'price', 'stock', 'created_at'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        $query = Medicine::with('category');
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('medicines.name', 'like', '%' . $search . '%')
+                  ->orWhereHas('category', function($catQuery) use ($search) {
+                      $catQuery->where('categories.name', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        if ($sortBy === 'category_name') {
+            $query->leftJoin('categories', 'medicines.category_id', '=', 'categories.id')
+                  ->select('medicines.*')
+                  ->orderBy('categories.name', $sortOrder);
+        } else {
+            $query->orderBy('medicines.' . $sortBy, $sortOrder);
+        }
+
+        $medicines = $query->paginate($perPage)->withQueryString();
+        return view('admin.medicines', compact('medicines', 'perPage', 'sortBy', 'sortOrder'));
     }
 
     public function createMedicine()
@@ -133,13 +168,13 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string'
         ]);
 
-        $imageName = null;
+        $imagePath = null;
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
+            $imagePath = $request->file('image')->store('medicines', 'public');
         }
 
         Medicine::create([
@@ -148,7 +183,8 @@ class AdminController extends Controller
             'slug' => Str::slug($request->name),
             'price' => $request->price,
             'stock' => $request->stock,
-            'image' => $imageName ? '/images/' . $imageName : null,
+            'image' => $imagePath ? '/storage/' . $imagePath : null,
+            'description' => $request->description,
         ]);
 
         return redirect()->route('admin.medicines')->with('success', 'Obat berhasil ditambahkan!');
@@ -169,13 +205,13 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable|string'
         ]);
 
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $imageName);
-            $medicine->image = '/images/' . $imageName;
+            $imagePath = $request->file('image')->store('medicines', 'public');
+            $medicine->image = '/storage/' . $imagePath;
         }
 
         $medicine->category_id = $request->category_id;
@@ -183,6 +219,7 @@ class AdminController extends Controller
         $medicine->slug = Str::slug($request->name);
         $medicine->price = $request->price;
         $medicine->stock = $request->stock;
+        $medicine->description = $request->description;
         $medicine->save();
 
         return redirect()->route('admin.medicines')->with('success', 'Obat berhasil diperbarui!');
@@ -190,8 +227,36 @@ class AdminController extends Controller
 
     public function deleteMedicine($id)
     {
-        Medicine::findOrFail($id)->delete();
+        $medicine = Medicine::findOrFail($id);
+        $medicine->delete();
         return back()->with('success', 'Obat berhasil dihapus!');
+    }
+
+    public function generateDescription(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+        ]);
+
+        $category = null;
+        if ($request->category_id) {
+            $category = Category::find($request->category_id);
+        }
+
+        try {
+            $geminiService = new GeminiService();
+            $description = $geminiService->generateDescription($request->name, $category ? $category->name : null);
+            return response()->json([
+                'success' => true,
+                'description' => $description
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     // --- Laporan Penjualan ---
@@ -214,25 +279,52 @@ class AdminController extends Controller
         $statusFilter  = $request->get('status', 'all');
         $paymentFilter = $request->get('payment_method', 'all');
 
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSortBy = ['order_number', 'customer_name', 'created_at', 'order_type', 'payment_method', 'status', 'payment_status', 'total_amount'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
         // Base query builder
         $baseQuery = Order::with('user')
-            ->whereBetween('created_at', [$from, $to]);
+            ->whereBetween('orders.created_at', [$from, $to]);
 
         if ($statusFilter !== 'all') {
-            $baseQuery->where('status', $statusFilter);
+            $baseQuery->where('orders.status', $statusFilter);
         }
         if ($paymentFilter !== 'all') {
-            $baseQuery->where('payment_method', $paymentFilter);
+            $baseQuery->where('orders.payment_method', $paymentFilter);
         }
 
         // Summary cards
-        $totalPendapatan = (clone $baseQuery)->where('payment_status', 'paid')->sum('total_amount');
+        $totalPendapatan = (clone $baseQuery)->where('orders.payment_status', 'paid')->sum('orders.total_amount');
         $totalOrder      = (clone $baseQuery)->count();
-        $orderSelesai    = (clone $baseQuery)->where('status', 'delivered')->count();
-        $orderDibatalkan = (clone $baseQuery)->where('status', 'cancelled')->count();
+        $orderSelesai    = (clone $baseQuery)->where('orders.status', 'delivered')->count();
+        $orderDibatalkan = (clone $baseQuery)->where('orders.status', 'cancelled')->count();
 
-        // Orders list with pagination
-        $orders = (clone $baseQuery)->latest()->paginate(15)->withQueryString();
+        // Orders list with pagination (restricted to delivered and cancelled)
+        $perPage = (int) $request->get('per_page', 10);
+        $listQuery = (clone $baseQuery);
+        if ($statusFilter === 'all') {
+            $listQuery->whereIn('orders.status', ['delivered', 'cancelled']);
+        } else {
+            $listQuery->where('orders.status', $statusFilter);
+        }
+
+        if ($sortBy === 'customer_name') {
+            $listQuery->leftJoin('users', 'orders.user_id', '=', 'users.id')
+                      ->select('orders.*')
+                      ->orderBy('users.name', $sortOrder);
+        } else {
+            $listQuery->orderBy('orders.' . $sortBy, $sortOrder);
+        }
+
+        $orders = $listQuery->paginate($perPage)->withQueryString();
 
         // Top selling medicines in the date range
         $topMedicines = OrderItem::select(
@@ -255,7 +347,7 @@ class AdminController extends Controller
             'totalPendapatan', 'totalOrder', 'orderSelesai', 'orderDibatalkan',
             'orders', 'topMedicines',
             'period', 'dateFrom', 'dateTo', 'statusFilter', 'paymentFilter',
-            'from', 'to'
+            'from', 'to', 'perPage', 'sortBy', 'sortOrder'
         ));
     }
 
@@ -313,4 +405,109 @@ class AdminController extends Controller
 
         return response()->json(compact('labels', 'revenues', 'counts'));
     }
+
+    // --- Order Management ---
+    public function orders(Request $request)
+    {
+        $status = $request->get('status', 'all');
+        $perPage = (int) $request->get('per_page', 10);
+        
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+
+        $allowedSortBy = ['order_number', 'customer_name', 'created_at', 'order_type', 'payment_status', 'total_amount', 'status'];
+        if (!in_array($sortBy, $allowedSortBy)) {
+            $sortBy = 'created_at';
+        }
+        if (!in_array($sortOrder, ['asc', 'desc'])) {
+            $sortOrder = 'desc';
+        }
+
+        $query = Order::with('user')
+            ->whereIn('orders.status', ['pending', 'confirmed', 'processing', 'ready_for_pickup', 'shipped']);
+
+        if ($sortBy === 'customer_name') {
+            $query->leftJoin('users', 'orders.user_id', '=', 'users.id')
+                  ->select('orders.*')
+                  ->orderBy('users.name', $sortOrder);
+        } else {
+            $query->orderBy('orders.' . $sortBy, $sortOrder);
+        }
+
+        $orders = $query->paginate($perPage)->withQueryString();
+        return view('admin.orders', compact('orders', 'status', 'perPage', 'sortBy', 'sortOrder'));
+    }
+
+    public function showOrder($id)
+    {
+        $order = Order::with(['items.medicine', 'user'])->findOrFail($id);
+        
+        // Fetch prescription if exists
+        $prescription = \App\Models\Prescription::where('order_id', $order->id)->first();
+        
+        return view('admin.order_show', compact('order', 'prescription'));
+    }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,processing,ready_for_pickup,shipped,delivered,cancelled',
+            'payment_status' => 'required|in:unpaid,paid,refunded',
+            'pharmacist_note' => 'nullable|string|max:255',
+        ]);
+
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
+        // If order gets cancelled, restock medicines
+        if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+            foreach ($order->items as $item) {
+                if ($item->medicine) {
+                    $item->medicine->increment('stock', $item->quantity);
+                }
+            }
+        }
+        
+        // If order was cancelled but gets un-cancelled (restored), reduce stock again
+        if ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+            foreach ($order->items as $item) {
+                if ($item->medicine) {
+                    $item->medicine->decrement('stock', $item->quantity);
+                }
+            }
+        }
+
+        $updateData = [
+            'status' => $newStatus,
+            'payment_status' => $request->payment_status,
+            'pharmacist_note' => $request->pharmacist_note,
+        ];
+
+        if ($request->payment_status === 'paid' && $order->payment_status !== 'paid') {
+            $updateData['paid_at'] = now();
+        }
+
+        $order->update($updateData);
+
+        // Update prescription status if exists
+        $prescription = \App\Models\Prescription::where('order_id', $order->id)->first();
+        if ($prescription) {
+            if ($newStatus === 'cancelled') {
+                $prescription->update(['status' => 'rejected']);
+            } elseif ($newStatus === 'delivered') {
+                $prescription->update(['status' => 'completed']);
+            } elseif (in_array($newStatus, ['confirmed', 'processing', 'ready_for_pickup', 'shipped'])) {
+                $prescription->update([
+                    'status' => 'verified',
+                    'verified_by' => auth()->id(),
+                    'verified_at' => now(),
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.orders')->with('success', 'Status pesanan berhasil diperbarui!');
+    }
 }
+
