@@ -292,7 +292,7 @@
                                 <button type="button" onclick="adjustQty(-1)" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition cursor-pointer font-bold text-sm">
                                     <i class="fa-solid fa-minus text-[10px]"></i>
                                 </button>
-                                <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $medicine->stock }}" class="w-10 text-center font-bold text-gray-800 bg-transparent border-0 outline-none pointer-events-none text-sm" readonly>
+                                <input type="number" id="qtyInput" name="quantity" value="1" min="1" max="{{ $medicine->stock }}" oninput="handleManualQty(this)" class="w-12 text-center font-bold text-gray-800 bg-transparent border-0 outline-none text-sm focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                 <button type="button" onclick="adjustQty(1)" class="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded transition cursor-pointer font-bold text-sm">
                                     <i class="fa-solid fa-plus text-[10px]"></i>
                                 </button>
@@ -436,6 +436,7 @@
 
         function adjustQty(amount) {
             let currentQty = parseInt(qtyInput.value);
+            if (isNaN(currentQty)) currentQty = 1;
             let newQty = currentQty + amount;
 
             if (newQty >= 1 && newQty <= maxStock) {
@@ -444,6 +445,31 @@
                 subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
             }
         }
+
+        function handleManualQty(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val)) {
+                subtotalDisplay.innerText = 'Rp0';
+                return;
+            }
+            if (val < 1) {
+                val = 1;
+            } else if (val > maxStock) {
+                val = maxStock;
+            }
+            input.value = val;
+            let subtotal = unitPrice * val;
+            subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
+        }
+
+        qtyInput.addEventListener('blur', function() {
+            let val = parseInt(qtyInput.value);
+            if (isNaN(val) || val < 1) {
+                qtyInput.value = 1;
+                let subtotal = unitPrice * 1;
+                subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
+            }
+        });
 
         function setRating(val) {
             document.getElementById('ratingValue').value = val;

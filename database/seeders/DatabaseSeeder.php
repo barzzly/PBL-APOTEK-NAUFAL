@@ -95,6 +95,8 @@ class DatabaseSeeder extends Seeder
         $catHerbal = Category::where('name', 'Herbal')->first();
         $catP3k = Category::where('name', 'P3K')->first();
         $catBayi = Category::where('name', 'Ibu & Bayi')->first();
+        $catP3K = $catP3k;
+        $catIbuBayi = $catBayi;
 
         $medicinesData = [
             // Vitamin

@@ -85,11 +85,30 @@ class CartController extends Controller
             $newQty = $currentQty + $quantity;
 
             if ($newQty > $medicine->stock) {
-                $msg = "Stok tidak mencukupi. Stok tersedia: {$medicine->stock}.";
-                if ($request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => $msg], 400);
+                $availableToAdd = $medicine->stock - $currentQty;
+                if ($availableToAdd > 0) {
+                    $newQty = $medicine->stock;
+                    if ($cartItem) {
+                        $cartItem->update(['quantity' => $newQty]);
+                    } else {
+                        CartItem::create([
+                            'user_id' => auth()->id(),
+                            'medicine_id' => $id,
+                            'quantity' => $newQty,
+                        ]);
+                    }
+                    $msg = "Berhasil menambahkan obat. Jumlah di keranjang Anda disesuaikan ke batas maksimal stok ({$medicine->stock} Pcs) karena sebelumnya Anda sudah memiliki {$currentQty} item di keranjang.";
+                    if ($request->wantsJson()) {
+                        return response()->json(['success' => true, 'message' => $msg]);
+                    }
+                    return back()->with('success', $msg);
+                } else {
+                    $msg = "Stok tidak mencukupi. Anda sudah memiliki {$currentQty} item di keranjang (batas maksimal stok).";
+                    if ($request->wantsJson()) {
+                        return response()->json(['success' => false, 'message' => $msg], 400);
+                    }
+                    return back()->with('error', $msg);
                 }
-                return back()->with('error', $msg);
             }
 
             if ($cartItem) {
@@ -107,11 +126,36 @@ class CartController extends Controller
             $newQty = $currentQty + $quantity;
 
             if ($newQty > $medicine->stock) {
-                $msg = "Stok tidak mencukupi. Stok tersedia: {$medicine->stock}.";
-                if ($request->wantsJson()) {
-                    return response()->json(['success' => false, 'message' => $msg], 400);
+                $availableToAdd = $medicine->stock - $currentQty;
+                if ($availableToAdd > 0) {
+                    $newQty = $medicine->stock;
+                    if (isset($cart[$id])) {
+                        $cart[$id]['quantity'] = $newQty;
+                    } else {
+                        $cart[$id] = [
+                            'id' => $medicine->id,
+                            'name' => $medicine->name,
+                            'price' => (float) $medicine->price,
+                            'quantity' => $newQty,
+                            'image' => $medicine->image,
+                            'unit' => $medicine->unit,
+                            'requires_prescription' => (bool) $medicine->requires_prescription,
+                            'slug' => $medicine->slug,
+                        ];
+                    }
+                    session()->put('cart', $cart);
+                    $msg = "Berhasil menambahkan obat. Jumlah di keranjang Anda disesuaikan ke batas maksimal stok ({$medicine->stock} Pcs) karena sebelumnya Anda sudah memiliki {$currentQty} item di keranjang.";
+                    if ($request->wantsJson()) {
+                        return response()->json(['success' => true, 'message' => $msg]);
+                    }
+                    return back()->with('success', $msg);
+                } else {
+                    $msg = "Stok tidak mencukupi. Anda sudah memiliki {$currentQty} item di keranjang (batas maksimal stok).";
+                    if ($request->wantsJson()) {
+                        return response()->json(['success' => false, 'message' => $msg], 400);
+                    }
+                    return back()->with('error', $msg);
                 }
-                return back()->with('error', $msg);
             }
 
             if (isset($cart[$id])) {
