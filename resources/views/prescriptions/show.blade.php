@@ -144,6 +144,13 @@
                                 {{ $prescription->status_label }}
                             </span>
                         </div>
+
+                        @if($prescription->status === 'completed' || $prescription->status === 'rejected')
+                        <div class="mt-4 p-3 bg-red-50/60 border border-red-100 text-red-700 rounded-xl text-[10px] leading-relaxed">
+                            <span class="font-bold block mb-0.5"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Penghapusan Otomatis</span>
+                            Tiket ini telah ditutup dan akan dihapus secara permanen beserta berkasnya dalam waktu 7 hari (sebelum <strong>{{ $prescription->updated_at->addDays(7)->isoFormat('D MMMM YYYY HH:mm') }}</strong>).
+                        </div>
+                        @endif
                     </div>
                 </div>
 
@@ -215,7 +222,7 @@
                                 @endif
 
                                 <div class="max-w-[75%]">
-                                    <div class="px-4 py-3 rounded-2xl shadow-sm leading-relaxed text-sm {{ $isMe ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted' }}">
+                                    <div class="px-4 py-3 rounded-2xl shadow-sm leading-relaxed text-sm break-words {{ $isMe ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted' }}" style="word-break: break-word; overflow-wrap: break-word;">
                                         {!! nl2br(e($msg->message)) !!}
                                     </div>
                                     <span class="text-[10px] text-gray-400 block mt-1 {{ $isMe ? 'text-right' : 'text-left' }} px-1 font-medium">
@@ -229,17 +236,20 @@
 
                 <!-- Call to Action Banner when Completed -->
                 @if($prescription->status === 'completed')
-                <div class="px-6 py-4 bg-primary-light border-t border-b border-primary/20 flex flex-col sm:flex-row items-center justify-between gap-4 shrink-0 shadow-inner">
-                    <div class="flex items-center gap-3">
+                <div class="px-6 py-4 bg-primary-light border-t border-b border-primary/20 shrink-0 shadow-inner"
+                     style="display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-w: 250px;">
                         <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center text-lg shadow-md shrink-0">
                             <i class="fa-solid fa-cart-shopping"></i>
                         </div>
-                        <div class="text-left">
+                        <div style="flex: 1; min-w: 0; text-align: left;">
                             <h4 class="text-xs font-bold text-primary-dark">Verifikasi Selesai & Obat Ditambahkan!</h4>
                             <p class="text-[11px] text-primary-dark leading-normal mt-0.5">Obat hasil tiket konsultasi Anda telah dimasukkan ke dalam keranjang. Silakan buka halaman keranjang belanja Anda untuk memesan.</p>
                         </div>
                     </div>
-                    <a href="{{ route('cart.index') }}" class="w-full sm:w-auto text-center px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 shrink-0 transition flex items-center justify-center gap-1.5">
+                    <a href="{{ route('cart.index') }}" 
+                       class="text-center px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-md shadow-primary/20 transition flex items-center justify-center gap-1.5"
+                       style="flex-shrink: 0; min-width: 140px;">
                         Buka Keranjang <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </a>
                 </div>
@@ -426,7 +436,7 @@
                         flexDiv.innerHTML = `
                             ${doctorAvatar}
                             <div class="max-w-[75%]">
-                                <div class="px-4 py-3 rounded-2xl shadow-sm leading-relaxed text-sm ${isMe ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted'}">
+                                <div class="px-4 py-3 rounded-2xl shadow-sm leading-relaxed text-sm break-words ${isMe ? 'bg-primary text-white' : 'bg-white text-text-main border border-border-muted'}" style="word-break: break-word; overflow-wrap: break-word;">
                                     ${formattedMsg}
                                 </div>
                                 <span class="text-[10px] text-gray-400 block mt-1 ${isMe ? 'text-right' : 'text-left'} px-1 font-medium">

@@ -11,7 +11,7 @@ use App\Models\Prescription;
 use Illuminate\Support\Facades\Schedule;
 
 // Command to clean up old completed/rejected prescription tickets and files
-Artisan::command('prescription:cleanup {days=30}', function () {
+Artisan::command('prescription:cleanup {days=7}', function () {
     $days = (int) $this->argument('days');
     $date = now()->subDays($days);
 
@@ -36,5 +36,5 @@ Artisan::command('prescription:cleanup {days=30}', function () {
 })->purpose('Clean up completed or rejected prescription tickets and their uploaded files older than N days');
 
 // Schedule the cleanup command to run daily
-Schedule::command('prescription:cleanup 30')->daily();
+Schedule::command('prescription:cleanup 7')->daily();
 

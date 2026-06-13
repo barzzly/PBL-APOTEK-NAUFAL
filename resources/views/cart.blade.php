@@ -127,7 +127,7 @@
                         <div class="col-span-2 text-right">Subtotal</div>
                     </div>
                     
-                    <div class="divide-y divide-gray-100" id="cart-items-list">
+                    <div class="divide-y divide-gray-100 overflow-y-auto" id="cart-items-list" style="max-height: 450px;">
                         @foreach($cart as $item)
                         <!-- Item row -->
                         <div class="p-6 grid grid-cols-1 md:grid-cols-12 gap-4 items-center" id="cart-item-row-{{ $item['id'] }}">

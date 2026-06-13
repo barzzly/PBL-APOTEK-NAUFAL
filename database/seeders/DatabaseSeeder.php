@@ -134,7 +134,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 8000,
                 'stock' => 120,
                 'unit' => 'strip',
-                'requires_prescription' => true
+                'requires_prescription' => false
             ],
             [
                 'name' => 'Cataflam 50mg Tablet',
@@ -142,7 +142,7 @@ class DatabaseSeeder extends Seeder
                 'price' => 85000,
                 'stock' => 15,
                 'unit' => 'strip',
-                'requires_prescription' => true
+                'requires_prescription' => false
             ],
             // Herbal
             [

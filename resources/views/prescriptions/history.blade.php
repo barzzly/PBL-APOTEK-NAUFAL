@@ -76,6 +76,15 @@
 
         <h1 class="text-2xl font-bold text-text-main mb-6">Tiket Konsultasi & Resep Saya</h1>
 
+        <!-- Info Banner tentang penghapusan otomatis tiket -->
+        <div class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-2xl text-blue-700 text-xs shadow-sm flex items-start gap-3">
+            <i class="fa-solid fa-circle-info text-lg mt-0.5 shrink-0 text-blue-500"></i>
+            <div>
+                <span class="font-bold block text-blue-800 mb-0.5">Informasi Penghapusan Tiket Otomatis</span>
+                <p class="leading-relaxed">Demi keamanan dan privasi data medis Anda, seluruh tiket konsultasi yang telah berstatus <strong>Selesai</strong> atau <strong>Ditolak</strong> beserta riwayat chat dan berkas resep akan <strong>dihapus secara permanen setelah 7 hari</strong> sejak tiket ditutup.</p>
+            </div>
+        </div>
+
         @if(session('success'))
         <div class="p-4 bg-green-50 border-l-4 border-primary rounded-r-lg flex items-center justify-between text-green-800 shadow-sm mb-6">
             <div class="flex items-center gap-3">
