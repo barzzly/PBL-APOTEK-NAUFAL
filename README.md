@@ -7,8 +7,8 @@ Sistem Informasi Apotek Naufal adalah aplikasi berbasis web yang dirancang untuk
 ## 👥 Tim Pengembang (PBL)
 * **Hidayathul Fikri**
 * **Farid Yahya**
-* **Rury Fezriani Matari**
 * **Nabilla Fitricia Hernanda**
+* * **Rury Fezriani Matari**
 
 ---
 
