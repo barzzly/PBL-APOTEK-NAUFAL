@@ -28,13 +28,13 @@
                 <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
             </a>
 
-            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
-                <input type="text" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
-                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
+            <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
+                <input type="text" name="search" placeholder="Cari obat, vitamin, atau suplemen..." 
+                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
+                <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-            </div>
+            </form>
 
             <div class="flex items-center gap-5">
                 <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
@@ -443,5 +443,6 @@
             });
         }
     </script>
+    <script src="/js/search-autocomplete.js"></script>
 </body>
 </html>

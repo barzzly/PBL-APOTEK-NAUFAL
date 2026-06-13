@@ -65,12 +65,35 @@ class NotificationService
                 'title' => 'Orderan Masuk',
                 'message' => "Pesanan baru <strong>{$order->order_number}</strong> dari <strong>{$customerName}</strong> menunggu konfirmasi.",
                 'time' => $order->created_at->diffForHumans(),
-                'route' => route('admin.laporan'),
+                'route' => route('admin.orders.show', $order->id),
                 'icon' => 'fa-bag-shopping',
                 'icon_bg' => 'bg-blue-50 text-blue-500',
                 'text_color' => 'text-blue-700',
                 'badge' => 'Pending',
                 'badge_class' => 'bg-blue-50 text-blue-600',
+            ];
+        }
+
+        // 3. Fetch pending tickets (prescriptions / consultations)
+        $pendingTickets = \App\Models\Prescription::with('user')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        foreach ($pendingTickets as $ticket) {
+            $customerName = $ticket->user->name ?? 'Pelanggan';
+            $typeLabel = $ticket->type === 'prescription' ? 'Resep' : 'Konsultasi';
+            $notifications[] = [
+                'type' => 'new_ticket',
+                'title' => 'Tiket ' . $typeLabel . ' Baru',
+                'message' => "Tiket {$typeLabel} <strong>{$ticket->prescription_number}</strong> dari <strong>{$customerName}</strong> menunggu verifikasi.",
+                'time' => $ticket->created_at->diffForHumans(),
+                'route' => route('admin.tickets.show', $ticket->id),
+                'icon' => $ticket->type === 'prescription' ? 'fa-file-prescription' : 'fa-comments',
+                'icon_bg' => $ticket->type === 'prescription' ? 'bg-indigo-50 text-indigo-500' : 'bg-purple-50 text-purple-500',
+                'text_color' => $ticket->type === 'prescription' ? 'text-indigo-700' : 'text-purple-700',
+                'badge' => 'Tiket',
+                'badge_class' => $ticket->type === 'prescription' ? 'bg-indigo-50 text-indigo-600' : 'bg-purple-50 text-purple-600',
             ];
         }
 

@@ -107,13 +107,13 @@
                             $badgeColors = [
                                 'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                                 'verified' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                'processing' => 'bg-orange-50 text-orange-700 border-orange-200',
+                                'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                                 'completed' => 'bg-green-50 text-green-700 border-green-200',
                                 'rejected' => 'bg-red-50 text-red-700 border-red-200',
                             ];
                             $colorClass = $badgeColors[$p->status] ?? 'bg-gray-50 text-gray-700 border-gray-200';
                         @endphp
-                        <span class="px-2.5 py-1 rounded-full border font-bold text-[10px] uppercase tracking-wider ticket-status {{ $colorClass }}">
+                        <span class="px-2.5 py-1 rounded-full border font-bold text-[10px] uppercase tracking-wider ticket-status whitespace-nowrap inline-block {{ $colorClass }}">
                             {{ $p->status_label }}
                         </span>
                     </td>

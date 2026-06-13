@@ -509,5 +509,16 @@ class AdminController extends Controller
 
         return redirect()->route('admin.orders')->with('success', 'Status pesanan berhasil diperbarui!');
     }
+
+    public function fetchNotifications()
+    {
+        $notificationService = new \App\Services\NotificationService();
+        $notifications = $notificationService->getNotifications();
+        
+        return response()->json([
+            'notifications' => $notifications,
+            'count' => $notifications->count()
+        ]);
+    }
 }
 
