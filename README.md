@@ -8,7 +8,7 @@ Sistem Informasi Apotek Naufal adalah aplikasi berbasis web yang dirancang untuk
 * **Hidayathul Fikri**
 * **Farid Yahya**
 * **Nabilla Fitricia Hernanda**
-* * **Rury Fezriani Matari**
+* **Rury Fezriani Matari**
 
 ---
 
