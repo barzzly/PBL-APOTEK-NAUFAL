@@ -67,6 +67,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     // Laporan Penjualan
     Route::get('/laporan-penjualan', [AdminController::class, 'laporanPenjualan'])->name('admin.laporan');
     Route::get('/laporan-penjualan/chart-data', [AdminController::class, 'laporanChartData'])->name('admin.laporan.chart');
+    Route::get('/laporan-penjualan/export', [AdminController::class, 'exportLaporanPenjualan'])->name('admin.laporan.export');
 
     // Admin Orders
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
