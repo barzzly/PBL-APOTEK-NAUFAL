@@ -66,6 +66,11 @@ class CheckoutController extends Controller
 
         $request->validate($validationRules);
 
+        // Additional validation for Cash payment + Delivery
+        if ($request->payment_method === 'cash' && $request->order_type === 'delivery') {
+            return back()->withInput()->with('error', 'Pembayaran tunai hanya tersedia untuk metode pengambilan di apotek (Pickup).');
+        }
+
         // Calculate pricing
         $subtotal = 0;
         foreach ($cart as $item) {

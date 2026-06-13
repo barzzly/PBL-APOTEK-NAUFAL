@@ -429,6 +429,9 @@
             const labelPickup = document.getElementById('label-pickup');
             const labelDelivery = document.getElementById('label-delivery');
 
+            const cashInput = document.querySelector('input[name="payment_method"][value="cash"]');
+            const cashLabel = document.getElementById('pay-cash');
+
             if (type === 'delivery') {
                 addressContainer.classList.remove('hidden');
                 inputAddress.setAttribute('required', 'required');
@@ -438,6 +441,26 @@
                 labelDelivery.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelPickup.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 
+                // Disable cash payment method
+                if (cashInput) {
+                    cashInput.disabled = true;
+                    if (cashInput.checked) {
+                        // Switch to transfer if cash was selected
+                        const transferInput = document.querySelector('input[name="payment_method"][value="transfer"]');
+                        if (transferInput) {
+                            transferInput.checked = true;
+                            togglePaymentMethod('transfer');
+                        }
+                    }
+                }
+                if (cashLabel) {
+                    cashLabel.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'bg-gray-50');
+                    const spanText = cashLabel.querySelector('span');
+                    if (spanText) {
+                        spanText.innerHTML = 'Tunai <span class="text-[9px] text-red-500 block font-normal">(Hanya Pickup)</span>';
+                    }
+                }
+
                 // Initialize Leaflet map
                 initMap();
             } else {
@@ -448,6 +471,18 @@
                 // Styling labels
                 labelPickup.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelDelivery.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
+                
+                // Enable cash payment method
+                if (cashInput) {
+                    cashInput.disabled = false;
+                }
+                if (cashLabel) {
+                    cashLabel.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'bg-gray-50');
+                    const spanText = cashLabel.querySelector('span');
+                    if (spanText) {
+                        spanText.innerHTML = 'Tunai';
+                    }
+                }
             }
             updateTotals();
         }
@@ -682,8 +717,21 @@
             }
         }
 
-        // Initialize active class
-        togglePaymentMethod('cash');
+        // Initialize active class and states based on current selection (supporting back/validation errors)
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkedOrderType = document.querySelector('input[name="order_type"]:checked');
+            if (checkedOrderType) {
+                toggleOrderType(checkedOrderType.value);
+            } else {
+                toggleOrderType('pickup');
+            }
+            const checkedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (checkedPaymentMethod && !checkedPaymentMethod.disabled) {
+                togglePaymentMethod(checkedPaymentMethod.value);
+            } else {
+                togglePaymentMethod('cash');
+            }
+        });
 
         function formatRupiah(number) {
             return new Intl.NumberFormat('id-ID', {

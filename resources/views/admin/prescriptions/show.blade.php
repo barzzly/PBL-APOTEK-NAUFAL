@@ -3,17 +3,33 @@
 
 @section('content')
 @if(session('success'))
-    <div class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-lg"></i>
-        <div class="text-sm font-semibold">{{ session('success') }}</div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: "{{ session('success') }}",
+                customClass: {
+                    popup: 'rounded-2xl'
+                }
+            });
+        });
+    </script>
 @endif
 
 @if(session('error'))
-    <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl flex items-center gap-3">
-        <i class="fa-solid fa-circle-exclamation text-lg text-red-500"></i>
-        <div class="text-sm font-semibold">{{ session('error') }}</div>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal',
+                text: "{{ session('error') }}",
+                customClass: {
+                    popup: 'rounded-2xl'
+                }
+            });
+        });
+    </script>
 @endif
 
 <div class="flex items-center gap-3 mb-6 text-xs">
@@ -82,7 +98,7 @@
                     ];
                     $colorClass = $badgeColors[$prescription->status] ?? 'bg-gray-50 text-gray-700 border-gray-200';
                 @endphp
-                <span class="px-2 py-0.5 rounded-full border font-bold text-[10px] uppercase tracking-wider {{ $colorClass }}">
+                <span class="px-2 py-0.5 rounded-full border font-bold text-[10px] uppercase tracking-wider whitespace-nowrap inline-block {{ $colorClass }}">
                     {{ $prescription->status_label }}
                 </span>
             </div>
@@ -251,16 +267,37 @@
                     @csrf
                     <div>
                         <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Pilih Obat</label>
-                        <select name="medicine_id" required 
-                            class="w-full h-10 px-3 border border-border-muted rounded-xl bg-gray-50/50 outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition text-xs font-medium"
-                            style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23757575%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22></polyline></svg>'); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; padding-right: 2.5rem;">
-                            <option value="">-- Cari/Pilih Obat --</option>
-                            @foreach($medicines as $med)
-                            <option value="{{ $med->id }}">
-                                {{ $med->name }} (Stok: {{ $med->stock }} - Rp {{ number_format($med->price, 0, ',', '.') }})
-                            </option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            <!-- Hidden input to store the selected medicine_id -->
+                            <input type="hidden" name="medicine_id" id="selected-medicine-id" required>
+                            
+                            <!-- Searchable input -->
+                            <input type="text" id="medicine-search-input" required placeholder="Cari/Pilih Obat..." autocomplete="off"
+                                class="w-full h-10 px-3 pr-8 border border-border-muted rounded-xl bg-gray-50/50 outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition text-xs font-medium">
+                            
+                            <!-- Chevron icon -->
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" id="dropdown-arrow"></i>
+                            </div>
+                            
+                            <!-- Custom dropdown options -->
+                            <div id="medicine-options-dropdown" class="hidden absolute left-0 right-0 mt-1.5 max-h-60 overflow-y-auto bg-white border border-border-muted rounded-xl shadow-lg z-50 py-1 text-xs">
+                                @foreach($medicines as $med)
+                                <div class="option-item px-3 py-2.5 hover:bg-gray-50 cursor-pointer transition flex justify-between items-center border-b border-gray-50 last:border-0" 
+                                     data-id="{{ $med->id }}" 
+                                     data-text="{{ $med->name }} (Stok: {{ $med->stock }} - Rp {{ number_format($med->price, 0, ',', '.') }})">
+                                     <div class="min-w-0 pr-2">
+                                         <span class="font-bold text-gray-700 block truncate">{{ $med->name }}</span>
+                                         <span class="text-gray-400 text-[10px] block mt-0.5">Stok: {{ $med->stock }}</span>
+                                     </div>
+                                     <span class="font-bold text-secondary shrink-0 text-xs">Rp {{ number_format($med->price, 0, ',', '.') }}</span>
+                                </div>
+                                @endforeach
+                                <div id="no-options-found" class="hidden px-3 py-4 text-center text-gray-400 italic">
+                                    Obat tidak ditemukan
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.75rem; align-items: end;">
@@ -311,10 +348,10 @@
                 @endif
 
                 <!-- Reject prescription button -->
-                <form action="{{ route('admin.tickets.status', $prescription->id) }}" method="POST" class="w-full">
+                <form action="{{ route('admin.tickets.status', $prescription->id) }}" method="POST" class="w-full" id="reject-ticket-form">
                     @csrf
                     <input type="hidden" name="status" value="rejected">
-                    <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menolak tiket ini?')" class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-red-200">
+                    <button type="button" onclick="confirmRejectTicket()" class="w-full py-2.5 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer border border-red-200">
                         <i class="fa-solid fa-circle-xmark"></i> Tolak Tiket
                     </button>
                 </form>
@@ -540,5 +577,118 @@
             closeFullImage();
         }
     });
+
+    // Searchable dropdown logic
+    const searchInput = document.getElementById('medicine-search-input');
+    const dropdown = document.getElementById('medicine-options-dropdown');
+    const hiddenInput = document.getElementById('selected-medicine-id');
+    const arrow = document.getElementById('dropdown-arrow');
+    
+    if (searchInput && dropdown) {
+        const options = dropdown.querySelectorAll('.option-item');
+        const noOptions = document.getElementById('no-options-found');
+        let selectedText = '';
+
+        const showDropdown = () => {
+            dropdown.classList.remove('hidden');
+            arrow.classList.add('rotate-180');
+            searchInput.value = '';
+            filterOptions('');
+        };
+
+        const hideDropdown = () => {
+            dropdown.classList.add('hidden');
+            arrow.classList.remove('rotate-180');
+            searchInput.value = selectedText;
+        };
+
+        const filterOptions = (query) => {
+            let matchCount = 0;
+            const cleanQuery = query.toLowerCase().trim();
+            options.forEach(opt => {
+                const text = opt.getAttribute('data-text').toLowerCase();
+                if (text.includes(cleanQuery)) {
+                    opt.classList.remove('hidden');
+                    matchCount++;
+                } else {
+                    opt.classList.add('hidden');
+                }
+            });
+
+            if (matchCount === 0) {
+                noOptions.classList.remove('hidden');
+            } else {
+                noOptions.classList.add('hidden');
+            }
+        };
+
+        searchInput.addEventListener('focus', showDropdown);
+        
+        // Close dropdown if clicked outside
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                hideDropdown();
+            }
+        });
+
+        searchInput.addEventListener('input', (e) => {
+            filterOptions(e.target.value);
+        });
+
+        options.forEach(opt => {
+            opt.addEventListener('click', () => {
+                const id = opt.getAttribute('data-id');
+                const text = opt.getAttribute('data-text');
+                
+                hiddenInput.value = id;
+                selectedText = text;
+                searchInput.value = text;
+                
+                dropdown.classList.add('hidden');
+                arrow.classList.remove('rotate-180');
+            });
+        });
+
+        // Prevent form submit if no medicine selected
+        const form = searchInput.closest('form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                if (!hiddenInput.value) {
+                    e.preventDefault();
+                    alert('Silakan pilih obat yang tersedia dari daftar!');
+                    searchInput.focus();
+                }
+            });
+        }
+    }
+
+    window.confirmRejectTicket = function() {
+        Swal.fire({
+            title: 'Tolak Tiket?',
+            text: 'Apakah Anda yakin ingin menolak tiket layanan & konsultasi ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#757575',
+            confirmButtonText: 'Ya, Tolak!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-2xl',
+                confirmButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm',
+                cancelButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Menolak tiket...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                document.getElementById('reject-ticket-form').submit();
+            }
+        });
+    };
 </script>
 @endsection

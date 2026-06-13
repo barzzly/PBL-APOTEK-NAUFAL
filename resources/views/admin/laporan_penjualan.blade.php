@@ -73,6 +73,10 @@
                 class="flex items-center gap-2 border border-gray-200 text-gray-500 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50 transition-all whitespace-nowrap">
                 <i class="fa-solid fa-rotate-right text-xs"></i> Reset
             </a>
+            <a href="{{ route('admin.laporan.export', request()->query()) }}"
+                class="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-file-excel text-xs"></i> Export Excel
+            </a>
         </div>
     </div>
 
@@ -276,7 +280,7 @@
                 </div>
                 <span class="text-sm font-semibold text-gray-700">Rata-rata Nilai Order</span>
             </div>
-            @php $avgOrder = $totalOrder > 0 ? $totalPendapatan / $orderSelesai : 0; @endphp
+            @php $avgOrder = $orderSelesai > 0 ? $totalPendapatan / $orderSelesai : 0; @endphp
             <div class="text-2xl font-bold text-gray-800">
                 Rp {{ $orderSelesai > 0 ? number_format($avgOrder, 0, ',', '.') : '0' }}
             </div>
