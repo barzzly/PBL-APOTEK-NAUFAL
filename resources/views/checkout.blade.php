@@ -46,10 +46,16 @@
                             <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
                             <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
-                            <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
+                            <a href="{{ route('profile.edit') }}" class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2 hover:text-primary transition">
+                                <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center overflow-hidden border border-gray-100 shadow-sm">
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ str_starts_with(auth()->user()->avatar, '/') ? auth()->user()->avatar : '/' . auth()->user()->avatar }}" class="w-full h-full object-cover">
+                                    @else
+                                        <i class="fa-solid fa-user"></i>
+                                    @endif
+                                </div>
                                 {{ auth()->user()->name }}
-                            </div>
+                            </a>
                             <form action="{{ route('logout') }}" method="POST" class="ml-2">
                                 @csrf
                                 <button type="submit" class="p-2 text-text-muted hover:text-red-500 transition" title="Keluar"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
@@ -423,6 +429,9 @@
             const labelPickup = document.getElementById('label-pickup');
             const labelDelivery = document.getElementById('label-delivery');
 
+            const cashInput = document.querySelector('input[name="payment_method"][value="cash"]');
+            const cashLabel = document.getElementById('pay-cash');
+
             if (type === 'delivery') {
                 addressContainer.classList.remove('hidden');
                 inputAddress.setAttribute('required', 'required');
@@ -432,6 +441,26 @@
                 labelDelivery.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelPickup.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 
+                // Disable cash payment method
+                if (cashInput) {
+                    cashInput.disabled = true;
+                    if (cashInput.checked) {
+                        // Switch to transfer if cash was selected
+                        const transferInput = document.querySelector('input[name="payment_method"][value="transfer"]');
+                        if (transferInput) {
+                            transferInput.checked = true;
+                            togglePaymentMethod('transfer');
+                        }
+                    }
+                }
+                if (cashLabel) {
+                    cashLabel.classList.add('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'bg-gray-50');
+                    const spanText = cashLabel.querySelector('span');
+                    if (spanText) {
+                        spanText.innerHTML = 'Tunai <span class="text-[9px] text-red-500 block font-normal">(Hanya Pickup)</span>';
+                    }
+                }
+
                 // Initialize Leaflet map
                 initMap();
             } else {
@@ -442,6 +471,18 @@
                 // Styling labels
                 labelPickup.className = "border-2 border-primary rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
                 labelDelivery.className = "border border-gray-200 rounded-xl p-4 flex items-start gap-3 cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
+                
+                // Enable cash payment method
+                if (cashInput) {
+                    cashInput.disabled = false;
+                }
+                if (cashLabel) {
+                    cashLabel.classList.remove('opacity-40', 'cursor-not-allowed', 'pointer-events-none', 'bg-gray-50');
+                    const spanText = cashLabel.querySelector('span');
+                    if (spanText) {
+                        spanText.innerHTML = 'Tunai';
+                    }
+                }
             }
             updateTotals();
         }
@@ -676,8 +717,21 @@
             }
         }
 
-        // Initialize active class
-        togglePaymentMethod('cash');
+        // Initialize active class and states based on current selection (supporting back/validation errors)
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkedOrderType = document.querySelector('input[name="order_type"]:checked');
+            if (checkedOrderType) {
+                toggleOrderType(checkedOrderType.value);
+            } else {
+                toggleOrderType('pickup');
+            }
+            const checkedPaymentMethod = document.querySelector('input[name="payment_method"]:checked');
+            if (checkedPaymentMethod && !checkedPaymentMethod.disabled) {
+                togglePaymentMethod(checkedPaymentMethod.value);
+            } else {
+                togglePaymentMethod('cash');
+            }
+        });
 
         function formatRupiah(number) {
             return new Intl.NumberFormat('id-ID', {
