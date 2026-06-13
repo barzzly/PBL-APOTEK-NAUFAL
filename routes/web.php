@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -111,5 +112,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/tickets/room/{id}/message', [\App\Http\Controllers\PrescriptionController::class, 'sendMessage'])->name('tickets.message');
     Route::get('/tickets/room/{id}/messages', [\App\Http\Controllers\PrescriptionController::class, 'getMessages'])->name('tickets.messages');
     Route::get('/tickets/file/{filename}', [CheckoutController::class, 'viewPrescription'])->name('tickets.view');
+    
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 

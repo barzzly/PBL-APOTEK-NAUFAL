@@ -29,10 +29,16 @@
                     </span>
                 </a>
                 <div class="flex items-center gap-3">
-                    <div class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
-                        {{ auth()->user()->name }}
-                    </div>
+                    <a href="{{ route('profile.edit') }}" class="px-3 py-2 text-sm font-semibold text-text-main flex items-center gap-2 hover:text-primary transition">
+                                <div class="w-8 h-8 rounded-full bg-primary-light text-primary flex items-center justify-center overflow-hidden border border-gray-100 shadow-sm">
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ str_starts_with(auth()->user()->avatar, '/') ? auth()->user()->avatar : '/' . auth()->user()->avatar }}" class="w-full h-full object-cover">
+                                    @else
+                                        <i class="fa-solid fa-user"></i>
+                                    @endif
+                                </div>
+                                {{ auth()->user()->name }}
+                            </a>
                     <form action="{{ route('logout') }}" method="POST" class="ml-2">
                         @csrf
                         <button type="submit" class="p-2 text-text-muted hover:text-red-500 transition" title="Keluar"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
