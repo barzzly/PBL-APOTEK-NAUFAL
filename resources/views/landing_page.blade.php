@@ -34,7 +34,7 @@
 
             <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
+                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
                 <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -336,110 +336,132 @@
     </footer>
 
     <!-- Search Scripts -->
+    <script src="/js/search-autocomplete.js"></script>
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInputs = document.querySelectorAll('input[name="search"]');
-        
-        searchInputs.forEach(input => {
-            const form = input.closest('form');
-            if (!form) return;
-            
-            // Ensure parent form has relative positioning
-            form.classList.add('relative');
-            
-            // Create suggestions container
-            const dropdown = document.createElement('div');
-            dropdown.className = 'absolute left-0 right-0 mt-2 bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden z-50 max-h-80 overflow-y-auto divide-y divide-gray-50 hidden';
-            form.appendChild(dropdown);
-            
-            let debounceTimer;
-            
-            input.addEventListener('input', function() {
-                clearTimeout(debounceTimer);
-                const query = input.value.trim();
-                
-                if (query.length < 2) {
-                    dropdown.innerHTML = '';
-                    dropdown.classList.add('hidden');
-                    return;
+        function addToCart(button) {
+            const id = button.getAttribute('data-id');
+            const name = button.getAttribute('data-name');
+            const price = button.getAttribute('data-price');
+            const unit = button.getAttribute('data-unit');
+            const image = button.getAttribute('data-image');
+            const description = button.getAttribute('data-description');
+
+            // Format image HTML
+            let imgHtml = '';
+            if (image) {
+                imgHtml = `<img src="${image}" alt="${name}" style="width: 64px; height: 64px; object-fit: contain; border-radius: 8px; border: 1px solid #e5e7eb; padding: 4px; background-color: #fff; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">`;
+            } else {
+                imgHtml = `<div style="width: 64px; height: 64px; border-radius: 8px; background-color: #f9fafb; color: #d1d5db; display: flex; align-items: center; justify-content: center; border: 1px solid #e5e7eb; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);"><i class="fa-solid fa-pills" style="font-size: 24px; color: #9ca3af;"></i></div>`;
+            }
+
+            Swal.fire({
+                title: 'Tambah ke Keranjang?',
+                html: `
+                    <div style="font-family: 'Inter', sans-serif; text-align: left; margin-top: 12px;">
+                        <p style="font-size: 13px; color: #6b7280; margin: 0 0 16px 0; line-height: 1.4;">Apakah Anda yakin ingin memasukkan obat ini ke keranjang belanja?</p>
+                        
+                        <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: linear-gradient(to right, #f9fafb, #fff); border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.04); width: 100%; box-sizing: border-box;">
+                            ${imgHtml}
+                            <div style="flex-grow: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 4px;">
+                                <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #1f2937; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</h4>
+                                <div style="margin-top: 2px;">
+                                    <span style="display: inline-block; font-size: 11px; font-weight: 600; color: #346739; background-color: #e6efe5; border: 1px solid rgba(52,103,57,0.15); padding: 2px 8px; border-radius: 9999px; line-height: 1.2;">Kemasan: ${unit}</span>
+                                </div>
+                                <div style="font-size: 16px; font-weight: 800; color: #79AE6F; margin-top: 4px;">${price}</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 14px; padding: 12px 14px; background-color: #f9fafb; border-radius: 10px; border: 1px dashed #e5e7eb; font-size: 12px; color: #4b5563; line-height: 1.5; text-align: left;">
+                            <strong style="color: #1f2937; display: block; margin-bottom: 4px; font-size: 12px;"><i class="fa-solid fa-file-prescription" style="color: #346739; margin-right: 4px;"></i>Deskripsi Obat:</strong>
+                            ${description || 'Tidak ada deskripsi obat.'}
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#346739',
+                cancelButtonColor: '#79AE6F',
+                confirmButtonText: 'Ya, Masukkan',
+                cancelButtonText: 'Batal',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm shadow-primary/20',
+                    cancelButton: 'px-5 py-2.5 rounded-xl text-xs font-bold transition-all'
                 }
-                
-                debounceTimer = setTimeout(() => {
-                    fetch(`/search-suggestions?q=${encodeURIComponent(query)}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            dropdown.innerHTML = '';
-                            
-                            if (data.length === 0) {
-                                const emptyItem = document.createElement('div');
-                                emptyItem.className = 'p-4 text-center text-xs text-text-muted';
-                                emptyItem.textContent = 'Tidak ditemukan obat yang cocok';
-                                dropdown.appendChild(emptyItem);
-                            } else {
-                                data.forEach(item => {
-                                    const a = document.createElement('a');
-                                    a.href = `/obat/${item.slug}`;
-                                    a.className = 'flex items-center gap-3 p-3 hover:bg-gray-50 transition text-left';
-                                    
-                                    const imgWrapper = document.createElement('div');
-                                    imgWrapper.className = 'w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden shrink-0 border border-gray-100';
-                                    
-                                    if (item.image) {
-                                        const img = document.createElement('img');
-                                        img.src = item.image;
-                                        img.alt = item.name;
-                                        img.className = 'w-full h-full object-contain';
-                                        imgWrapper.appendChild(img);
-                                    } else {
-                                        imgWrapper.innerHTML = '<i class="fa-solid fa-pills text-gray-300 text-sm"></i>';
-                                    }
-                                    
-                                    const infoWrapper = document.createElement('div');
-                                    infoWrapper.className = 'flex-grow min-w-0';
-                                    
-                                    const nameSpan = document.createElement('span');
-                                    nameSpan.className = 'text-sm font-semibold text-text-main block truncate';
-                                    nameSpan.textContent = item.name;
-                                    
-                                    const catSpan = document.createElement('span');
-                                    catSpan.className = 'text-[10px] text-text-muted block mt-0.5';
-                                    catSpan.textContent = item.category_name;
-                                    
-                                    infoWrapper.appendChild(nameSpan);
-                                    infoWrapper.appendChild(catSpan);
-                                    
-                                    const priceSpan = document.createElement('span');
-                                    priceSpan.className = 'text-xs font-bold text-secondary text-right shrink-0';
-                                    priceSpan.textContent = `Rp ${item.price}`;
-                                    
-                                    a.appendChild(imgWrapper);
-                                    a.appendChild(infoWrapper);
-                                    a.appendChild(priceSpan);
-                                    
-                                    dropdown.appendChild(a);
-                                });
-                            }
-                            dropdown.classList.remove('hidden');
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Menambahkan ke keranjang...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    fetch('{{ route('cart.add') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            medicine_id: id,
+                            quantity: 1
                         })
-                        .catch(err => console.error('Error fetching suggestions:', err));
-                }, 300);
-            });
-            
-            // Hide dropdown when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!form.contains(e.target)) {
-                    dropdown.classList.add('hidden');
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        Swal.close();
+                        if (data.success) {
+                            // Update badge
+                            const badge = document.getElementById('cart-badge');
+                            if (badge) {
+                                badge.innerText = data.cart_count;
+                            }
+                            
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: data.message,
+                                showCancelButton: true,
+                                confirmButtonColor: '#346739',
+                                cancelButtonColor: '#79AE6F',
+                                confirmButtonText: 'Lihat Keranjang',
+                                cancelButtonText: 'Lanjut Belanja',
+                                customClass: {
+                                    popup: 'rounded-2xl'
+                                }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '{{ route('cart.index') }}';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message || 'Terjadi kesalahan.',
+                                customClass: {
+                                    popup: 'rounded-2xl'
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        Swal.close();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Kesalahan Sistem',
+                            text: 'Gagal menghubungi server.',
+                            customClass: {
+                                popup: 'rounded-2xl'
+                            }
+                        });
+                    });
                 }
             });
-            
-            // Show dropdown again when input is focused and has text
-            input.addEventListener('focus', function() {
-                if (input.value.trim().length >= 2 && dropdown.children.length > 0) {
-                    dropdown.classList.remove('hidden');
-                }
-            });
-        });
-    });
+        }
     </script>
 
     @if(request('search'))
