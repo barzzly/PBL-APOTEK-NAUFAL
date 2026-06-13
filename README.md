@@ -1,13 +1,10 @@
 # Sistem Informasi Apotek Naufal 💊
 
-Selamat datang di repositori **Sistem Informasi Apotek Naufal**. Aplikasi ini dikembangkan untuk mengelola operasional apotek secara digital, mulai dari manajemen pengguna, inventaris obat, transaksi pemesanan (baik ambil langsung maupun pengantaran), hingga verifikasi resep dokter.
-
-Aplikasi ini dibangun menggunakan framework **Laravel** dengan integrasi frontend menggunakan **Vite**.
+Sistem Informasi Apotek Naufal adalah aplikasi berbasis web yang dirancang untuk mengelola operasional apotek secara digital. Aplikasi ini mencakup manajemen inventaris obat, transaksi pemesanan (delivery & pickup), verifikasi resep dokter, hingga sistem obrolan konsultasi real-time antara apoteker dan pelanggan.
 
 ---
 
 ## 👥 Tim Pengembang (PBL)
-Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
 * **Farid Yahya**
 * **Hidayathul Fikri**
 * **Nabilla Fitricia Hernanda**
@@ -15,112 +12,66 @@ Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
 
 ---
 
-## 🎯 Tujuan Proyek
-Proyek ini dibuat dengan tujuan:
-* **Digitalisasi Operasional Apotek**: Mengotomatiskan pencatatan stok obat, manajemen kategori, dan transaksi secara real-time.
-* **Kemudahan Akses Pelanggan**: Memfasilitasi pelanggan untuk memesan obat secara online baik melalui metode *delivery* (diantar) maupun *pickup* (ambil langsung).
-* **Verifikasi Resep Digital**: Menyediakan fitur bagi apoteker untuk memverifikasi unggahan foto resep dokter dari pelanggan sebelum memproses pesanan obat keras.
-* **Pelaporan yang Cepat & Akurat**: Membantu pihak administrasi apotek dalam mengunduh laporan penjualan dan stok dalam format PDF maupun Excel secara efisien.
+## 🛠️ Teknologi Utama
+* **Backend**: Laravel (PHP)
+* **Frontend**: Tailwind CSS v4 & Laravel Blade templates
+* **Build Tool**: Vite (Laravel Vite Plugin)
+* **Database**: MySQL / MariaDB
+* **Library**: Spatie Permission, Laravel DomPDF, Laravel Excel, SweetAlert2
 
 ---
 
-## 🌟 Fitur Utama
-* **Autentikasi & Multi-Role**: Sistem login dan hak akses terintegrasi untuk 3 role pengguna: **Admin**, **Pharmacist (Apoteker)**, dan **Customer**.
-* **Manajemen Inventaris Obat**: Manajemen data obat mencakup kategori, stok, harga diskon, batas minimum stok, status wajib resep dokter, hingga tanggal kadaluwarsa.
-* **Sistem Pemesanan (Checkout)**: Fitur pemesanan obat online dengan opsi pengiriman (*delivery*) atau pengambilan di apotek (*pickup*).
-* **Upload & Verifikasi Resep**: Pelanggan dapat mengunggah foto resep dokter, dan apoteker dapat memverifikasi atau menolak resep tersebut melalui panel khusus.
-* **Metode Pembayaran Variatif**: Mendukung pembayaran via *Cash*, *Transfer* (dengan unggah bukti bayar), *QRIS*, dan *BPJS*.
-* **Ekspor & Cetak Laporan**: Generate laporan penjualan format PDF, serta impor/ekspor data obat secara massal menggunakan format Excel.
-* **Pagination & Sorting Dinamis (Panel Admin)**: Batasan halaman dinamis (10, 25, 50, 100) serta fitur pengurutan data (*sorting*) interaktif pada header kolom tabel di halaman Riwayat Transaksi, Pesanan Masuk, dan Data Obat.
+## 🚀 Panduan Instalasi Cepat
+1. **Clone repository**:
+   ```bash
+   git clone https://github.com/barzzly/PBL-APOTEK-NAUFAL.git
+   cd PBL-APOTEK-NAUFAL
+   ```
+2. **Instal dependensi**:
+   ```bash
+   composer install
+   npm install
+   ```
+3. **Salin file lingkungan**:
+   ```bash
+   cp .env.example .env
+   ```
+4. **Konfigurasi Database & Jalankan Migrasi**:
+   Sesuaikan `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` di `.env` Anda, lalu jalankan:
+   ```bash
+   php artisan key:generate
+   php artisan migrate --seed
+   ```
+5. **Jalankan Aplikasi**:
+   - Terminal 1: `php artisan serve`
+   - Terminal 2: `npm run dev`
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## 🔗 Daftar API Internal (AJAX / JSON Endpoints)
+Aplikasi ini menyediakan berbagai API internal berbasis JSON untuk mendukung interaksi tanpa muat ulang halaman (AJAX):
 
-Aplikasi ini menggunakan kombinasi teknologi berikut untuk memastikan keandalan dan performa terbaik:
+### 1. API Obrolan Konsultasi (Real-time Sync)
+* **`GET /tickets/room/{id}/messages`**: Mengambil daftar pesan konsultasi terbaru untuk sisi Pelanggan.
+* **`POST /tickets/room/{id}/message`**: Mengirim pesan konsultasi baru dari sisi Pelanggan.
+* **`GET /admin/tickets/{id}/messages`**: Mengambil daftar pesan konsultasi terbaru untuk sisi Apoteker/Admin.
+* **`POST /admin/tickets/{id}/message`**: Mengirim pesan konsultasi baru dari sisi Apoteker/Admin.
 
-* **Backend / Engine Utama**: [Laravel](https://laravel.com) (Framework PHP MVC modern)
-* **Frontend UI**: [Laravel Blade](https://laravel.com/docs/blade) (Templating Engine) & [Tailwind CSS v4](https://tailwindcss.com) (Styling UI)
-* **Asset Bundler / Build Tool**: [Vite](https://vite.dev) (Terintegrasi via `laravel-vite-plugin`)
-* **Basis Data (Database)**: MySQL / MariaDB
-* **Library Pendukung Penting**:
-  * **Spatie Laravel Permission**: Mengelola otorisasi akses (Role & Permission) pengguna.
-  * **Laravel DomPDF**: Menghasilkan dokumen laporan penjualan dan bukti transaksi berformat PDF.
-  * **Laravel Excel**: Memproses ekspor dan impor data inventaris obat dengan format Excel (.xlsx).
+### 2. API Pengelolaan Keranjang Belanja (Live Cart)
+* **`POST /cart/add`**: Menambahkan obat ke dalam keranjang belanja.
+* **`POST /cart/update`**: Memperbarui kuantitas obat di keranjang belanja dengan validasi stok real-time.
+* **`POST /cart/remove`**: Menghapus obat dari keranjang belanja secara dinamis.
 
----
+### 3. API Checkout & Logistik
+* **`GET /checkout/calculate-distance`**: Menghitung jarak pengantaran alamat pelanggan secara dinamis guna menghitung estimasi ongkos kirim (*shipping cost*).
 
-## 🚀 Panduan Instalasi & Clone Repository
-
-Ikuti langkah-langkah di bawah ini untuk memasang proyek ini di lingkungan lokal Anda:
-
-### 1. Clone Repository
-Unduh kode sumber proyek ini dengan menjalankan perintah berikut di terminal Anda:
-```bash
-git clone https://github.com/barzzly/PBL-APOTEK-NAUFAL.git
-cd pbl-fix-dev
-```
-
-### 2. Instalasi Dependensi
-Pasang semua dependensi PHP (Composer) dan Javascript (NPM) yang diperlukan:
-```bash
-# Menginstal library backend PHP
-composer install
-
-# Menginstal package frontend Javascript
-npm install
-```
-
-### 3. Konfigurasi Environment File
-Salin file konfigurasi lingkungan dari `.env.example` ke `.env`:
-```bash
-# Pengguna Unix/Linux/macOS atau Git Bash
-cp .env.example .env
-
-# Pengguna Windows Command Prompt (CMD)
-copy .env.example .env
-```
-
-### 4. Generate Application Key
-Jalankan perintah berikut untuk membuat kunci enkripsi aplikasi Laravel:
-```bash
-php artisan key:generate
-```
-
-### 5. Konfigurasi Database
-Buat database baru di DBMS Anda (misal: MySQL/MariaDB). Setelah itu, buka file `.env` dengan text editor dan sesuaikan kredensial database Anda pada baris berikut:
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database_anda
-DB_USERNAME=username_database_anda
-DB_PASSWORD=password_database_anda
-```
-
-### 6. Migrasi & Seeding Database
-Jalankan migrasi untuk membuat tabel-tabel di database beserta data awal (seed) seperti akun administrator, kategori, dan beberapa data obat contoh:
-```bash
-php artisan migrate --seed
-```
-
-### 7. Jalankan Server Lokal
-Untuk menjalankan aplikasi secara lokal, Anda perlu menyalakan server Laravel dan server kompilasi frontend (Vite) secara bersamaan:
-
-* **Terminal 1: Menjalankan backend Laravel**
-  ```bash
-  php artisan serve
-  ```
-  Aplikasi dapat diakses melalui browser di: `http://127.0.0.1:8000`
-
-* **Terminal 2: Menjalankan aset frontend (Vite)**
-  ```bash
-  npm run dev
-  ```
+### 4. API Dashboard & Administrasi
+* **`GET /admin/laporan-penjualan/chart-data`**: Mengambil data akumulasi transaksi bulanan dalam format JSON untuk dirender ke dalam Chart.js Dashboard.
+* **`POST /admin/medicines/generate-description`**: Menghasilkan deskripsi obat secara otomatis menggunakan integrasi AI.
 
 ---
 
-## 🗃️ Struktur Database
+## 🗃️ Struktur Database (Schema)
 
 Berikut adalah representasi detail dari struktur tabel database yang digunakan pada sistem ini:
 
@@ -153,7 +104,7 @@ Menyimpan kategori pengelompokan obat-obatan.
 | `name` | `string` | Nama kategori obat |
 | `slug` | `string` | Slug unik untuk penulisan URL ramah SEO |
 | `description` | `text` | Deskripsi singkat mengenai kategori (nullable) |
-| `image` | `string` | Gambar representasi kategori (nullable) |
+| `image` | `string` | Gambar kategori (nullable) |
 | `is_active` | `boolean` | Status keaktifan kategori (Default: `true`) |
 | `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
 | `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
@@ -172,19 +123,19 @@ Menyimpan inventaris dan data obat-obatan yang dijual.
 | `brand` | `string` | Merek atau pabrikan obat (nullable) |
 | `sku` | `string` | Kode unik inventaris / SKU (nullable) |
 | `description` | `text` | Deskripsi umum obat (nullable) |
-| `composition` | `text` | Kandungan / komposisi bahan aktif obat (nullable) |
+| `composition` | `text` | Kandungan / komposisi obat (nullable) |
 | `indications` | `text` | Khasiat atau indikasi penggunaan (nullable) |
 | `dosage` | `text` | Aturan pakai dan dosis (nullable) |
-| `side_effects` | `text` | Efek samping yang mungkin terjadi (nullable) |
-| `contraindications`| `text` | Kondisi yang tidak disarankan memakai obat (nullable) |
-| `unit` | `string(50)` | Satuan obat, misal: *pcs*, *strip*, *botol* (Default: `pcs`) |
+| `side_effects` | `text` | Efek samping (nullable) |
+| `contraindications`| `text` | Kontraindikasi obat (nullable) |
+| `unit` | `string(50)` | Satuan obat, misal: *strip*, *botol* (Default: `pcs`) |
 | `price` | `decimal(12,2)` | Harga jual obat |
 | `price_before_discount` | `decimal(12,2)` | Harga asli sebelum diskon (nullable) |
 | `stock` | `integer` | Jumlah stok obat tersedia |
-| `min_stock` | `integer` | Batas minimum stok sebelum memicu peringatan |
+| `min_stock` | `integer` | Batas minimum stok sebelum warning |
 | `image` | `string` | Path file gambar obat (nullable) |
-| `requires_prescription` | `boolean` | Status apakah memerlukan resep dokter (Default: `false`) |
-| `is_active` | `boolean` | Status ketersediaan aktif obat (Default: `true`) |
+| `requires_prescription` | `boolean` | Status wajib resep dokter (Default: `false`) |
+| `is_active` | `boolean` | Status keaktifan obat (Default: `true`) |
 | `expired_date` | `date` | Tanggal kedaluwarsa obat (nullable) |
 | `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
 | `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
@@ -197,18 +148,21 @@ Menyimpan informasi transaksi pembelian obat.
 | Nama Kolom | Tipe Data | Keterangan |
 | :--- | :--- | :--- |
 | `id` | `bigint` | Primary Key 🔑 |
-| `order_number` | `string` | Nomor pesanan unik (contoh: ORD-YYYYMMDD-XXXXX) |
+| `order_number` | `string` | Nomor pesanan unik (ORD-YYYYMMDD-XXXXX) |
 | `user_id` | `bigint` | Foreign Key ke `users.id` 🗝️ (Cascade) |
-| `status` | `enum` | Status pesanan (`pending`, `confirmed`, `processing`, `ready_for_pickup`, `shipped`, `delivered`, `cancelled`) |
+| `status` | `enum('pending', 'confirmed', 'processing', 'ready_for_pickup', 'shipped', 'delivered', 'cancelled')` | Status pesanan |
 | `order_type` | `enum('pickup', 'delivery')` | Metode pengambilan barang |
 | `subtotal` | `decimal(12,2)` | Total harga obat sebelum ongkir/diskon |
-| `shipping_cost` | `decimal(12,2)` | Biaya pengiriman jika tipe pesanan adalah delivery |
-| `discount` | `decimal(12,2)` | Potongan harga yang didapatkan |
+| `shipping_cost` | `decimal(12,2)` | Biaya pengiriman jika delivery |
+| `discount` | `decimal(12,2)` | Potongan harga (nullable) |
 | `total_amount` | `decimal(12,2)` | Total akhir yang wajib dibayar |
 | `payment_method` | `enum('cash', 'transfer', 'bpjs', 'qris')` | Metode pembayaran |
-| `payment_status` | `enum('unpaid', 'paid', 'refunded')` | Status pelunasan pembayaran |
+| `payment_status` | `enum('unpaid', 'paid', 'refunded')` | Status pembayaran |
 | `paid_at` | `timestamp` | Waktu pembayaran terkonfirmasi (nullable) |
-| `payment_proof` | `string` | Path file bukti transfer pembayaran (nullable) |
+| `payment_proof` | `string` | Bukti transfer pembayaran (nullable) |
+| `delivery_latitude` | `double` | Koordinat lintang tujuan pengantaran (nullable) [BARU] |
+| `delivery_longitude`| `double` | Koordinat bujur tujuan pengantaran (nullable) [BARU] |
+| `delivery_distance` | `double` | Jarak pengantaran dalam kilometer (nullable) [BARU] |
 | `shipping_address` | `text` | Alamat tujuan pengantaran (nullable) |
 | `notes` | `string` | Catatan tambahan dari customer (nullable) |
 | `pharmacist_note` | `string` | Catatan tambahan dari apoteker (nullable) |
@@ -225,8 +179,8 @@ Menyimpan rincian item obat pada setiap pesanan.
 | `id` | `bigint` | Primary Key 🔑 |
 | `order_id` | `bigint` | Foreign Key ke `orders.id` 🗝️ (Cascade) |
 | `medicine_id` | `bigint` | Foreign Key ke `medicines.id` 🗝️ (Cascade) |
-| `medicine_name` | `string` | Nama obat saat transaksi dibuat *(Snapshot)* |
-| `medicine_unit` | `string(50)` | Satuan obat saat transaksi dibuat *(Snapshot)* |
+| `medicine_name` | `string` | Nama obat saat transaksi dibuat (Snapshot) |
+| `medicine_unit` | `string(50)` | Satuan obat saat transaksi dibuat (Snapshot) |
 | `quantity` | `integer` | Jumlah kuantitas obat yang dibeli |
 | `price` | `decimal(12,2)` | Harga satuan obat saat transaksi dibuat |
 | `subtotal` | `decimal(12,2)` | Subtotal harga untuk item (`quantity * price`) |
@@ -236,42 +190,67 @@ Menyimpan rincian item obat pada setiap pesanan.
 ---
 
 ### 6. Tabel: `prescriptions`
-Menyimpan data unggahan resep dokter untuk pembelian obat-obat tertentu.
+Menyimpan data tiket konsultasi / tebus resep dokter dari pelanggan.
 
 | Nama Kolom | Tipe Data | Keterangan |
 | :--- | :--- | :--- |
 | `id` | `bigint` | Primary Key 🔑 |
 | `user_id` | `bigint` | Foreign Key ke `users.id` 🗝️ (Cascade) |
 | `order_id` | `bigint` | Foreign Key ke `orders.id` 🗝️ (Set Null, nullable) |
-| `prescription_number` | `string` | Nomor resep dokter unik |
-| `doctor_name` | `string` | Nama dokter yang memberikan resep |
-| `hospital_clinic` | `string` | Nama rumah sakit atau klinik penerbit (nullable) |
-| `prescription_date` | `date` | Tanggal penulisan resep |
-| `patient_name` | `string` | Nama pasien penerima resep |
+| `prescription_number` | `string` | Nomor tiket unik (RX- atau TK- YYYYMMDD-XXXXX) |
+| `type` | `enum('prescription', 'consultation')` | Tipe tiket: tebus resep dokter atau konsultasi umum [BARU] |
+| `doctor_name` | `string` | Nama dokter penulis resep (nullable) [MODIFIKASI: NULLABLE] |
+| `hospital_clinic` | `string` | Nama rumah sakit atau klinik (nullable) |
+| `patient_name` | `string` | Nama pasien penerima resep/konsultasi |
 | `patient_age` | `integer` | Usia pasien (nullable) |
-| `status` | `enum` | Status resep (`pending`, `verified`, `processing`, `completed`, `rejected`) |
-| `image` | `string` | Path file scan/foto resep dokter |
+| `status` | `enum('pending', 'verified', 'processing', 'completed', 'rejected')` | Status verifikasi/proses tiket |
+| `image` | `string` | Path foto scan resep / keluhan (nullable) [MODIFIKASI: NULLABLE] |
+| `customer_notes` | `text` | Catatan/detail keluhan dari pelanggan (nullable) [BARU] |
 | `notes` | `text` | Catatan verifikasi resep oleh apoteker (nullable) |
-| `verified_by` | `bigint` | Foreign Key ke `users.id` (Apoteker penanggung jawab) 🗝️ (Set Null, nullable) |
-| `verified_at` | `timestamp` | Waktu resep dikonfirmasi/diverifikasi (nullable) |
+| `verified_by` | `bigint` | Foreign Key ke `users.id` (Apoteker penanggung jawab) 🗝️ (nullable) |
+| `verified_at` | `timestamp` | Waktu resep diverifikasi/dikonfirmasi (nullable) |
 | `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
 | `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
 
 ---
 
-## ⚙️ Ketergantungan Paket Utama (Dependencies)
+### 7. Tabel: `cart_items` [TABEL BARU]
+Menyimpan data keranjang belanja pelanggan secara persisten di database (Live Sync).
 
-Aplikasi ini menggunakan beberapa paket open-source penting berikut untuk mendukung fiturnya:
-* **Spatie Laravel Permission**: Digunakan untuk mengelola peran (Role) dan hak akses (Permission) pengguna (misalnya: membedakan menu Admin, Apoteker, dan Kasir/Customer).
-* **Laravel DomPDF**: Digunakan untuk mencetak dokumen dan laporan penjualan, stok, serta transaksi ke format PDF.
-* **Laravel Excel**: Digunakan untuk mengekspor atau mengimpor data obat-obatan dalam jumlah besar menggunakan file Excel (.xlsx).
+| Nama Kolom | Tipe Data | Keterangan |
+| :--- | :--- | :--- |
+| `id` | `bigint` | Primary Key 🔑 |
+| `user_id` | `bigint` | Foreign Key ke `users.id` 🗝️ (Cascade) |
+| `medicine_id` | `bigint` | Foreign Key ke `medicines.id` 🗝️ (Cascade) |
+| `quantity` | `integer` | Jumlah kuantitas obat dalam keranjang |
+| `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
+| `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
 
 ---
 
-## 👥 Anggota Tim Pengembang (PBL)
+### 8. Tabel: `ratings` [TABEL BARU]
+Menyimpan data ulasan dan rating bintang obat-obatan dari pelanggan.
 
-Aplikasi ini dikembangkan oleh kelompok mahasiswa berikut:
-* **Hidayathul Fikri**
-* **Farid Yahya**
-* **Nabilla Fitricia Hernanda**
-* **Rury Fezriani Matari**
+| Nama Kolom | Tipe Data | Keterangan |
+| :--- | :--- | :--- |
+| `id` | `bigint` | Primary Key 🔑 |
+| `medicine_id` | `bigint` | Foreign Key ke `medicines.id` 🗝️ (Cascade) |
+| `user_id` | `bigint` | Foreign Key ke `users.id` 🗝️ (Cascade) |
+| `rating` | `integer` | Skor ulasan (skala 1 hingga 5) |
+| `review` | `text` | Ulasan/komentar produk (nullable) |
+| `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
+| `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
+
+---
+
+### 9. Tabel: `prescription_messages` [TABEL BARU]
+Menyimpan riwayat obrolan konsultasi di dalam masing-masing tiket pelayanan.
+
+| Nama Kolom | Tipe Data | Keterangan |
+| :--- | :--- | :--- |
+| `id` | `bigint` | Primary Key 🔑 |
+| `prescription_id` | `bigint` | Foreign Key ke `prescriptions.id` 🗝️ (Cascade) |
+| `user_id` | `bigint` | Foreign Key ke `users.id` 🗝️ (Cascade) |
+| `message` | `text` | Konten isi pesan obrolan |
+| `created_at` | `timestamp` | Tanggal & waktu pembuatan data |
+| `updated_at` | `timestamp` | Tanggal & waktu pembaruan data |
