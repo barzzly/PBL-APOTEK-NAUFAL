@@ -27,6 +27,7 @@ if (php_sapi_name() !== 'cli') {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
 Route::get('/obat/{slug}', [HomeController::class, 'show'])->name('product.detail');
+Route::get('/search-suggestions', [HomeController::class, 'suggestions'])->name('search.suggestions');
 
 Route::get('/login', function () {
     return view('auth.login');
