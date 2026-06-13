@@ -24,19 +24,7 @@
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
-    <!-- Topbar -->
-    <div class="bg-white border-b border-border-muted text-xs py-2 text-text-muted">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span><i class="fa-solid fa-truck"></i> Gratis Ongkir ke Seluruh Indonesia</span>
-            </div>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-primary transition">Bantuan</a>
-                <a href="#" class="hover:text-primary transition">Lacak Pesanan</a>
-                <a href="#" class="hover:text-primary transition">Download App</a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Header -->
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
@@ -186,6 +174,12 @@
                                 <p class="text-[10px] text-text-muted">Membantu kurir menemukan lokasi Anda dengan lebih mudah.</p>
                             </div>
                         </div>
+
+                        <!-- Catatan Tambahan -->
+                        <div class="space-y-1 mt-4 pt-4 border-t border-gray-100">
+                            <label class="text-xs font-semibold text-text-main block">Catatan Tambahan</label>
+                            <textarea name="notes" placeholder="Tuliskan catatan khusus untuk apoteker atau kurir jika diperlukan..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-20">{{ old('notes') }}</textarea>
+                        </div>
                     </div>
 
 
@@ -273,15 +267,6 @@
                             <h4 class="font-bold mb-1"><i class="fa-solid fa-circle-info"></i> Ketentuan Klaim BPJS</h4>
                             <p>Pembayaran menggunakan BPJS memerlukan verifikasi manual oleh staf apotek kami. Pastikan kartu BPJS Anda aktif dan unggah resep dokter BPJS resmi pada form resep dokter di atas.</p>
                         </div>
-                    </div>
-
-                    <!-- 4. Catatan Tambahan -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-                        <h3 class="text-base font-bold text-text-main flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">3</span>
-                            Catatan Tambahan
-                        </h3>
-                        <textarea name="notes" placeholder="Tuliskan catatan khusus untuk apoteker atau kurir jika diperlukan..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-20">{{ old('notes') }}</textarea>
                     </div>
                 </div>
 

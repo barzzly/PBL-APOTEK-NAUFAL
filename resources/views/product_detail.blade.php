@@ -23,19 +23,7 @@
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
-    <!-- Topbar -->
-    <div class="bg-white border-b border-border-muted text-xs py-2 text-text-muted">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span><i class="fa-solid fa-truck"></i> Gratis Ongkir ke Seluruh Indonesia</span>
-            </div>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-primary transition">Bantuan</a>
-                <a href="#" class="hover:text-primary transition">Lacak Pesanan</a>
-                <a href="#" class="hover:text-primary transition">Download App</a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Header -->
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">

@@ -54,7 +54,7 @@
             <div>
                 <div class="flex items-center justify-between mb-2">
                     <label class="block text-sm font-semibold text-text-main">Deskripsi Obat</label>
-                    <button type="button" id="btn-generate-ai" onclick="generateAIDescription()" class="px-3 py-1.5 hover:brightness-105 active:scale-[0.98] text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1.5 shadow-sm" style="background-color: #00A651; color: #ffffff; border: none; cursor: pointer;">
+                    <button type="button" id="btn-generate-ai" onclick="generateAIDescription()" class="px-3 py-1.5 hover:brightness-105 active:scale-[0.98] text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1.5 shadow-sm" style="background-color: #346739; color: #ffffff; border: none; cursor: pointer;">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> ✨ Generate dengan AI
                     </button>
                 </div>
@@ -107,7 +107,7 @@
                 icon: 'warning',
                 title: 'Nama Obat Kosong',
                 text: 'Silakan isi Nama Obat terlebih dahulu.',
-                confirmButtonColor: '#00A651',
+                confirmButtonColor: '#346739',
                 confirmButtonText: 'OK',
                 customClass: {
                     popup: 'rounded-2xl'
@@ -162,7 +162,7 @@
                     icon: 'error',
                     title: 'Gagal Menulis Deskripsi',
                     text: data.message || 'Terjadi kesalahan saat generate deskripsi.',
-                    confirmButtonColor: '#f26522',
+                    confirmButtonColor: '#79AE6F',
                     confirmButtonText: 'Tutup',
                     customClass: {
                         popup: 'rounded-2xl'
@@ -176,7 +176,7 @@
                 icon: 'error',
                 title: 'Gagal Menghubungi Gemini AI',
                 text: err.message || 'Terjadi kesalahan sistem.',
-                confirmButtonColor: '#f26522',
+                confirmButtonColor: '#79AE6F',
                 confirmButtonText: 'Tutup',
                 customClass: {
                     popup: 'rounded-2xl'

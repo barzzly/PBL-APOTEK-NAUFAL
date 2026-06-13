@@ -23,19 +23,7 @@
 </head>
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
-    <!-- Topbar -->
-    <div class="bg-white border-b border-border-muted text-xs py-2 text-text-muted">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span><i class="fa-solid fa-truck"></i> Gratis Ongkir ke Seluruh Indonesia</span>
-            </div>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-primary transition">Bantuan</a>
-                <a href="#" class="hover:text-primary transition">Lacak Pesanan</a>
-                <a href="#" class="hover:text-primary transition">Download App</a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Header -->
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
@@ -363,21 +351,21 @@
                             <div style="flex-grow: 1; min-width: 0; text-align: left; display: flex; flex-direction: column; gap: 4px;">
                                 <h4 style="margin: 0; font-size: 15px; font-weight: 700; color: #1f2937; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${name}</h4>
                                 <div style="margin-top: 2px;">
-                                    <span style="display: inline-block; font-size: 11px; font-weight: 600; color: #00A651; background-color: #e6f6ec; border: 1px solid rgba(0,166,81,0.15); padding: 2px 8px; border-radius: 9999px; line-height: 1.2;">Kemasan: ${unit}</span>
+                                    <span style="display: inline-block; font-size: 11px; font-weight: 600; color: #346739; background-color: #e6efe5; border: 1px solid rgba(52,103,57,0.15); padding: 2px 8px; border-radius: 9999px; line-height: 1.2;">Kemasan: ${unit}</span>
                                 </div>
-                                <div style="font-size: 16px; font-weight: 800; color: #f26522; margin-top: 4px;">${price}</div>
+                                <div style="font-size: 16px; font-weight: 800; color: #79AE6F; margin-top: 4px;">${price}</div>
                             </div>
                         </div>
 
                         <div style="margin-top: 14px; padding: 12px 14px; background-color: #f9fafb; border-radius: 10px; border: 1px dashed #e5e7eb; font-size: 12px; color: #4b5563; line-height: 1.5; text-align: left;">
-                            <strong style="color: #1f2937; display: block; margin-bottom: 4px; font-size: 12px;"><i class="fa-solid fa-file-prescription" style="color: #00A651; margin-right: 4px;"></i>Deskripsi Obat:</strong>
+                            <strong style="color: #1f2937; display: block; margin-bottom: 4px; font-size: 12px;"><i class="fa-solid fa-file-prescription" style="color: #346739; margin-right: 4px;"></i>Deskripsi Obat:</strong>
                             ${description || 'Tidak ada deskripsi obat.'}
                         </div>
                     </div>
                 `,
                 showCancelButton: true,
-                confirmButtonColor: '#00A651',
-                cancelButtonColor: '#f26522',
+                confirmButtonColor: '#346739',
+                cancelButtonColor: '#79AE6F',
                 confirmButtonText: 'Ya, Masukkan',
                 cancelButtonText: 'Batal',
                 customClass: {
@@ -422,8 +410,8 @@
                                 title: 'Berhasil',
                                 text: data.message,
                                 showCancelButton: true,
-                                confirmButtonColor: '#00A651',
-                                cancelButtonColor: '#f26522',
+                                confirmButtonColor: '#346739',
+                                cancelButtonColor: '#79AE6F',
                                 confirmButtonText: 'Lihat Keranjang',
                                 cancelButtonText: 'Lanjut Belanja',
                                 customClass: {

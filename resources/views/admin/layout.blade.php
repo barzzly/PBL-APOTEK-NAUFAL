@@ -222,16 +222,16 @@
             font-size: 0.875rem !important;
             font-weight: 600 !important;
             border-radius: 0.625rem !important;
-            background-color: #00A651 !important;
+            background-color: #346739 !important;
             color: #fff !important;
             border: none !important;
-            box-shadow: 0 4px 12px rgba(0,166,81,0.3) !important;
+            box-shadow: 0 4px 12px rgba(52,103,57,0.3) !important;
             transition: background 0.2s, box-shadow 0.2s, transform 0.15s !important;
             min-width: 120px !important;
         }
         .swal2-confirm:hover {
-            background-color: #008f45 !important;
-            box-shadow: 0 6px 16px rgba(0,166,81,0.4) !important;
+            background-color: #274E2B !important;
+            box-shadow: 0 6px 16px rgba(52,103,57,0.4) !important;
             transform: translateY(-1px) !important;
         }
         .swal2-cancel {
@@ -253,7 +253,7 @@
         }
         /* Progress bar for success */
         .swal2-timer-progress-bar {
-            background: #00A651 !important;
+            background: #346739 !important;
         }
         /* Error icon */
         .swal2-icon.swal2-error {

@@ -40,9 +40,9 @@
             <div style="position: relative; display: inline-block; width: 100%; min-width: 200px; max-width: 320px; box-sizing: border-box;">
                 <input type="text" id="search-input" oninput="filterOrders()" placeholder="Cari pesanan..." 
                        style="width: 100%; padding: 8px 36px 8px 14px; border: 1px solid #e0e0e0; border-radius: 9999px; font-size: 13px; outline: none; transition: all 0.2s; box-sizing: border-box; background-color: #fff;" 
-                       onfocus="this.style.borderColor='#00A651'; this.style.boxShadow='0 0 0 3px rgba(0, 166, 81, 0.15)';" 
+                       onfocus="this.style.borderColor='#346739'; this.style.boxShadow='0 0 0 3px rgba(52, 103, 57, 0.15)';" 
                        onblur="this.style.borderColor='#e0e0e0'; this.style.boxShadow='none';">
-                <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #00A651; font-size: 13px;"></i>
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #346739; font-size: 13px;"></i>
                 <button type="button" id="clear-btn" onclick="clearSearch()" style="display: none; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); color: #9ca3af; border: none; background: none; cursor: pointer; padding: 2px; font-size: 13px; align-items: center; justify-content: center; outline: none;" title="Hapus">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
