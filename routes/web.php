@@ -27,6 +27,7 @@ if (php_sapi_name() !== 'cli') {
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
 Route::get('/obat/{slug}', [HomeController::class, 'show'])->name('product.detail');
+Route::get('/search-suggestions', [HomeController::class, 'suggestions'])->name('search.suggestions');
 
 Route::get('/login', function () {
     return view('auth.login');
@@ -72,6 +73,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
     Route::post('/orders/{id}/update-status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.update_status');
+    Route::get('/notifications/fetch', [AdminController::class, 'fetchNotifications'])->name('admin.notifications.fetch');
 
     // Admin Ticket Routes
     Route::get('/tickets', [\App\Http\Controllers\AdminPrescriptionController::class, 'index'])->name('admin.tickets.index');

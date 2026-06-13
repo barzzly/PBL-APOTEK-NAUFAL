@@ -22,7 +22,7 @@
             </div>
             
             <div class="p-5">
-                <div class="divide-y divide-gray-100">
+                <div class="divide-y divide-gray-100 overflow-y-auto pr-2" style="max-height: 380px;">
                     @foreach($order->items as $item)
                     <div class="py-3 flex justify-between gap-4 items-center">
                         <div class="flex gap-4">

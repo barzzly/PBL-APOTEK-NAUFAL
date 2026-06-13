@@ -32,13 +32,13 @@
                 <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
             </a>
 
-            <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
-                <input type="text" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition">
-                <button class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
+            <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari obat, vitamin, atau suplemen..." 
+                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
+                <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
-            </div>
+            </form>
 
             <div class="flex items-center gap-5">
                 <a href="{{ route('cart.index') }}" class="text-text-main hover:text-primary text-xl relative transition">
@@ -183,9 +183,16 @@
         </section>
 
         <!-- Products Section -->
-        <section class="max-w-7xl mx-auto px-4 py-8">
+        <section id="products-section" class="max-w-7xl mx-auto px-4 py-8">
             <div class="flex justify-between items-center mb-5">
-                <h3 class="text-xl font-bold text-text-main">Produk Apotek Naufal</h3>
+                @if(request('search'))
+                    <div class="flex flex-col gap-1">
+                        <h3 class="text-xl font-bold text-text-main">Hasil Pencarian untuk: <span class="text-primary">"{{ request('search') }}"</span></h3>
+                        <a href="{{ route('home') }}" class="text-xs text-secondary hover:underline flex items-center gap-1 w-fit"><i class="fa-solid fa-circle-xmark"></i> Hapus Pencarian</a>
+                    </div>
+                @else
+                    <h3 class="text-xl font-bold text-text-main">Produk Apotek Naufal</h3>
+                @endif
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-5">
                 
@@ -223,7 +230,12 @@
                     </div>
                 </div>
                 @empty
-                <div class="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center text-text-muted py-8">Belum ada produk yang ditambahkan.</div>
+                <div class="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 text-center text-text-muted py-12 bg-white rounded-xl border border-gray-100 shadow-sm w-full">
+                    <div class="text-5xl mb-4 text-gray-200"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
+                    <p class="text-sm font-medium">
+                        Tidak ditemukan obat dengan kata kunci "{{ request('search') }}".
+                    </p>
+                </div>
                 @endforelse
 
             </div>
@@ -309,7 +321,7 @@
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Hubungi Kami</h3>
                     <ul class="flex flex-col gap-3">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Kesehatan No. 123, Jakarta</a></li>
+                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-location-dot w-5 text-center"></i> Jl. Andalas</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> cs@apoteknaufal.com</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center"></i> +62 812-3456-7890</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> (021) 1500-123</a></li>
@@ -318,10 +330,13 @@
             </div>
             
             <div class="text-center pt-6 border-t border-border-muted text-sm text-text-muted">
-                <p>&copy; 2026 Apotek Naufal. All rights reserved. SIPA: 123/SIPA/2026.</p>
+                <p>&copy; 2026 Apotek Naufal. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <!-- Search Scripts -->
+    <script src="/js/search-autocomplete.js"></script>
 
     <script>
         function addToCart(button) {
@@ -448,5 +463,19 @@
             });
         }
     </script>
+
+    @if(request('search'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const productSection = document.getElementById('products-section');
+            if (productSection) {
+                setTimeout(() => {
+                    productSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        });
+    </script>
+    @endif
+
 </body>
 </html>

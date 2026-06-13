@@ -280,7 +280,7 @@
                 </div>
                 <span class="text-sm font-semibold text-gray-700">Rata-rata Nilai Order</span>
             </div>
-            @php $avgOrder = $totalOrder > 0 ? $totalPendapatan / $orderSelesai : 0; @endphp
+            @php $avgOrder = $orderSelesai > 0 ? $totalPendapatan / $orderSelesai : 0; @endphp
             <div class="text-2xl font-bold text-gray-800">
                 Rp {{ $orderSelesai > 0 ? number_format($avgOrder, 0, ',', '.') : '0' }}
             </div>
