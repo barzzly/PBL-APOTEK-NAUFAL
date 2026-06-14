@@ -1,191 +1,145 @@
 # Dokumentasi Refactoring — Website Apotek Naufal
 
-Dokumen ini mencatat perubahan refactoring yang dilakukan pada kode proyek untuk meningkatkan kualitas, keterbacaan, dan maintainability.
+Dokumen ini mencatat proses refactoring yang telah diterapkan pada kode proyek Apotek Naufal guna meningkatkan kualitas, keterbacaan, keterujian (testability), dan pemeliharaan (maintainability) kode.
 
 ---
 
-## Refactoring 1 — Ekstraksi Logic Stok ke StokService
+## Refactoring 1 — Ekstraksi Logic Bisnis ke Service Class (`app/Services/`)
 
-### Sebelum
+### Sebelum Refactoring
 
 **Masalah:**
-Logic validasi dan pengurangan stok obat ditulis langsung di dalam `CartController` dan `OrderController`. Kedua controller menjadi terlalu besar dan logic yang sama diulang di dua tempat (duplikasi kode).
+Logic eksternal yang kompleks (seperti integrasi API Google Gemini AI) dan logic bisnis yang berulang (seperti pemeriksaan notifikasi stok menipis, stok kosong, order baru, dan tiket baru) awalnya ditulis langsung di dalam `AdminController`. Hal ini melanggar prinsip **Single Responsibility Principle (SRP)** dan membuat class controller menjadi sangat gemuk, sulit diuji secara terpisah, serta rentan terjadi penumpukan kode.
+
+### Setelah Refactoring
+
+Logic integrasi AI diekstraksi ke class khusus `GeminiService`, dan logic pemetaan notifikasi diekstraksi ke class `NotificationService`. Keduanya diletakkan di bawah namespace `App\Services`.
+
+#### A. Kelas Layanan AI (`app/Services/GeminiService.php`)
+Class ini bertugas menyusun prompt, mengonfigurasi header HTTP, serta menangani kueri berantai (chaining) model Gemini (`gemini-2.5-flash-lite` -> `gemini-flash-lite-latest` -> `gemini-2.5-flash`) dengan mekanisme penanganan error (error handling) yang kokoh.
 
 ```php
-// CartController.php — SEBELUM
-public function store(Request $request)
+// app/Services/GeminiService.php
+namespace App\Services;
+
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+class GeminiService
 {
-    $obat = Obat::find($request->obat_id);
+    protected $apiKey;
+    protected $models = ['gemini-2.5-flash-lite', 'gemini-flash-lite-latest', 'gemini-2.5-flash'];
 
-    // Logic stok ditulis langsung di controller
-    if (!$obat) {
-        return back()->withErrors(['msg' => 'Obat tidak ditemukan']);
-    }
-    if ($obat->stok < $request->qty) {
-        return back()->withErrors(['msg' => 'Stok tidak mencukupi']);
+    public function __construct() {
+        $this->apiKey = config('services.gemini.key');
     }
 
-    // ... lanjut proses cart
-}
-```
-
----
-
-### Perubahan
-
-Logic validasi dan pengurangan stok dipindahkan ke class `StokService` di folder `app/Services/`.
-
-```php
-// app/Services/StokService.php — SESUDAH
-class StokService
-{
-    public function cekKetersediaan(Obat $obat, int $qty): bool
-    {
-        return $obat->stok >= $qty;
-    }
-
-    public function kurangiStok(Obat $obat, int $qty): void
-    {
-        $obat->decrement('stok', $qty);
+    public function generateDescription(string $medicineName, ?string $categoryName = null): string {
+        // HTTP Request ke Google Gemini API dengan model-model fallback
     }
 }
 ```
 
+Controller (`AdminController`) kini menjadi jauh lebih ramping dan hanya bertugas memanggil service tersebut:
 ```php
-// CartController.php — SESUDAH (lebih ringkas)
-public function store(Request $request)
+// app/Http/Controllers/AdminController.php
+public function generateDescription(Request $request)
 {
-    $obat = Obat::findOrFail($request->obat_id);
-
-    if (!$this->stokService->cekKetersediaan($obat, $request->qty)) {
-        return back()->withErrors(['msg' => 'Stok tidak mencukupi']);
+    $request->validate(['name' => 'required|string|max:255']);
+    try {
+        $geminiService = new GeminiService();
+        $description = $geminiService->generateDescription($request->name, $categoryName);
+        return response()->json(['success' => true, 'description' => $description]);
+    } catch (\Exception $e) {
+        return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
     }
-
-    // ... lanjut proses cart
 }
 ```
 
+#### B. Kelas Layanan Notifikasi (`app/Services/NotificationService.php`)
+Class ini merangkum kueri filter database untuk mendeteksi obat dengan stok menipis (< 30), stok kosong (0), pesanan bertipe pending, dan tiket chat baru yang berstatus pending. Semua kueri ini dipetakan ke dalam struktur array notifikasi yang seragam.
+
+```php
+// app/Services/NotificationService.php
+namespace App\Services;
+
+use App\Models\Medicine;
+use App\Models\Order;
+
+class NotificationService
+{
+    public function getNotifications() {
+        // Query database & pembentukan koleksi notifikasi terpadu
+    }
+}
+```
+
+### Manfaat Refactoring
+1. **Pemisahan Kepentingan (Separation of Concerns):** Controller hanya bertugas menangani alur HTTP (request & response), sedangkan logic API dan kueri berat didelegasikan ke service.
+2. **Keterujian (Testability):** `GeminiService` dan `NotificationService` dapat diuji dengan mudah menggunakan unit testing (Mocking) tanpa perlu mensimulasikan full HTTP routing.
+3. **Kode Dapat Digunakan Ulang (Reusability):** Notifikasi atau integrasi AI dapat dipanggil sewaktu-waktu dari Artisan Command, Queue Jobs, atau controller lain tanpa menulis ulang kueri yang sama.
+
 ---
 
-### Alasan
+## Refactoring 2 — Abstraksi Layout Khusus Admin (`admin/layout.blade.php`)
 
-- Menghilangkan duplikasi kode yang sama di `CartController` dan `OrderController`
-- Mempermudah testing — `StokService` bisa diuji secara unit tanpa melibatkan HTTP request
-- Controller lebih fokus pada alur HTTP (terima request → kembalikan response)
-
-### Dampak
-
-- Kode lebih modular dan mengikuti prinsip **Single Responsibility**
-- Jika logic stok berubah, cukup ubah di satu tempat (`StokService`)
-- Ukuran controller berkurang ~30 baris per controller
-
----
-
-## Refactoring 2 — Pemisahan Blade Template ke Partial
-
-### Sebelum
+### Sebelum Refactoring
 
 **Masalah:**
-Setiap halaman Blade (`katalog.blade.php`, `keranjang.blade.php`, `pesanan.blade.php`) memiliki kode HTML navbar dan footer yang identik. Jika ada perubahan desain navbar, harus diubah di semua file satu per satu.
+Setiap halaman antarmuka Admin (Dashboard, Manajemen Obat, Kategori, Order, dan Laporan Penjualan) menyalin struktur HTML boilerplate, tag header, file css/js, serta sidebar admin yang sama berulang kali. Ketika admin menambahkan sidebar baru atau mengubah warna navigasi, developer harus mengubahnya di belasan file view admin.
 
----
+### Setelah Refactoring
 
-### Perubahan
+Struktur umum visual panel admin dipusatkan ke dalam file layout tunggal yaitu `resources/views/admin/layout.blade.php`. Layout ini menampung HTML scaffold, bilah samping (sidebar), bilah atas (navbar admin), tautan ke Vite asset compilation `@vite(['resources/css/app.css', 'resources/js/app.js'])`, dan notifikasi pop-up.
 
-Navbar, sidebar admin, dan footer dipecah menjadi file partial terpisah:
-
-```
-resources/views/
-├── layouts/
-│   └── app.blade.php          ← layout utama
-├── partials/
-│   ├── _navbar.blade.php      ← navbar pelanggan
-│   ├── _sidebar-admin.blade.php ← sidebar admin
-│   └── _footer.blade.php      ← footer
-```
-
-Penggunaan di halaman lain:
+File view admin spesifik (misalnya `dashboard.blade.php`) cukup memperluas layout tersebut menggunakan direktif Blade `@extends` dan menaruh kontennya di dalam `@section('content')`:
 
 ```blade
-{{-- katalog.blade.php --}}
-@extends('layouts.app')
+{{-- resources/views/admin/dashboard.blade.php --}}
+@extends('admin.layout')
+
+@section('title', 'Dashboard Admin')
 
 @section('content')
-    @include('partials._navbar')
-    
-    {{-- konten katalog --}}
-    
-    @include('partials._footer')
+    <!-- Konten statistik, tabel, dan grafik penjualan -->
 @endsection
 ```
 
----
-
-### Alasan
-
-- Perubahan navbar/footer cukup dilakukan di satu file partial
-- Mengurangi ukuran setiap file Blade secara signifikan
-- Konsistensi tampilan terjamin di seluruh halaman
-
-### Dampak
-
-- Setiap file view menjadi lebih pendek dan mudah dibaca
-- Proses onboarding developer baru lebih cepat karena struktur lebih jelas
+### Manfaat Refactoring
+* **Prinsip DRY (Don't Repeat Yourself):** Boilerplate HTML dan menu sidebar hanya didefinisikan satu kali.
+* **Konsistensi Tampilan:** Seluruh halaman panel admin dijamin memiliki tampilan sidebar, header, dan notifikasi SweetAlert2 yang seragam.
+* **Kecepatan Pengembangan:** Saat membuat modul admin baru (misal Laporan Penjualan Grafik), developer cukup fokus membuat konten utama tanpa mengkhawatirkan layouting dasar.
 
 ---
 
-## Refactoring 3 — Cleanup dan Penamaan Route
+## Refactoring 3 — Standardisasi Penamaan Route Admin
 
-### Sebelum
+### Sebelum Refactoring
 
 **Masalah:**
-Nama route tidak konsisten — sebagian menggunakan snake_case, sebagian lagi camelCase. Route admin dan user tidak dikelompokkan dengan jelas.
+Route-route manajemen admin pada awalnya menyebar dengan penamaan url yang acak-acakan (menggunakan camelCase atau nama kustom seperti `/admin-manage-obat`). Hal ini menyulitkan pemetaan menu navigasi sidebar dan rentan terjadi konflik url.
+
+### Setelah Refactoring
+
+Semua route admin dikelompokkan dengan rapi di dalam file `routes/web.php` menggunakan prefix `/admin/` dan dilindungi oleh middleware keamanan yang selaras. Selain itu, penamaan route diseragamkan dengan notasi titik (`admin.medicines.index`, `admin.categories.edit`, dll.):
 
 ```php
-// routes/web.php — SEBELUM
-Route::get('/daftarObat', [ObatController::class, 'index']);
-Route::get('/detail_obat/{id}', [ObatController::class, 'show']);
-Route::get('/admin-manage-obat', [Admin\ObatController::class, 'index']);
-```
-
----
-
-### Perubahan
-
-Route dikonversi ke konvensi **kebab-case** dan dikelompokkan dalam prefix yang jelas:
-
-```php
-// routes/web.php — SESUDAH
-// Route pelanggan
-Route::get('/katalog', [ObatController::class, 'index'])->name('katalog.index');
-Route::get('/obat/{id}', [ObatController::class, 'show'])->name('obat.show');
-
-// Route admin — dikelompokkan dalam prefix 'admin'
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('obat', Admin\ObatController::class);
-    Route::resource('pesanan', Admin\OrderController::class);
+// routes/web.php
+Route::middleware('auth')->prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    
+    // Kategori
+    Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
+    
+    // Obat
+    Route::get('/medicines', [AdminController::class, 'medicines'])->name('admin.medicines');
+    Route::delete('/medicines/{id}', [AdminController::class, 'deleteMedicine'])->name('admin.medicines.destroy');
+    
+    // ...
 });
 ```
 
----
-
-### Alasan
-
-- Konsisten dengan konvensi Laravel (kebab-case URL, dot-notation route name)
-- Named route memudahkan penggunaan `route('katalog.index')` di Blade dan controller
-- Grouping route memperjelas mana yang butuh middleware auth/role
-
-### Dampak
-
-- File `routes/web.php` lebih mudah dibaca dan dikelola
-- Tidak ada lagi URL yang inkonsisten antar halaman
-
----
-
-## Ringkasan Refactoring
-
-| # | Jenis | File Terdampak | Manfaat |
-|---|---|---|---|
-| 1 | Service Extraction | `CartController`, `OrderController`, `StokService` | Hilangkan duplikasi, mudah ditest |
-| 2 | Blade Partial | Semua file `*.blade.php` | Konsistensi UI, mudah diubah |
-| 3 | Route Cleanup | `routes/web.php` | Konvensi konsisten, mudah navigasi |
+### Manfaat Refactoring
+* Mempermudah penulisan url dinamis di view Blade menggunakan helper `route('admin.medicines')` daripada hardcode `/admin/medicines`.
+* URL aplikasi menjadi seragam menggunakan format **kebab-case** yang ramah SEO dan standar Laravel.

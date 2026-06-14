@@ -34,15 +34,13 @@ class ProfileController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'required|string|max:20',
             'address' => 'nullable|string',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'nullable|string|in:avatar1,avatar2,avatar3,avatar4,avatar5,avatar6,avatar7,avatar8,avatar9,avatar10',
             'old_password' => 'required_with:password|nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
         ], [
             'email.unique' => 'Email ini sudah digunakan oleh pengguna lain.',
             'password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
             'password.min' => 'Kata sandi baru minimal harus 8 karakter.',
-            'avatar.max' => 'Ukuran foto profil maksimal adalah 2MB.',
-            'avatar.image' => 'File harus berupa gambar.',
         ]);
 
         // Validate old password if new password is provided
@@ -55,17 +53,15 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->password);
         }
 
-        // Handle Avatar upload
-        if ($request->hasFile('avatar')) {
-            // Delete old avatar if exists
-            if ($user->avatar) {
-                // If it starts with /storage/
+        // Handle pre-selected Avatar
+        if ($request->filled('avatar')) {
+            // Delete old uploaded avatar if it was custom
+            if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
                 $oldPath = str_replace('/storage/', '', $user->avatar);
                 Storage::disk('public')->delete($oldPath);
             }
 
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = '/storage/' . $path;
+            $user->avatar = '/images/avatars/' . $request->avatar . '.png';
         }
 
         $user->name = $request->name;
