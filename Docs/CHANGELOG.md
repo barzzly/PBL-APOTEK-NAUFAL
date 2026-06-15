@@ -4,6 +4,13 @@ Semua perubahan penting pada proyek **Website Apotek Naufal** didokumentasikan d
 
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v0.4.1] - 2026-06-15
+
+### Added
+- Fitur konversi satuan otomatis (1 Kardus = 24 Box) pada input data obat admin untuk menstandardisasi stok ke satuan terkecil.
+- Fitur "Aksi Stok" (Tambah/Kurang/Atur Nilai Mutlak) pada halaman edit obat admin untuk memudahkan penyesuaian stok secara fleksibel tanpa salah kalkulasi manual.
+- Input kuantitas keranjang belanja yang dapat diketik langsung secara dinamis serta pembaruan jumlah tanpa popup loading modal (silent update).
+
 ---
 
 ## [v0.4.0] - 2026-06-14

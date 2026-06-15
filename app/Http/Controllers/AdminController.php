@@ -168,6 +168,7 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'unit' => 'required|string|max:50',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string'
         ]);
@@ -177,12 +178,21 @@ class AdminController extends Controller
             $imagePath = $request->file('image')->store('medicines', 'public');
         }
 
+        $stock = $request->stock;
+        $unit = $request->unit;
+
+        if (strtolower($unit) === 'kardus') {
+            $stock = $stock * 24;
+            $unit = 'box';
+        }
+
         Medicine::create([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'slug' => Str::slug($request->name),
             'price' => $request->price,
-            'stock' => $request->stock,
+            'stock' => $stock,
+            'unit' => $unit,
             'image' => $imagePath ? '/storage/' . $imagePath : null,
             'description' => $request->description,
         ]);
@@ -204,7 +214,9 @@ class AdminController extends Controller
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
+            'stock_action' => 'required|in:add,subtract,set',
+            'stock_value' => 'required|integer|min:0',
+            'unit' => 'required|string|max:50',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string'
         ]);
@@ -214,11 +226,29 @@ class AdminController extends Controller
             $medicine->image = '/storage/' . $imagePath;
         }
 
+        $stockAction = $request->stock_action;
+        $stockValue = (int) $request->stock_value;
+        $unit = $request->unit;
+
+        if (strtolower($unit) === 'kardus') {
+            $stockValue = $stockValue * 24;
+            $unit = 'box';
+        }
+
         $medicine->category_id = $request->category_id;
         $medicine->name = $request->name;
         $medicine->slug = Str::slug($request->name);
         $medicine->price = $request->price;
-        $medicine->stock = $request->stock;
+
+        if ($stockAction === 'add') {
+            $medicine->stock = $medicine->stock + $stockValue;
+        } elseif ($stockAction === 'subtract') {
+            $medicine->stock = max(0, $medicine->stock - $stockValue);
+        } elseif ($stockAction === 'set') {
+            $medicine->stock = $stockValue;
+        }
+
+        $medicine->unit = $unit;
         $medicine->description = $request->description;
         $medicine->save();
 
