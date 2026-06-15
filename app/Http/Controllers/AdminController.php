@@ -454,7 +454,7 @@ class AdminController extends Controller
         }
 
         $query = Order::with('user')
-            ->whereIn('orders.status', ['pending', 'confirmed', 'processing', 'ready_for_pickup', 'shipped']);
+            ->whereIn('orders.status', ['pending', 'confirmed', 'ready_for_pickup', 'shipped']);
 
         if ($sortBy === 'customer_name') {
             $query->leftJoin('users', 'orders.user_id', '=', 'users.id')
@@ -483,7 +483,7 @@ class AdminController extends Controller
         $order = Order::findOrFail($id);
         
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,ready_for_pickup,shipped,delivered,cancelled',
+            'status' => 'required|in:pending,confirmed,ready_for_pickup,shipped,delivered,cancelled',
             'payment_status' => 'required|in:unpaid,paid,refunded',
             'pharmacist_note' => 'nullable|string|max:255',
         ]);
@@ -521,6 +521,15 @@ class AdminController extends Controller
 
         $order->update($updateData);
 
+        // Trigger WhatsApp status notification if status changed
+        if ($oldStatus !== $newStatus) {
+            try {
+                \App\Services\WhatsAppNotificationService::sendOrderNotification($order, $newStatus);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to send status update WA notification: " . $e->getMessage());
+            }
+        }
+
         // Update prescription status if exists
         $prescription = \App\Models\Prescription::where('order_id', $order->id)->first();
         if ($prescription) {
@@ -528,7 +537,7 @@ class AdminController extends Controller
                 $prescription->update(['status' => 'rejected']);
             } elseif ($newStatus === 'delivered') {
                 $prescription->update(['status' => 'completed']);
-            } elseif (in_array($newStatus, ['confirmed', 'processing', 'ready_for_pickup', 'shipped'])) {
+            } elseif (in_array($newStatus, ['confirmed', 'ready_for_pickup', 'shipped'])) {
                 $prescription->update([
                     'status' => 'verified',
                     'verified_by' => auth()->id(),

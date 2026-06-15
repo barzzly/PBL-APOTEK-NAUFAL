@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\WhatsAppAuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
@@ -41,6 +42,9 @@ Route::get('/register', function () {
 })->name('register');
 
 Route::post('/register', [AuthController::class, 'register']);
+Route::get('/register/verify', [AuthController::class, 'showVerifyForm'])->name('register.verify');
+Route::post('/register/verify', [AuthController::class, 'verifyOtp']);
+Route::post('/register/resend-otp', [AuthController::class, 'resendOtp'])->name('register.resend_otp');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
@@ -117,4 +121,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+// WhatsApp Login & OTP Routes
+Route::get('/login-wa', [WhatsAppAuthController::class, 'showLoginForm'])->name('login.wa');
+Route::post('/login-wa', [WhatsAppAuthController::class, 'sendOtp']);
+Route::get('/login-wa/verify', [WhatsAppAuthController::class, 'showVerifyForm'])->name('login.wa.verify');
+Route::post('/login-wa/verify', [WhatsAppAuthController::class, 'verifyOtp']);
 

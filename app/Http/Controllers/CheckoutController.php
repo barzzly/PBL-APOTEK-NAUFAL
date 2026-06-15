@@ -168,6 +168,13 @@ class CheckoutController extends Controller
             // Clear database cart items
             \App\Models\CartItem::where('user_id', auth()->id())->delete();
 
+            // Send WhatsApp notification for new pending order
+            try {
+                \App\Services\WhatsAppNotificationService::sendOrderNotification($order, 'pending');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Failed to trigger checkout WA notification: " . $e->getMessage());
+            }
+
             return redirect()->route('orders.success', ['order_number' => $order->order_number])
                 ->with('success', 'Pesanan Anda berhasil dibuat!');
 

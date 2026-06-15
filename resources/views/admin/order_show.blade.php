@@ -143,8 +143,7 @@
                     <label class="text-xs font-semibold text-text-muted block">Status Pesanan</label>
                     <select name="status" class="w-full border border-border-muted rounded-lg px-3 py-2 text-xs focus:border-primary outline-none bg-white">
                         <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Menunggu Konfirmasi (Pending)</option>
-                        <option value="confirmed" {{ $order->status === 'confirmed' ? 'selected' : '' }}>Dikonfirmasi (Confirmed)</option>
-                        <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Sedang Disiapkan (Processing)</option>
+                        <option value="confirmed" {{ $order->status === 'confirmed' ? 'selected' : '' }}>Dikonfirmasi / Sedang Disiapkan (Confirmed)</option>
                         
                         @if($order->order_type === 'delivery')
                             <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Sedang Dikirim (Shipped)</option>

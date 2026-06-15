@@ -45,7 +45,7 @@ class OrderDummySeeder extends Seeder
             return;
         }
 
-        $statuses = ['delivered', 'cancelled', 'pending', 'confirmed', 'processing', 'ready_for_pickup', 'shipped'];
+        $statuses = ['delivered', 'cancelled', 'pending', 'confirmed', 'ready_for_pickup', 'shipped'];
         $paymentMethods = ['cash', 'transfer', 'bpjs', 'qris'];
 
         // 3. Generate 100 orders distributed over the last 365 days
@@ -77,7 +77,7 @@ class OrderDummySeeder extends Seeder
             } elseif ($status === 'cancelled') {
                 $paymentStatus = (rand(1, 2) === 1) ? 'unpaid' : 'refunded';
             } else {
-                // If it's pending/confirmed/processing
+                // If it's pending/confirmed
                 $paymentStatus = ($paymentMethod === 'cash') ? 'unpaid' : ((rand(1, 4) <= 3) ? 'paid' : 'unpaid');
             }
 

@@ -65,7 +65,6 @@ class Order extends Model
         return match($this->status) {
             'pending'          => 'Menunggu',
             'confirmed'        => 'Dikonfirmasi',
-            'processing'       => 'Diproses',
             'ready_for_pickup' => 'Siap Diambil',
             'shipped'          => 'Dikirim',
             'delivered'        => 'Selesai',
@@ -79,7 +78,6 @@ class Order extends Model
         return match($this->status) {
             'pending'          => 'yellow',
             'confirmed'        => 'blue',
-            'processing'       => 'indigo',
             'ready_for_pickup' => 'purple',
             'shipped'          => 'cyan',
             'delivered'        => 'green',

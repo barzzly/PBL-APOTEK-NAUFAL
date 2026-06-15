@@ -70,7 +70,7 @@ class Medicine extends Model
     {
         return (int) $this->orderItems()
             ->whereHas('order', function ($query) {
-                $query->whereIn('status', ['confirmed', 'processing', 'ready_for_pickup', 'shipped', 'delivered']);
+                $query->whereIn('status', ['confirmed', 'ready_for_pickup', 'shipped', 'delivered']);
             })
             ->sum('quantity');
     }

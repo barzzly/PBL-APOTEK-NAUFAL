@@ -39,4 +39,8 @@ return [
         'key' => env('GEMINI_API_KEY'),
     ],
 
+    'whatsapp' => [
+        'api_url' => env('WHATSAPP_BOT_API_URL', 'http://localhost:3000'),
+    ],
+
 ];
