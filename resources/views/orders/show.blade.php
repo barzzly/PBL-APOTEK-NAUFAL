@@ -71,12 +71,10 @@
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-50 text-red-700 border border-red-200">Belum Lunas</span>
                 @endif
 
-                <!-- Order Status Badge -->
                 @php
                     $badgeColors = [
                         'pending' => 'bg-yellow-50 text-yellow-700 border-yellow-200',
                         'confirmed' => 'bg-blue-50 text-blue-700 border-blue-200',
-                        'processing' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
                         'ready_for_pickup' => 'bg-purple-50 text-purple-700 border-purple-200',
                         'shipped' => 'bg-cyan-50 text-cyan-700 border-cyan-200',
                         'delivered' => 'bg-green-50 text-green-700 border-green-200',
@@ -109,7 +107,6 @@
                     $steps = [
                         'pending' => ['label' => 'Dibuat', 'icon' => 'fa-file-invoice'],
                         'confirmed' => ['label' => 'Dikonfirmasi', 'icon' => 'fa-check-double'],
-                        'processing' => ['label' => 'Diproses', 'icon' => 'fa-gears'],
                         'ready_or_shipped' => [
                             'label' => $order->order_type === 'delivery' ? 'Dikirim' : 'Siap Diambil',
                             'icon' => $order->order_type === 'delivery' ? 'fa-truck' : 'fa-box-archive'
@@ -117,21 +114,20 @@
                         'delivered' => ['label' => 'Selesai', 'icon' => 'fa-circle-check']
                     ];
 
-                    $statusSequence = ['pending', 'confirmed', 'processing', 'ready_or_shipped', 'delivered'];
+                    $statusSequence = ['pending', 'confirmed', 'ready_or_shipped', 'delivered'];
                     
                     // Map current database status to sequence
                     $currentStatusIndex = 0;
                     if ($order->status === 'confirmed') $currentStatusIndex = 1;
-                    if ($order->status === 'processing') $currentStatusIndex = 2;
-                    if ($order->status === 'ready_for_pickup' || $order->status === 'shipped') $currentStatusIndex = 3;
-                    if ($order->status === 'delivered') $currentStatusIndex = 4;
+                    if ($order->status === 'ready_for_pickup' || $order->status === 'shipped') $currentStatusIndex = 2;
+                    if ($order->status === 'delivered') $currentStatusIndex = 3;
                     if ($order->status === 'cancelled') $currentStatusIndex = -1; // special case
                 @endphp
 
                 <!-- Active Line -->
                 @if($currentStatusIndex >= 0)
                 <div class="absolute top-[18px] left-[45px] h-1 bg-primary z-0 transition-all duration-500" 
-                     style="width: calc({{ ($currentStatusIndex / 4) * 100 }}% - 15px);"></div>
+                     style="width: calc({{ ($currentStatusIndex / 3) * 100 }}% - 15px);"></div>
                 @endif
 
                 @foreach($statusSequence as $index => $stepKey)

@@ -1,163 +1,94 @@
 # Dokumentasi Dependency — Website Apotek Naufal
 
-Dokumen ini menjelaskan seluruh package eksternal yang digunakan dalam proyek beserta alasan pemilihan, cara instalasi, dan dampaknya terhadap proyek.
+Dokumen ini menjelaskan seluruh package eksternal, library frontend, dan integrasi API pihak ketiga yang digunakan dalam proyek Website Apotek Naufal.
 
 ---
 
-## Daftar Dependency Utama
+## 1. Lingkungan PHP & Framework
 
-| Package | Fungsi | Alasan | Versi | Risiko |
-|---|---|---|---|---|
-| `laravel/framework` | Core framework aplikasi | Foundation utama proyek | ^11.0 | Low — LTS, update rutin |
-| `laravel/breeze` | Scaffolding autentikasi (login, register) | Setup auth cepat dan ringan tanpa overhead | ^2.0 | Low — official package |
-| `spatie/laravel-permission` | Manajemen Role & Permission berbasis database | Fleksibel, dokumentasi lengkap, komunitas besar | ^6.0 | Low — actively maintained |
-| `barryvdh/laravel-dompdf` | Generate dokumen PDF dari view Blade | Mudah diintegrasikan dengan Blade template | ^3.0 | Medium — bergantung DomPDF core |
+Aplikasi dikembangkan menggunakan stack Laravel modern dengan spesifikasi:
 
----
-
-## Detail Setiap Package
-
----
-
-### 1. `laravel/breeze`
-
-**Fungsi:**
-Scaffolding autentikasi minimal untuk Laravel, menyediakan halaman login, register, lupa password, dan verifikasi email siap pakai.
-
-**Alasan Memilih:**
-- Lebih ringan dibanding Jetstream (tidak ada Livewire/Inertia overhead)
-- Menggunakan Blade template yang konsisten dengan stack proyek
-- Mudah dikustomisasi sesuai desain Apotek Naufal
-
-**Cara Install:**
-
-```bash
-composer require laravel/breeze --dev
-php artisan breeze:install blade
-npm install && npm run dev
-php artisan migrate
-```
-
-**Dampak pada Proyek:**
-- Menambah halaman autentikasi siap pakai di `resources/views/auth/`
-- Menambah route autentikasi di `routes/auth.php`
-- Menambah ~5MB pada ukuran project (node_modules)
-
----
-
-### 2. `spatie/laravel-permission`
-
-**Fungsi:**
-Manajemen role dan permission berbasis database. Memungkinkan pembatasan akses fitur berdasarkan peran pengguna (admin / pelanggan).
-
-**Alasan Memilih:**
-- Integrasi mulus dengan Laravel Auth
-- Permission disimpan di database → mudah dikelola tanpa hardcode
-- Middleware bawaan: `role:admin`, `permission:manage-obat`
-- Dokumentasi sangat lengkap di [spatie.be/docs/laravel-permission](https://spatie.be/docs/laravel-permission)
-
-**Cara Install:**
-
-```bash
-composer require spatie/laravel-permission
-php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
-php artisan migrate
-```
-
-Tambahkan trait ke model `User`:
-
-```php
-use Spatie\Permission\Traits\HasRoles;
-
-class User extends Authenticatable
-{
-    use HasRoles;
-}
-```
-
-Contoh penggunaan di controller:
-
-```php
-// Assign role ke user baru
-$user->assignRole('pelanggan');
-
-// Cek role di controller
-if ($user->hasRole('admin')) { ... }
-
-// Protect route dengan middleware
-Route::middleware(['role:admin'])->group(function () {
-    Route::resource('/admin/obat', Admin\ObatController::class);
-});
-```
-
-**Dampak pada Proyek:**
-- Menambah 4 tabel di database: `roles`, `permissions`, `model_has_roles`, `model_has_permissions`
-- Menambah ~2MB pada ukuran vendor
-- Risiko: jika upgrade versi major (v6 → v7) bisa ada breaking change pada method
-
----
-
-### 3. `barryvdh/laravel-dompdf`
-
-**Fungsi:**
-Mengonversi view Blade HTML menjadi file PDF yang dapat diunduh atau dicetak. Digunakan untuk fitur cetak struk pesanan.
-
-**Alasan Memilih:**
-- Paling populer untuk PDF di ekosistem Laravel
-- Sintaks sederhana dan langsung terintegrasi dengan Blade
-- Mendukung CSS dasar untuk styling PDF
-
-**Cara Install:**
-
-```bash
-composer require barryvdh/laravel-dompdf
-php artisan vendor:publish --provider="Barryvdh\DomPDF\ServiceProvider"
-```
-
-Contoh penggunaan di controller:
-
-```php
-use Barryvdh\DomPDF\Facade\Pdf;
-
-public function cetakPdf($id)
-{
-    $order = Order::with('items.obat')->findOrFail($id);
-    $pdf = Pdf::loadView('pesanan.struk', compact('order'));
-    return $pdf->download('struk-' . $order->id . '.pdf');
-}
-```
-
-**Dampak pada Proyek:**
-- Menambah fitur unduh PDF tanpa perlu service eksternal
-- Menambah ~8MB pada ukuran vendor (DomPDF core)
-- Risiko: rendering CSS kompleks kurang sempurna — gunakan CSS inline untuk PDF
-- Performa: generate PDF berat jika data pesanan sangat banyak (>100 item)
-
----
-
-## Ringkasan Ukuran Dependency
-
-| Package | Ukuran Perkiraan | Keterangan |
+| Komponen | Versi | Deskripsi |
 |---|---|---|
-| `laravel/framework` | ~50MB | Core framework |
-| `laravel/breeze` | ~5MB | Dev only (tidak dibawa ke production build) |
-| `spatie/laravel-permission` | ~2MB | Production |
-| `barryvdh/laravel-dompdf` | ~8MB | Production |
+| PHP | `^8.3` | Versi interpreter PHP utama |
+| `laravel/framework` | `^13.0` | Core framework aplikasi (Laravel 13) |
 
 ---
 
-## Update & Maintenance
+## 2. Dependensi Produksi (Composer)
 
-Untuk memeriksa package yang sudah outdated:
+Berikut adalah daftar library PHP backend yang terpasang di file `composer.json` (bagian `require`):
 
-```bash
-composer outdated
-```
+| Package | Versi | Fungsi & Status Penggunaan |
+|---|---|---|
+| `laravel/tinker` | `^3.0` | Interaksi REPL terminal Laravel. |
+| `spatie/laravel-permission` | `^8.0` | Terpasang, tetapi sistem otorisasi saat ini menggunakan kolom `role` pada tabel `users` secara langsung (`admin` / `customer`). |
+| `barryvdh/laravel-dompdf` | `^3.1` | Terpasang untuk keperluan rendering dokumen PDF di masa mendatang. |
 
-Untuk update semua package sesuai batasan versi di `composer.json`:
+---
 
-```bash
-composer update
-```
+## 3. Dependensi Development & Testing (Composer)
 
-> ⚠️ Selalu jalankan `php artisan test` setelah update dependency untuk memastikan tidak ada breaking change.
+Library PHP yang digunakan khusus di lingkungan pengembangan (lokal) dan pengujian (bagian `require-dev`):
+
+| Package | Versi | Fungsi |
+|---|---|---|
+| `pestphp/pest` | `^4.6` | Framework unit testing utama yang modern. |
+| `pestphp/pest-plugin-laravel` | `^4.1` | Plugin integrasi Pest dengan framework Laravel. |
+| `barryvdh/laravel-debugbar` | `^4.2` | Menampilkan debug bar info kueri database, log, dan memori di browser. |
+| `fakerphp/faker` | `^1.23` | Penyuplai data palsu untuk Database Seeder / Factory. |
+| `nunomaduro/collision` | `^8.6` | Penampil error/exception yang interaktif di CLI. |
+| `mockery/mockery` | `^1.6` | Object mocking untuk pengujian unit. |
+| `laravel/pail` | `^1.2.5` | Log streaming tool bawaan Laravel. |
+| `laravel/pao` | `^1.0.6` | Helper utilitas internal development. |
+| `laravel/pint` | `^1.27` | Kode PHP style fixer untuk menjaga konsistensi penulisan kode. |
+
+---
+
+## 4. Dependensi Frontend & Build Tool (NPM)
+
+Library JavaScript dan stylesheet yang dikonfigurasi melalui `package.json` dan dibuild via Vite:
+
+| Library / Tool | Versi | Fungsi |
+|---|---|---|
+| `vite` | `^8.0.0` | Build tool dan bundler asset frontend. |
+| `laravel-vite-plugin` | `^3.0.0` | Jembatan integrasi Vite dengan Laravel Asset Loading. |
+| `tailwindcss` | `^4.0.0` | Framework Utility-First CSS versi terbaru (Tailwind CSS v4). |
+| `@tailwindcss/vite` | `^4.0.0` | Plugin official integrasi kompilasi Tailwind v4 ke dalam Vite. |
+| `concurrently` | `^9.0.1` | Menjalankan server lokal PHP (`artisan serve`) dan Vite compiler (`npm run dev`) secara bersamaan. |
+
+---
+
+## 5. Integrasi Layanan Eksternal (API Pihak Ketiga)
+
+Aplikasi Apotek Naufal terintegrasi secara langsung dengan layanan API eksternal berikut untuk menunjang fitur premium:
+
+### A. Google Gemini API
+* **Fungsi:** Men-generate deskripsi obat secara otomatis berdasarkan nama dan kategori obat melalui asisten AI.
+* **Integrasi:** Dilakukan oleh `App\Services\GeminiService`.
+* **API Endpoint:** `https://generativelanguage.googleapis.com/v1beta/models/`
+* **Model yang Digunakan:** Mencoba berurutan dari model tercepat: `gemini-2.5-flash-lite`, jika gagal menggunakan `gemini-flash-lite-latest`, dan terakhir fallback ke `gemini-2.5-flash`.
+* **Kebutuhan:** Memerlukan konfigurasi `GEMINI_API_KEY` di file `.env`.
+
+### B. OSRM API (Open Source Routing Machine)
+* **Fungsi:** Menghitung rute perjalanan dan jarak mengemudi (dalam kilometer) dari koordinat Apotek Naufal (Andalas, Padang) ke koordinat alamat kirim yang dipilih customer di peta.
+* **Integrasi:** Dilakukan oleh `CheckoutController` (method `getDistanceAndShipping`).
+* **API Endpoint:** `https://router.project-osrm.org/route/v1/driving/`
+* **Fallback:** Jika server OSRM sedang lambat atau offline, sistem otomatis beralih menggunakan rumus matematika **Haversine** untuk mendapatkan jarak garis lurus di bumi secara instan.
+
+---
+
+## 6. Update & Pemeliharaan Dependensi
+
+1. **Memeriksa Update Tersedia:**
+   * Backend (PHP): `composer outdated`
+   * Frontend (JS): `npm outdated`
+2. **Melakukan Update:**
+   * Backend: `composer update`
+   * Frontend: `npm update`
+3. **Pembersihan Cache Laravel:**
+   * Setelah melakukan perubahan dependensi, disarankan melakukan clear cache:
+     ```bash
+     php artisan config:clear
+     php artisan cache:clear
+     ```

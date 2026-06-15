@@ -36,7 +36,7 @@
                 </select>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div>
                     <label class="block text-sm font-semibold text-text-main mb-2">Harga (Rp) <span class="text-red-500">*</span></label>
                     <div class="flex items-center border border-border-muted rounded-lg overflow-hidden focus-within:border-primary focus-within:ring-4 focus-within:ring-primary-light transition bg-white">
@@ -47,6 +47,13 @@
                 <div>
                     <label class="block text-sm font-semibold text-text-main mb-2">Stok <span class="text-red-500">*</span></label>
                     <input type="number" name="stock" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition" placeholder="0" required min="0">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-text-main mb-2">Satuan <span class="text-red-500">*</span></label>
+                    <select name="unit" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none bg-white transition" required>
+                        <option value="box">Box</option>
+                        <option value="kardus">Kardus</option>
+                    </select>
                 </div>
             </div>
             

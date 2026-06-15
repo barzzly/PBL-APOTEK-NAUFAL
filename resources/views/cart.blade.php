@@ -163,7 +163,7 @@
                                     <button onclick="updateQty({{ $item['id'] }}, -1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition text-text-muted border-r border-gray-200">
                                         <i class="fa-solid fa-minus text-xs"></i>
                                     </button>
-                                    <input type="text" id="qty-input-{{ $item['id'] }}" value="{{ $item['quantity'] }}" readonly class="w-12 h-8 text-center text-sm font-semibold text-text-main bg-white border-0 outline-none">
+                                    <input type="number" id="qty-input-{{ $item['id'] }}" value="{{ $item['quantity'] }}" min="1" onchange="updateQtyDirect({{ $item['id'] }}, this.value)" class="w-12 h-8 text-center text-sm font-semibold text-text-main bg-white border-0 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                     <button onclick="updateQty({{ $item['id'] }}, 1)" class="w-8 h-8 flex items-center justify-center hover:bg-gray-50 transition text-text-muted border-l border-gray-200">
                                         <i class="fa-solid fa-plus text-xs"></i>
                                     </button>
@@ -311,19 +311,23 @@
 
     <!-- Ajax Script -->
     <script>
-        function updateQty(medicineId, amount) {
-            const input = document.getElementById(`qty-input-${medicineId}`);
-            let newQty = parseInt(input.value) + amount;
-            if (newQty < 1) return;
+        function updateQtyDirect(medicineId, value) {
+            let qty = parseInt(value);
+            if (isNaN(qty) || qty < 1) {
+                qty = 1;
+            }
+            updateQty(medicineId, 0, qty);
+        }
 
-            // Show loading indicator
-            Swal.fire({
-                title: 'Memperbarui keranjang...',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
+        function updateQty(medicineId, amount, customQty = null) {
+            const input = document.getElementById(`qty-input-${medicineId}`);
+            let newQty;
+            if (customQty !== null) {
+                newQty = customQty;
+            } else {
+                newQty = parseInt(input.value) + amount;
+            }
+            if (newQty < 1) return;
 
             fetch('{{ route('cart.update') }}', {
                 method: 'POST',
@@ -339,7 +343,6 @@
             })
             .then(res => res.json())
             .then(data => {
-                Swal.close();
                 if (data.success) {
                     input.value = data.quantity;
                     document.getElementById(`item-subtotal-${medicineId}`).innerText = `Rp ${data.item_subtotal}`;
@@ -363,16 +366,20 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal memperbarui',
-                        text: data.message || 'Stok tidak mencukupi.'
+                        text: data.message || 'Stok tidak mencukupi.',
+                        confirmButtonColor: '#346739',
+                    }).then(() => {
+                        window.location.reload();
                     });
                 }
             })
             .catch(err => {
-                Swal.close();
+                console.error(err);
                 Swal.fire({
                     icon: 'error',
                     title: 'Kesalahan Sistem',
-                    text: 'Gagal terhubung ke server.'
+                    text: 'Gagal terhubung ke server.',
+                    confirmButtonColor: '#346739',
                 });
             });
         }

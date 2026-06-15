@@ -51,6 +51,19 @@
                 <button type="submit" class="w-full py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition">Masuk</button>
             </form>
 
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-border-muted"></div>
+                </div>
+                <div class="relative flex justify-center text-xs uppercase">
+                    <span class="bg-white px-2 text-text-muted">Atau</span>
+                </div>
+            </div>
+
+            <a href="/login-wa" class="w-full py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-primary hover:text-white transition flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Masuk dengan WhatsApp
+            </a>
+
             <div class="text-center mt-6 text-sm text-text-muted">
                 Belum punya akun? <a href="/register" class="text-primary font-semibold hover:text-primary-dark hover:underline transition">Daftar Sekarang</a>
             </div>

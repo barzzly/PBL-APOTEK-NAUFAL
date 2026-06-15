@@ -170,7 +170,7 @@
 
                             <div class="space-y-1">
                                 <label class="text-xs font-semibold text-text-main block">Alamat Pengiriman Lengkap <span class="text-red-500">*</span></label>
-                                <textarea name="shipping_address" id="shipping_address" placeholder="Pilih lokasi pada peta di atas untuk mengisi alamat secara otomatis, lalu tambahkan detail (No. Rumah, RT/RW, Patokan)..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-24">{{ old('shipping_address') }}</textarea>
+                                <textarea name="shipping_address" id="shipping_address" placeholder="Pilih lokasi pada peta di atas untuk mengisi alamat secara otomatis, lalu tambahkan detail (No. Rumah, RT/RW, Patokan)..." class="w-full border border-gray-200 rounded-lg p-3 text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition h-24">{{ old('shipping_address', $user->address) }}</textarea>
                                 <p class="text-[10px] text-text-muted">Alamat di atas akan terisi otomatis saat Anda mengklik peta. Anda dapat menyuntingnya jika diperlukan.</p>
                             </div>
 

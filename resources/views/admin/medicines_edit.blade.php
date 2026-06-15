@@ -46,8 +46,37 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-text-main mb-2">Stok <span class="text-red-500">*</span></label>
-                    <input type="number" name="stock" value="{{ $medicine->stock }}" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition" required min="0">
+                    <label class="block text-sm font-semibold text-text-main mb-2">Stok Saat Ini</label>
+                    <div class="w-full px-4 py-3 bg-gray-50 border border-border-muted rounded-lg text-sm text-text-muted font-semibold flex items-center justify-between">
+                        <span>{{ $medicine->stock }} {{ ucfirst($medicine->unit) }}</span>
+                        <span class="text-xs bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">Database</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                    <label class="block text-sm font-semibold text-text-main mb-2">Aksi Stok <span class="text-red-500">*</span></label>
+                    <select name="stock_action" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none bg-white transition" required>
+                        <option value="add">Tambah Stok (+)</option>
+                        <option value="subtract">Kurangi Stok (-)</option>
+                        <option value="set">Atur Stok Baru (Nilai Mutlak)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-text-main mb-2">Jumlah Stok <span class="text-red-500">*</span></label>
+                    <input type="number" name="stock_value" value="0" min="0" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none transition" required>
+                    <span class="text-[10px] text-text-muted mt-1 block">Isi 0 jika tidak ada perubahan</span>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-text-main mb-2">Satuan Input Stok <span class="text-red-500">*</span></label>
+                    <select name="unit" class="w-full px-4 py-3 border border-border-muted rounded-lg text-sm focus:border-primary focus:ring-4 focus:ring-primary-light outline-none bg-white transition" required>
+                        <option value="box" {{ strtolower($medicine->unit) == 'box' ? 'selected' : '' }}>Box</option>
+                        <option value="kardus" {{ strtolower($medicine->unit) == 'kardus' ? 'selected' : '' }}>Kardus</option>
+                        @if($medicine->unit && !in_array(strtolower($medicine->unit), ['box', 'kardus']))
+                            <option value="{{ strtolower($medicine->unit) }}" selected>{{ ucfirst($medicine->unit) }}</option>
+                        @endif
+                    </select>
                 </div>
             </div>
             

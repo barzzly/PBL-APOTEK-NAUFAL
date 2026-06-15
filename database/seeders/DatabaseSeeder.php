@@ -220,7 +220,7 @@ class DatabaseSeeder extends Seeder
         $orderTemplates = [
             // Status, Payment Status, Payment Method, Order Type, Days Ago, Customer Index, Items [Medicine Index, Quantity]
             ['delivered', 'paid', 'qris', 'delivery', 0, 1, [[0, 1], [3, 2]]], // hari ini, c1
-            ['processing', 'paid', 'transfer', 'delivery', 0, 2, [[1, 1], [7, 1]]], // hari ini, c2
+            ['confirmed', 'paid', 'transfer', 'delivery', 0, 2, [[1, 1], [7, 1]]], // hari ini, c2
             ['ready_for_pickup', 'paid', 'cash', 'pickup', 1, 3, [[2, 2]]], // kemarin, c3
             ['delivered', 'paid', 'transfer', 'delivery', 1, 4, [[10, 1], [11, 1]]], // kemarin, c4
             ['cancelled', 'unpaid', 'transfer', 'delivery', 2, 0, [[4, 3]]], // 2 hari lalu, c0

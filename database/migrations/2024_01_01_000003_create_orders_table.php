@@ -17,8 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', [
                 'pending',          // Menunggu konfirmasi
-                'confirmed',        // Dikonfirmasi apotek
-                'processing',       // Sedang diproses/disiapkan
+                'confirmed',        // Dikonfirmasi apotek (Sedang disiapkan)
                 'ready_for_pickup', // Siap diambil
                 'shipped',          // Sedang dikirim
                 'delivered',        // Sudah diterima
