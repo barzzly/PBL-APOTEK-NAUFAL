@@ -71,15 +71,34 @@ Aplikasi ini menyediakan berbagai API internal berbasis JSON untuk mendukung int
 
 ---
 
+## 🔒 Fitur Otentikasi & Halaman Informasi E-Commerce
+Sistem ini dilengkapi dengan berbagai fitur keamanan transaksi dan transparansi informasi bagi pelanggan:
+
+1. **WhatsApp OTP Login & Password Recovery**:
+   - Menggunakan pengiriman One-Time Password (OTP) 6-digit nirkabel langsung ke WhatsApp terdaftar untuk autentikasi cepat tanpa sandi.
+   - Tombol **Lupa Password?** pada form masuk terhubung ke alur login OTP WhatsApp guna mempercepat pemulihan sesi pelanggan.
+2. **Password Visibility Toggle**:
+   - Dilengkapi dengan fitur tombol mata (*eye icon*) untuk merubah visibilitas teks sandi secara real-time pada halaman masuk (`login`) dan pendaftaran (`register`).
+3. **Halaman Hukum E-Commerce (T&C & Privacy Policy)**:
+   - Menyediakan halaman **Syarat & Ketentuan** (`/syarat-ketentuan`) serta **Kebijakan Privasi** (`/kebijakan-privasi`) dengan tata letak premium dua kolom:
+     - *Sticky Navigation*: Daftar isi yang melayang (sticky) pada panel kiri desktop.
+     - *Scroll Highlighting*: Link navigasi otomatis menyala (highlight) sesuai dengan pasal yang sedang dibaca.
+     - *Call to Action*: Menghubungkan langsung ke obrolan konsultasi Apoteker jika pengguna membutuhkan bantuan.
+
+---
+
 ## 🌐 Layanan API Eksternal (Third-Party APIs)
-Aplikasi ini memanfaatkan beberapa API eksternal pihak ketiga untuk menyediakan fitur kecerdasan buatan dan pemetaan:
+Aplikasi ini memanfaatkan beberapa API eksternal pihak ketiga untuk menyediakan fitur kecerdasan buatan, perpesanan, dan pemetaan:
 
 1. **Google Gemini AI API**:
    - Digunakan oleh backend (melalui `GeminiService`) untuk menyusun deskripsi, komposisi, indikasi, dan efek samping obat secara otomatis berdasarkan nama produk yang diinput oleh Admin.
-2. **OSRM (Open Source Routing Machine) API**:
+2. **WhatsApp Bot API (Next.js)**:
+   - Digunakan oleh `WhatsAppAuthController` dan `WhatsAppNotificationService` untuk mengirimkan pesan kode OTP 6-digit serta pembaruan real-time status pesanan pelanggan.
+3. **OSRM (Open Source Routing Machine) API**:
    - Digunakan untuk menghitung rute mengemudi (*driving route*) secara real-time untuk memperoleh jarak tempuh jalan raya (km) dari lokasi Apotek Naufal ke pin koordinat alamat pengiriman pelanggan.
-3. **OpenStreetMap Tile Server (via Leaflet)**:
+4. **OpenStreetMap Tile Server (via Leaflet)**:
    - Digunakan untuk memuat dan merender ubin peta (*map tiles*) interaktif pada halaman checkout agar pelanggan dapat memilih koordinat lintang/bujur alamat pengantaran secara akurat.
+
 
 ---
 
