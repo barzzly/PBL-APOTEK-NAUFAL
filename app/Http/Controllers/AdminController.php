@@ -69,11 +69,14 @@ class AdminController extends Controller
 
     public function storeCategory(Request $request)
     {
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
         
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $imagePath = $this->convertToWebp($request->file('image'), 'categories');
         }
 
         Category::create([
@@ -94,10 +97,13 @@ class AdminController extends Controller
     public function updateCategory(Request $request, $id)
     {
         $category = Category::findOrFail($id);
-        $request->validate(['name' => 'required|string|max:255']);
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
         
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $imagePath = $this->convertToWebp($request->file('image'), 'categories');
             $category->image = '/storage/' . $imagePath;
         }
 
@@ -169,13 +175,13 @@ class AdminController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string'
         ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('medicines', 'public');
+            $imagePath = $this->convertToWebp($request->file('image'), 'medicines');
         }
 
         $stock = $request->stock;
@@ -217,12 +223,12 @@ class AdminController extends Controller
             'stock_action' => 'required|in:add,subtract,set',
             'stock_value' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'description' => 'nullable|string'
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('medicines', 'public');
+            $imagePath = $this->convertToWebp($request->file('image'), 'medicines');
             $medicine->image = '/storage/' . $imagePath;
         }
 
@@ -558,6 +564,55 @@ class AdminController extends Controller
             'notifications' => $notifications,
             'count' => $notifications->count()
         ]);
+    }
+
+    /**
+     * Convert uploaded image to WebP format.
+     */
+    private function convertToWebp($file, $folder)
+    {
+        $extension = strtolower($file->getClientOriginalExtension());
+        $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $newFilename = Str::slug($filename) . '_' . time() . '.webp';
+        
+        $tempPath = $file->getRealPath();
+        
+        // Exif image type detection
+        $type = @exif_imagetype($tempPath);
+        $image = null;
+        
+        if ($type === IMAGETYPE_PNG || $extension === 'png') {
+            $image = @imagecreatefrompng($tempPath);
+        } elseif ($type === IMAGETYPE_JPEG || in_array($extension, ['jpg', 'jpeg'])) {
+            $image = @imagecreatefromjpeg($tempPath);
+        } elseif ($type === IMAGETYPE_GIF || $extension === 'gif') {
+            $image = @imagecreatefromgif($tempPath);
+        } elseif ($type === IMAGETYPE_WEBP || $extension === 'webp') {
+            $image = @imagecreatefromwebp($tempPath);
+        }
+
+        if (!$image) {
+            return $file->store($folder, 'public');
+        }
+
+        // Preserve transparency
+        imagepalettetotruecolor($image);
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+
+        $relativeDir = 'public/' . $folder;
+        $destinationDir = storage_path('app/' . $relativeDir);
+        
+        if (!file_exists($destinationDir)) {
+            mkdir($destinationDir, 0755, true);
+        }
+
+        $destinationPath = $destinationDir . '/' . $newFilename;
+        
+        imagewebp($image, $destinationPath, 80);
+        imagedestroy($image);
+
+        return $folder . '/' . $newFilename;
     }
 }
 

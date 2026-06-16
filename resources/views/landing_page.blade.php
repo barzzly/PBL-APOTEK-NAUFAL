@@ -117,7 +117,7 @@
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 py-5">
             <div class="w-full h-48 md:h-[350px] rounded-2xl overflow-hidden relative shadow-md bg-primary-light">
-                <img src="/images/hero.png" alt="Promo Apotek Naufal" class="w-full h-full object-cover">
+                <img src="/images/hero.webp" alt="Promo Apotek Naufal" class="w-full h-full object-cover">
                 <div class="absolute inset-y-0 left-0 flex flex-col justify-center max-w-md p-6 md:p-12 text-white bg-black/30 backdrop-blur-sm rounded-l-2xl">
                     <h2 class="text-2xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-md">Kesehatan Anda Adalah Prioritas Kami</h2>
                     <p class="text-sm md:text-base mb-6 drop-shadow-md hidden md:block">Beli obat asli, lengkap, dan terpercaya secara online dengan pengiriman cepat.</p>
