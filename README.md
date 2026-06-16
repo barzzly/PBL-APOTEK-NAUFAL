@@ -92,8 +92,8 @@ Aplikasi ini memanfaatkan beberapa API eksternal pihak ketiga untuk menyediakan 
 
 1. **Google Gemini AI API**:
    - Digunakan oleh backend (melalui `GeminiService`) untuk menyusun deskripsi, komposisi, indikasi, dan efek samping obat secara otomatis berdasarkan nama produk yang diinput oleh Admin.
-2. **WhatsApp Bot API (Next.js)**:
-   - Digunakan oleh `WhatsAppAuthController` dan `WhatsAppNotificationService` untuk mengirimkan pesan kode OTP 6-digit serta pembaruan real-time status pesanan pelanggan.
+2. **WhatsApp Bot API (Custom / Buatan Sendiri)**:
+   - API perpesanan kustom berbasis Node.js/Next.js yang dibangun secara mandiri oleh tim pengembang untuk mengintegrasikan pengiriman kode OTP 6-digit serta pembaruan real-time status pesanan pelanggan melalui bot WhatsApp.
 3. **OSRM (Open Source Routing Machine) API**:
    - Digunakan untuk menghitung rute mengemudi (*driving route*) secara real-time untuk memperoleh jarak tempuh jalan raya (km) dari lokasi Apotek Naufal ke pin koordinat alamat pengiriman pelanggan.
 4. **OpenStreetMap Tile Server (via Leaflet)**:
