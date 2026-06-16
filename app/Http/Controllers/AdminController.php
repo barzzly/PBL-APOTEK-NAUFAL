@@ -546,7 +546,7 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->route('admin.orders')->with('success', 'Status pesanan berhasil diperbarui!');
+        return redirect()->route('admin.orders.show', $order->id)->with('success', 'Status pesanan berhasil diperbarui!');
     }
 
     public function fetchNotifications()

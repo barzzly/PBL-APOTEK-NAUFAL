@@ -51,7 +51,7 @@ class AuthController extends Controller
             'reg_name' => $request->name,
             'reg_email' => $request->email,
             'reg_phone' => $cleanPhone,
-            'reg_password' => Hash::make($request->password), // Hash it now for security
+            'reg_password' => $request->password, // Model casts 'password' => 'hashed' handles hashing automatically
             'reg_otp_code' => $otp,
             'reg_otp_expires_at' => now()->addMinutes(5)
         ]);
@@ -178,9 +178,32 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $loginInput = $request->input('email'); // Form field name is "email"
+        $password = $request->input('password');
+
+        // Check if input is email format
+        $loginField = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
         
-        if (Auth::attempt($credentials)) {
+        if ($loginField === 'phone') {
+            // Clean phone format
+            $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);
+            if (str_starts_with($cleanPhone, '0')) {
+                $cleanPhone = '62' . substr($cleanPhone, 1);
+            }
+            
+            // Try to find user by clean phone or if it's a username (like 'admin'), check email column
+            $userExists = User::where('phone', $cleanPhone)->exists();
+            if ($userExists) {
+                $credentials = ['phone' => $cleanPhone, 'password' => $password];
+            } else {
+                // Fallback to checking email column (for 'admin')
+                $credentials = ['email' => $loginInput, 'password' => $password];
+            }
+        } else {
+            $credentials = ['email' => $loginInput, 'password' => $password];
+        }
+
+        if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
             $this->syncSessionCartToDatabase();
             
@@ -191,8 +214,8 @@ class AuthController extends Controller
             return redirect()->intended('/');
         }
         
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+        return back()->withInput()->withErrors([
+            'email' => 'Email/Username atau password salah.',
         ]);
     }
     

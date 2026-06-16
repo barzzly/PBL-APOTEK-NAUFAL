@@ -6,6 +6,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_apotek_naufal.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Apotek Naufal</title>
@@ -39,9 +40,7 @@
     <aside id="sidebar" class="bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
         <div class="h-16 flex items-center px-10 border-b border-gray-100 shrink-0">
             <a href="/" class="text-primary text-xl font-bold flex items-center gap-3">
-                <div class="w-8 h-8 bg-primary text-white rounded-lg flex items-center justify-center shadow-md shadow-primary/30">
-                    <i class="fa-solid fa-notes-medical"></i>
-                </div>
+                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="w-8 h-8 object-contain rounded-lg shadow-sm" alt="Logo Apotek Naufal">
                 <span class="sidebar-text">Apotek Naufal</span>
             </a>
         </div>

@@ -122,6 +122,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
+
+// T&C and Privacy Policy routes
+Route::get('/syarat-ketentuan', function () {
+    $categories = \App\Models\Category::all();
+    return view('syarat_ketentuan', compact('categories'));
+})->name('syarat_ketentuan');
+
+Route::get('/kebijakan-privasi', function () {
+    $categories = \App\Models\Category::all();
+    return view('kebijakan_privasi', compact('categories'));
+})->name('kebijakan_privasi');
+
 // WhatsApp Login & OTP Routes
 Route::get('/login-wa', [WhatsAppAuthController::class, 'showLoginForm'])->name('login.wa');
 Route::post('/login-wa', [WhatsAppAuthController::class, 'sendOtp']);

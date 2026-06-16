@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_apotek_naufal.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keranjang Belanja - Apotek Naufal</title>
@@ -25,7 +26,7 @@
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
+                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
             </a>
 
             <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
@@ -257,7 +258,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10 text-left">
                 <div class="lg:col-span-2">
                     <div class="mb-4 text-left">
-                        <h2 class="text-2xl font-bold text-primary flex items-center gap-2"><i class="fa-solid fa-notes-medical"></i> Apotek Naufal</h2>
+                        <h2 class="text-2xl font-bold text-primary flex items-center gap-2"><img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-6 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal</h2>
                     </div>
                     <p class="text-sm text-text-muted mb-5 leading-relaxed pr-0 md:pr-10">
                         Apotek Naufal adalah platform kesehatan terpercaya yang menyediakan akses mudah untuk mendapatkan obat, vitamin, dan kebutuhan kesehatan lainnya dengan layanan konsultasi apoteker profesional.
@@ -287,8 +288,8 @@
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
                         <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
+                        <li><a href="{{ route('syarat_ketentuan') }}" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
+                        <li><a href="{{ route('kebijakan_privasi') }}" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
                     </ul>
                 </div>
 

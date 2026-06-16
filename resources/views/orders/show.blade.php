@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_apotek_naufal.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Pesanan {{ $order->order_number }} - Apotek Naufal</title>
@@ -19,7 +20,7 @@
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
+                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
             </a>
 
             <div class="flex items-center gap-5 ml-auto">
@@ -100,9 +101,6 @@
             <h3 class="text-sm font-bold text-text-main mb-6">Status Pelacakan Pesanan:</h3>
             
             <div class="min-w-[600px] flex items-center justify-between relative px-8">
-                <!-- Background Line -->
-                <div class="absolute top-[18px] left-[45px] right-[45px] h-1 bg-gray-100 z-0"></div>
-                
                 @php
                     $steps = [
                         'pending' => ['label' => 'Dibuat', 'icon' => 'fa-file-invoice'],
@@ -124,11 +122,14 @@
                     if ($order->status === 'cancelled') $currentStatusIndex = -1; // special case
                 @endphp
 
-                <!-- Active Line -->
-                @if($currentStatusIndex >= 0)
-                <div class="absolute top-[18px] left-[45px] h-1 bg-primary z-0 transition-all duration-500" 
-                     style="width: calc({{ ($currentStatusIndex / 3) * 100 }}% - 15px);"></div>
-                @endif
+                <!-- Progress Line Container (Left & Right offset are exactly at center of first/last step) -->
+                <div class="absolute top-[18px] left-[52px] right-[52px] h-1 bg-gray-100 z-0">
+                    <!-- Active Line constrained within the container to prevent overflow -->
+                    @if($currentStatusIndex >= 0)
+                    <div class="h-full bg-primary transition-all duration-500" 
+                         style="width: {{ ($currentStatusIndex / 3) * 100 }}%;"></div>
+                    @endif
+                </div>
 
                 @foreach($statusSequence as $index => $stepKey)
                     @php
@@ -347,6 +348,33 @@
                 });
             });
         }
+
+        // Auto reload page when order status or payment status updates
+        let currentStatus = "{{ $order->status }}";
+        let currentPaymentStatus = "{{ $order->payment_status }}";
+        
+        setInterval(function() {
+            // Append json query param and timestamp to prevent caching and guarantee JSON response
+            const url = window.location.origin + window.location.pathname + '?json=1&t=' + new Date().getTime();
+            fetch(url, {
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status !== currentStatus || data.payment_status !== currentPaymentStatus) {
+                    window.location.reload();
+                }
+            })
+            .catch(error => console.error('Error polling order status:', error));
+        }, 3000);
     </script>
 </body>
 </html>

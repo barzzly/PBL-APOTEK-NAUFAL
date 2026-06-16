@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_apotek_naufal.png') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Pesanan - Apotek Naufal</title>
@@ -18,7 +19,7 @@
     <header class="bg-white py-4 sticky top-0 z-50 shadow-sm border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
-                <i class="fa-solid fa-notes-medical text-3xl"></i> Apotek Naufal
+                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
             </a>
 
             <div class="flex items-center gap-5 ml-auto">

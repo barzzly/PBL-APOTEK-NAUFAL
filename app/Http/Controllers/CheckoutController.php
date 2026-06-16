@@ -210,8 +210,19 @@ class CheckoutController extends Controller
     // Customer order detail
     public function show($id)
     {
-        $categories = Category::all();
         $order = Order::with(['items', 'user'])->where('user_id', auth()->id())->findOrFail($id);
+        
+        if (request()->wantsJson() || request()->ajax() || request()->has('json')) {
+            return response()->json([
+                'status' => $order->status,
+                'status_label' => $order->status_label,
+                'status_color' => $order->status_color,
+                'payment_status' => $order->payment_status,
+                'payment_status_label' => $order->payment_status_label,
+            ]);
+        }
+
+        $categories = Category::all();
         
         // Find prescription if exists
         $prescription = Prescription::where('order_id', $order->id)->first();
