@@ -61,7 +61,8 @@ class CheckoutController extends Controller
             'delivery_longitude' => 'required_if:order_type,delivery|nullable|numeric',
             'delivery_distance' => 'required_if:order_type,delivery|nullable|numeric',
             'notes' => 'nullable|string|max:255',
-            'payment_proof' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'payment_proof' => 'required_if:payment_method,transfer|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'payment_proof_qris' => 'required_if:payment_method,qris|nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
 
         $request->validate($validationRules);
@@ -134,6 +135,11 @@ class CheckoutController extends Controller
                 // 3. Process payment proof if uploaded (Public storage)
                 if ($request->hasFile('payment_proof')) {
                     $imagePath = $request->file('payment_proof')->store('payment_proofs', 'public');
+                    $order->update([
+                        'payment_proof' => '/storage/' . $imagePath
+                    ]);
+                } elseif ($request->hasFile('payment_proof_qris')) {
+                    $imagePath = $request->file('payment_proof_qris')->store('payment_proofs', 'public');
                     $order->update([
                         'payment_proof' => '/storage/' . $imagePath
                     ]);
