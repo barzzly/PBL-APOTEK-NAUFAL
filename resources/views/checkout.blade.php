@@ -240,9 +240,9 @@
                                 </div>
                             </div>
                             <div class="space-y-2 pt-2">
-                                <label class="text-xs font-semibold block">Unggah Bukti Transfer (Opsional)</label>
+                                <label class="text-xs font-semibold block">Unggah Bukti Transfer (Wajib) <span class="text-red-500">*</span></label>
                                 <input type="file" name="payment_proof" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
-                                <p class="text-[10px] text-text-muted">Format file: JPG, PNG, JPEG. Ukuran maksimum: 2MB. Anda juga dapat mengunggah bukti setelah pemesanan dilakukan.</p>
+                                <p class="text-[10px] text-text-muted">Format file: JPG, PNG, JPEG. Ukuran maksimum: 2MB.</p>
                             </div>
                         </div>
 
@@ -263,7 +263,7 @@
                             </div>
 
                             <div class="space-y-2 pt-2 w-full">
-                                <label class="text-xs font-semibold block">Unggah Bukti Bayar QRIS (Opsional)</label>
+                                <label class="text-xs font-semibold block">Unggah Bukti Bayar QRIS (Wajib) <span class="text-red-500">*</span></label>
                                 <input type="file" name="payment_proof_qris" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 cursor-pointer">
                                 <p class="text-[10px] text-text-muted">Format file: JPG, PNG, JPEG. Ukuran maksimum: 2MB.</p>
                             </div>

@@ -77,6 +77,21 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 
 ---
 
+### Sprint 5: Optimasi UX, Konversi Satuan, Bot WhatsApp & Halaman Hukum
+**Target Rilis:** `v0.5.0`  
+**Tujuan Sprint:** Meningkatkan keandalan transaksi dengan fitur konversi satuan obat otomatis di backend, silent update keranjang belanja, memperluas fitur keamanan otentikasi via WhatsApp OTP, pengiriman notifikasi pesanan via WhatsApp, serta menyediakan halaman hukum Syarat & Ketentuan serta Kebijakan Privasi yang interaktif.
+
+| Task ID | Item Pekerjaan (Backlog) | Assignee | Status |
+|---|---|---|---|
+| SP5-01 | Fitur konversi satuan otomatis (Kardus ke Box) & Aksi Stok (Tambah/Kurang/Atur) di panel admin | Farid Yahya & Hidayathul Fikri | ✅ Selesai |
+| SP5-02 | Input kuantitas keranjang belanja dinamis (silent update) | Nabilla Fitricia Hernanda | ✅ Selesai |
+| SP5-03 | Integrasi WhatsApp Bot API untuk notifikasi status pesanan pelanggan | Farid Yahya & Hidayathul Fikri | ✅ Selesai |
+| SP5-04 | Sistem autentikasi OTP WhatsApp (Login, Register & Lupa Password via WA) | Hidayathul Fikri | ✅ Selesai |
+| SP5-05 | Halaman Syarat & Ketentuan & Kebijakan Privasi dengan layout interaktif (Sticky Nav & Scroll Highlighting) | Nabilla Fitricia Hernanda & Rury Fezriani Matari | ✅ Selesai |
+| SP5-06 | Optimasi media aset (konversi ke WebP) & pembaruan kontak bisnis di footer | Rury Fezriani Matari | ✅ Selesai |
+
+---
+
 ## Cara Membaca Status Sprint
 
 - ✅ **Selesai**: Fitur telah diimplementasikan, diuji melalui manual testing, dan aktif di codebase utama.
