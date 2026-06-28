@@ -267,8 +267,9 @@
                             
                             <!-- Actual QRIS Image Design -->
                             <div class="bg-white p-4 rounded-xl border border-gray-100 flex flex-col items-center shadow-inner mt-2">
+                                <h5 class="text-xs font-bold text-gray-700 mb-2 uppercase">QRIS APOTEK NAUFAL</h5>
                                 <div class="w-48 border-2 border-primary rounded-lg overflow-hidden shadow-sm">
-                                    <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Apotek Naufal" class="w-full h-auto">
+                                    <img src="{{ asset('images/qris.png') }}" alt="QRIS Apotek Naufal" class="w-full h-auto">
                                 </div>
                                 <span class="text-[10px] font-bold tracking-widest mt-2 uppercase">NMID: ID2023250018231</span>
                             </div>
