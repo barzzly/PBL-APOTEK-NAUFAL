@@ -16,7 +16,7 @@
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm border-b border-border-muted">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -51,7 +51,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-border-muted shadow-sm">
+    <nav class="bg-white/70 backdrop-blur border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4">
             <ul class="flex gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-3">
                 <li><a href="/" class="text-text-main hover:text-primary font-medium text-sm transition">Beranda</a></li>
@@ -165,7 +165,7 @@
 
                     <div class="pt-4 flex flex-col sm:flex-row gap-3">
                         <a href="{{ route('tickets.history') }}" class="w-full sm:w-1/3 text-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition">Batal</a>
-                        <button type="submit" class="w-full sm:w-2/3 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition shadow-md shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="submit" class="w-full sm:w-2/3 py-3 ui-btn-primary font-bold rounded-xl transition shadow-md shadow-primary/20 flex items-center justify-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-paper-plane"></i> Kirim Resep Ke Apoteker
                         </button>
                     </div>

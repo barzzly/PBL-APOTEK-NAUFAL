@@ -28,7 +28,7 @@
 
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -109,7 +109,7 @@
                 <div class="lg:col-span-2 space-y-6">
                     
                     <!-- 1. Tipe Pengiriman -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                    <div class="ui-card p-6 space-y-4">
                         <h3 class="text-base font-bold text-text-main flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">1</span>
                             Tipe Pengiriman
@@ -192,7 +192,7 @@
 
 
                     <!-- 3. Metode Pembayaran -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                    <div class="ui-card p-6 space-y-4">
                         <h3 class="text-base font-bold text-text-main flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">2</span>
                             Metode Pembayaran
@@ -279,7 +279,7 @@
 
                 <!-- Summary Column -->
                 <div class="space-y-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+                    <div class="ui-card p-6 space-y-6">
                         <h3 class="text-base font-bold text-text-main">Ringkasan Pesanan</h3>
                         
                         <!-- Mini items list -->
@@ -310,7 +310,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md cursor-pointer">
+                        <button type="submit" class="w-full py-3.5 ui-btn-primary font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md cursor-pointer">
                             Buat Pesanan Sekarang
                         </button>
                     </div>
@@ -325,7 +325,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+    <footer class="bg-white/82 backdrop-blur border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10 text-left">
                 <div class="lg:col-span-2">

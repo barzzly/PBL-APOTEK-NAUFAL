@@ -387,6 +387,93 @@ class AdminController extends Controller
         ));
     }
 
+    public function exportLaporanPenjualan(Request $request)
+    {
+        $period = $request->get('period', '30');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        if ($period === 'custom' && $dateFrom && $dateTo) {
+            $from = Carbon::parse($dateFrom)->startOfDay();
+            $to = Carbon::parse($dateTo)->endOfDay();
+        } else {
+            $days = max(1, (int) $period);
+            $from = Carbon::now()->subDays($days - 1)->startOfDay();
+            $to = Carbon::now()->endOfDay();
+        }
+
+        $statusFilter = $request->get('status', 'all');
+        $paymentFilter = $request->get('payment_method', 'all');
+
+        $query = Order::with('user')
+            ->whereBetween('orders.created_at', [$from, $to]);
+
+        if ($statusFilter === 'all') {
+            $query->whereIn('orders.status', ['delivered', 'cancelled']);
+        } else {
+            $query->where('orders.status', $statusFilter);
+        }
+
+        if ($paymentFilter !== 'all') {
+            $query->where('orders.payment_method', $paymentFilter);
+        }
+
+        $orders = $query->orderBy('orders.created_at', 'desc')->get();
+        $paidRevenue = $orders->where('payment_status', 'paid')->sum('total_amount');
+        $filename = 'laporan-penjualan-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.xls';
+
+        return response()->streamDownload(function () use ($orders, $from, $to, $statusFilter, $paymentFilter, $paidRevenue) {
+            echo '<html><head><meta charset="UTF-8"><style>';
+            echo 'table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}';
+            echo 'th{background:#16704A;color:#fff;font-weight:bold}th,td{border:1px solid #DDE7E2;padding:6px 8px}';
+            echo '.title{font-size:18px;font-weight:bold;text-align:center}.meta{text-align:center;color:#333}.money{mso-number-format:"\\0022Rp\\0022 #,##0";text-align:right}.bold{font-weight:bold}';
+            echo '</style></head><body>';
+            echo '<table>';
+            echo '<tr><td colspan="14" class="title">Laporan Penjualan Apotek Naufal</td></tr>';
+            echo '<tr><td colspan="14" class="meta">Periode: ' . e($from->format('d/m/Y')) . ' - ' . e($to->format('d/m/Y')) . '</td></tr>';
+            echo '<tr><td colspan="14" class="meta">Status: ' . e($statusFilter === 'all' ? 'Semua' : $statusFilter) . ' | Metode Bayar: ' . e($paymentFilter === 'all' ? 'Semua' : strtoupper($paymentFilter)) . '</td></tr>';
+            echo '<tr></tr>';
+            echo '<tr>';
+            foreach (['No', 'Tanggal', 'No Order', 'Pelanggan', 'Email', 'Telepon', 'Jenis Order', 'Status Order', 'Metode Bayar', 'Status Bayar', 'Subtotal', 'Ongkir', 'Diskon', 'Total'] as $header) {
+                echo '<th>' . e($header) . '</th>';
+            }
+            echo '</tr>';
+
+            foreach ($orders as $index => $order) {
+                $values = [
+                    $index + 1,
+                    optional($order->created_at)->format('d/m/Y H:i'),
+                    $order->order_number,
+                    optional($order->user)->name ?? '-',
+                    optional($order->user)->email ?? '-',
+                    optional($order->user)->phone ?? '-',
+                    $order->order_type === 'delivery' ? 'Delivery' : 'Pickup',
+                    $order->status_label,
+                    $order->payment_method_label,
+                    $order->payment_status_label,
+                    (float) $order->subtotal,
+                    (float) $order->shipping_cost,
+                    (float) $order->discount,
+                    (float) $order->total_amount,
+                ];
+
+                echo '<tr>';
+                foreach ($values as $columnIndex => $value) {
+                    $class = $columnIndex >= 10 ? ' class="money"' : '';
+                    echo '<td' . $class . '>' . e((string) $value) . '</td>';
+                }
+                echo '</tr>';
+            }
+
+            echo '<tr></tr>';
+            echo '<tr><td colspan="13" class="bold">Total Pendapatan Lunas</td><td class="money bold">' . e((string) (float) $paidRevenue) . '</td></tr>';
+            echo '<tr><td colspan="13" class="bold">Total Order</td><td class="bold">' . e((string) $orders->count()) . '</td></tr>';
+            echo '</table></body></html>';
+        }, $filename, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
+        ]);
+    }
     public function laporanChartData(Request $request)
     {
         $period  = $request->get('period', '30');
