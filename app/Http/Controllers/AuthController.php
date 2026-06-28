@@ -9,6 +9,17 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
+    private function normalizePhoneNumber($phone)
+    {
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($clean, '0')) {
+            $clean = '62' . substr($clean, 1);
+        } elseif (str_starts_with($clean, '8')) {
+            $clean = '62' . $clean;
+        }
+        return $clean;
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -18,15 +29,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $phone = $request->phone;
-        
-        // Clean phone number: remove non-digits
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        
-        // Convert leading '0' to '62' (Indonesian country code prefix)
-        if (str_starts_with($cleanPhone, '0')) {
-            $cleanPhone = '62' . substr($cleanPhone, 1);
-        }
+        $cleanPhone = $this->normalizePhoneNumber($request->phone);
 
         if (strlen($cleanPhone) < 10) {
             return back()->withInput()->withErrors(['phone' => 'Format nomor WhatsApp tidak valid.']);
@@ -37,6 +40,7 @@ class AuthController extends Controller
         $exists = User::where('phone', $cleanPhone)
             ->orWhere('phone', '0' . $phoneSuffix)
             ->orWhere('phone', '+' . $cleanPhone)
+            ->orWhere('phone', $phoneSuffix)
             ->exists();
 
         if ($exists) {
@@ -185,16 +189,18 @@ class AuthController extends Controller
         $loginField = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
         
         if ($loginField === 'phone') {
-            // Clean phone format
-            $cleanPhone = preg_replace('/[^0-9]/', '', $loginInput);
-            if (str_starts_with($cleanPhone, '0')) {
-                $cleanPhone = '62' . substr($cleanPhone, 1);
-            }
+            $cleanPhone = $this->normalizePhoneNumber($loginInput);
+            $phoneSuffix = substr($cleanPhone, 2);
             
-            // Try to find user by clean phone or if it's a username (like 'admin'), check email column
-            $userExists = User::where('phone', $cleanPhone)->exists();
-            if ($userExists) {
-                $credentials = ['phone' => $cleanPhone, 'password' => $password];
+            // Try to find user by any phone format or fallback to email (if 'admin' etc.)
+            $user = User::where('phone', $cleanPhone)
+                ->orWhere('phone', '0' . $phoneSuffix)
+                ->orWhere('phone', '+' . $cleanPhone)
+                ->orWhere('phone', $phoneSuffix)
+                ->first();
+                
+            if ($user) {
+                $credentials = ['phone' => $user->phone, 'password' => $password];
             } else {
                 // Fallback to checking email column (for 'admin')
                 $credentials = ['email' => $loginInput, 'password' => $password];

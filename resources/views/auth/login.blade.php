@@ -143,7 +143,7 @@
                                 <i class="fa-solid fa-envelope"></i>
                             </span>
                             <input type="text" id="email" name="email" value="{{ old('email') }}" 
-                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
                                 placeholder="Masukkan email atau nomor WA Anda" required autofocus>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
                                 <i class="fa-solid fa-lock"></i>
                             </span>
                             <input type="password" id="password" name="password" 
-                                class="w-full pl-10 pr-10 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                class="w-full pl-10 pr-10 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
                                 placeholder="Masukkan password Anda" required>
                             <!-- Password Toggle Eye -->
                             <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 transition">
@@ -177,7 +177,7 @@
                     </div>
 
                     <!-- Submit -->
-                    <button type="submit" class="w-full py-3.5 mt-2 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 cursor-pointer">
+                    <button type="submit" class="w-full py-3.5 mt-2 ui-btn-primary font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 cursor-pointer">
                         Masuk ke Akun
                     </button>
                 </form>
