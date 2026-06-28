@@ -108,7 +108,7 @@ Quality gate yang disiapkan di workflow CI:
 | Gate | Perintah / Action |
 | --- | --- |
 | Install backend | `composer install` |
-| Setup runtime | Setup PHP 8.2 & MySQL Service Container |
+| Setup runtime | Setup PHP 8.3 & MySQL Service Container |
 | Setup env | `cp .env.example .env.testing` & `key:generate` |
 | Migration DB | `php artisan migrate --env=testing --force` |
 | Automated test | `php artisan test` |

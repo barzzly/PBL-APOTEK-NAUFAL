@@ -68,11 +68,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Setup PHP 8.2
+      # 2. Setup PHP 8.3
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3'
           extensions: mbstring, bcmath, pdo, pdo_mysql
           coverage: none
 
@@ -131,7 +131,7 @@ jobs:
 | # | Tahap | Keterangan |
 |---|---|---|
 | 1 | **Checkout code** | Mengambil kode terbaru dari repository |
-| 2 | **Setup PHP 8.2** | Menyiapkan runtime PHP dengan ekstensi yang dibutuhkan |
+| 2 | **Setup PHP 8.3** | Menyiapkan runtime PHP dengan ekstensi yang dibutuhkan |
 | 3 | **Cache Composer** | Cache vendor folder agar build lebih cepat di run berikutnya |
 | 4 | **Composer install** | Mengunduh semua dependency (Laravel, Spatie, DomPDF, dll.) |
 | 5 | **Copy .env** | Menyalin konfigurasi environment untuk testing |

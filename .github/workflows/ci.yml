@@ -1,0 +1,81 @@
+name: Laravel CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: apotek_naufal_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      # 1. Checkout kode dari repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Setup PHP 8.3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, pdo, pdo_mysql
+          coverage: none
+
+      # 3. Cache Composer dependencies
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      # 4. Install dependency via Composer
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # 5. Setup environment file
+      - name: Copy .env
+        run: cp .env.example .env.testing
+
+      # 6. Generate application key
+      - name: Generate app key
+        run: php artisan key:generate --env=testing
+
+      # 7. Set permission storage
+      - name: Set storage permissions
+        run: chmod -R 777 storage bootstrap/cache
+
+      # 8. Jalankan migrasi di database testing
+      - name: Run migrations
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: apotek_naufal_test
+          DB_USERNAME: root
+          DB_PASSWORD: password
+        run: php artisan migrate --env=testing --force
+
+      # 9. Jalankan seluruh test suite
+      - name: Run tests
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: apotek_naufal_test
+          DB_USERNAME: root
+          DB_PASSWORD: password
+        run: php artisan test
