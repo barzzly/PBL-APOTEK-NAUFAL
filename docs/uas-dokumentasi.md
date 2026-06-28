@@ -17,7 +17,8 @@
 | Ketentuan UAS | Luaran di repository | Status |
 | --- | --- | --- |
 | Dokumentasi Utama | `README.md`, seluruh file pada `docs/` | Selesai |
-| Pembagian peran & Sprint | `docs/sprint-planning.md` | Selesai |
+| Pembagian peran di GitHub | `docs/github-roles.md` | Selesai |
+| Sprint Planning | `docs/sprint-planning.md` | Selesai |
 | GitHub Action Workflow | `.github/workflows/ci.yml` | Selesai |
 | Refactoring | `docs/refactoring.md` | Selesai |
 | Dependency | `docs/dependency.md` | Selesai |
@@ -28,7 +29,7 @@
 
 ## Ringkasan Sistem
 
-Website Apotek Naufal dibangun untuk memodernisasi layanan apotek fisik menjadi platform digital interaktif. Pelanggan dapat berbelanja obat bebas secara instan dengan metode pembayaran bervariasi (Cash, Transfer, QRIS, BPJS) serta opsi pengambilan langsung (*pickup*) atau pengiriman (*delivery*). Untuk tipe *delivery*, ongkos kirim dihitung otomatis secara dinamis memanfaatkan OSRM API berdasarkan koordinat rute peta ke alamat tujuan. 
+Website Apotek Naufal dibangun untuk memodernisasi layanan apotek fisik menjadi platform digital interaktif. Pelanggan dapat berbelanja obat bebas secara instan dengan metode pembayaran bervariasi (Cash, Transfer, QRIS) serta opsi pengambilan langsung (*pickup*) atau pengiriman (*delivery*). Untuk tipe *delivery*, ongkos kirim dihitung otomatis secara dinamis memanfaatkan OSRM API berdasarkan koordinat rute peta ke alamat tujuan. 
 
 Apotek Naufal juga menyediakan fitur penebusan obat keras melalui unggah resep dokter dan konsultasi keluhan kesehatan secara *online*. Melalui ruang live chat AJAX, apoteker (admin) dapat berdiskusi dengan pelanggan dan merekomendasikan obat yang langsung terintegrasi dengan keranjang belanja pelanggan untuk mempermudah checkout. Seluruh transaksi dan operasional dipantau oleh admin melalui grafik laporan penjualan Chart.js, restock stok otomatis jika pesanan dibatalkan, fitur konversi satuan obat, serta sistem notifikasi polling stok dan pesanan masuk secara real-time.
 

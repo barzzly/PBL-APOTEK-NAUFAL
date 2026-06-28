@@ -220,12 +220,7 @@
                                 <span class="text-xs font-semibold text-text-main mt-1">QRIS / E-Wallet</span>
                             </label>
 
-                            <!-- BPJS -->
-                            <label class="border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden" id="pay-bpjs">
-                                <input type="radio" name="payment_method" value="bpjs" onchange="togglePaymentMethod('bpjs')" class="absolute top-3 right-3 accent-primary">
-                                <div class="text-xl text-primary mt-2"><i class="fa-solid fa-id-card"></i></div>
-                                <span class="text-xs font-semibold text-text-main mt-1">BPJS</span>
-                            </label>
+
                         </div>
 
                         <!-- Transfer Instruction Info -->
@@ -269,11 +264,7 @@
                             </div>
                         </div>
 
-                        <!-- BPJS Info -->
-                        <div id="bpjs-info" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed mt-4">
-                            <h4 class="font-bold mb-1"><i class="fa-solid fa-circle-info"></i> Ketentuan Klaim BPJS</h4>
-                            <p>Pembayaran menggunakan BPJS memerlukan verifikasi manual oleh staf apotek kami. Pastikan kartu BPJS Anda aktif dan unggah resep dokter BPJS resmi pada form resep dokter di atas.</p>
-                        </div>
+
                     </div>
                 </div>
 
@@ -688,13 +679,10 @@
         function togglePaymentMethod(method) {
             const transferInfo = document.getElementById('transfer-info');
             const qrisInfo = document.getElementById('qris-info');
-            const bpjsInfo = document.getElementById('bpjs-info');
-
             // Reset borders
             document.getElementById('pay-cash').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
             document.getElementById('pay-transfer').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
             document.getElementById('pay-qris').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
-            document.getElementById('pay-bpjs').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
 
             // Set primary border for active payment method
             document.getElementById(`pay-${method}`).className = "border-2 border-primary rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
@@ -702,14 +690,11 @@
             // Show instruction
             transferInfo.classList.add('hidden');
             qrisInfo.classList.add('hidden');
-            bpjsInfo.classList.add('hidden');
 
             if (method === 'transfer') {
                 transferInfo.classList.remove('hidden');
             } else if (method === 'qris') {
                 qrisInfo.classList.remove('hidden');
-            } else if (method === 'bpjs') {
-                bpjsInfo.classList.remove('hidden');
             }
         }
 
