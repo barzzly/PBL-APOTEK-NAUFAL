@@ -14,31 +14,35 @@ class WhatsAppAuthController extends Controller
         return view('auth.login-wa');
     }
 
+    private function normalizePhoneNumber($phone)
+    {
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($clean, '0')) {
+            $clean = '62' . substr($clean, 1);
+        } elseif (str_starts_with($clean, '8')) {
+            $clean = '62' . $clean;
+        }
+        return $clean;
+    }
+
     public function sendOtp(Request $request)
     {
         $request->validate([
             'phone' => 'required|string|min:8|max:20',
         ]);
 
-        $phone = $request->phone;
-        
-        // Clean phone number: remove non-digits
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        
-        // Convert leading '0' to '62' (Indonesian country code prefix)
-        if (str_starts_with($cleanPhone, '0')) {
-            $cleanPhone = '62' . substr($cleanPhone, 1);
-        }
+        $cleanPhone = $this->normalizePhoneNumber($request->phone);
 
         if (strlen($cleanPhone) < 10) {
             return back()->withErrors(['phone' => 'Format nomor WhatsApp tidak valid.']);
         }
 
-        // Flexible search in users table to match different phone formats (62..., 0..., +62...)
+        // Flexible search in users table to match different phone formats (62..., 0..., +62..., 8...)
         $phoneSuffix = substr($cleanPhone, 2); // get main number without 62 prefix, e.g. 812xxx
         $user = User::where('phone', $cleanPhone)
             ->orWhere('phone', '0' . $phoneSuffix)
             ->orWhere('phone', '+' . $cleanPhone)
+            ->orWhere('phone', $phoneSuffix)
             ->first();
 
         if (!$user) {

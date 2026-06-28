@@ -11,6 +11,17 @@ use Illuminate\Validation\ValidationException;
 
 class ProfileController extends Controller
 {
+    private function normalizePhoneNumber($phone)
+    {
+        $clean = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($clean, '0')) {
+            $clean = '62' . substr($clean, 1);
+        } elseif (str_starts_with($clean, '8')) {
+            $clean = '62' . $clean;
+        }
+        return $clean;
+    }
+
     /**
      * Show the profile edit form.
      */
@@ -66,7 +77,7 @@ class ProfileController extends Controller
 
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->phone = $request->phone;
+        $user->phone = $this->normalizePhoneNumber($request->phone);
         $user->address = $request->address;
         $user->save();
 

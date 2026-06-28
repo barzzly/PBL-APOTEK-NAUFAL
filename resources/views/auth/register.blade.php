@@ -288,7 +288,7 @@
 
                             <input type="text" id="name" name="name" value="{{ old('name') }}" 
 
-                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
 
                                 placeholder="Masukkan nama lengkap Anda" required autofocus>
 
@@ -314,7 +314,7 @@
 
                             <input type="email" id="email" name="email" value="{{ old('email') }}" 
 
-                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
 
                                 placeholder="Masukkan alamat email aktif" required>
 
@@ -340,7 +340,7 @@
 
                             <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" 
 
-                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                class="w-full pl-10 pr-4 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
 
                                 placeholder="Contoh: 081234567890" required>
 
@@ -372,7 +372,7 @@
 
                                 <input type="password" id="password" name="password" 
 
-                                    class="w-full pl-10 pr-10 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                    class="w-full pl-10 pr-10 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
 
                                     placeholder="Min. 8 karakter" required>
 
@@ -404,7 +404,7 @@
 
                                 <input type="password" id="password_confirmation" name="password_confirmation" 
 
-                                    class="w-full pl-10 pr-10 py-3 bg-gray-50/50 border border-border-muted rounded-xl text-xs outline-none focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary-light transition font-medium" 
+                                    class="w-full pl-10 pr-10 py-3 bg-gray-50/50 ui-input rounded-xl text-xs outline-none transition font-medium" 
 
                                     placeholder="Ulangi password" required>
 
@@ -432,7 +432,7 @@
 
                     <!-- Submit -->
 
-                    <button type="submit" class="w-full py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 cursor-pointer">
+                    <button type="submit" class="w-full py-3.5 ui-btn-primary font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 cursor-pointer">
 
                         Mulai Pendaftaran & Kirim OTP
 

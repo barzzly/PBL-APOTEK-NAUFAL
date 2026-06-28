@@ -308,7 +308,7 @@
                         </div>
                         <div>
                             <button type="submit" 
-                                class="w-full h-10 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition shadow-md shadow-primary/10 flex items-center justify-center gap-1.5 cursor-pointer text-xs">
+                                class="w-full h-10 ui-btn-primary font-bold rounded-xl transition shadow-md shadow-primary/10 flex items-center justify-center gap-1.5 cursor-pointer text-xs">
                                 <i class="fa-solid fa-cart-plus"></i> Masukkan Obat
                             </button>
                         </div>
