@@ -226,12 +226,31 @@
                         <!-- Transfer Instruction Info -->
                         <div id="transfer-info" class="hidden p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3 mt-4 text-xs text-text-main">
                             <h4 class="font-bold text-sm text-primary">Informasi Rekening Bank Apotek Naufal</h4>
-                            <p>Silakan lakukan pembayaran ke nomor rekening di bawah ini:</p>
-                            <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
-                                <div>
-                                    <span class="text-text-muted text-[10px] font-sans block uppercase">Bank Mandiri</span>
-                                    <strong>123-000-456789-0</strong>
-                                    <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal Jaya</span>
+                            <p>Silakan lakukan pembayaran ke salah satu nomor rekening di bawah ini:</p>
+                            <div class="space-y-2">
+                                <!-- BCA -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BCA</span>
+                                        <strong>1630507134</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
+                                </div>
+                                <!-- BRI -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BRI</span>
+                                        <strong>1840 0100 2958 533</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
+                                </div>
+                                <!-- BSI -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BSI</span>
+                                        <strong>7102 1461 36</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="space-y-2 pt-2">
@@ -246,15 +265,12 @@
                             <h4 class="font-bold text-sm text-primary w-full text-left">Pembayaran QRIS Apotek Naufal</h4>
                             <p class="w-full">Pindai kode QR di bawah ini menggunakan aplikasi e-wallet Anda (Gopay, OVO, Dana, LinkAja) atau m-Banking:</p>
                             
-                            <!-- Mock QR Code Design -->
+                            <!-- Actual QRIS Image Design -->
                             <div class="bg-white p-4 rounded-xl border border-gray-100 flex flex-col items-center shadow-inner mt-2">
-                                <div class="w-40 h-40 bg-gray-200 flex items-center justify-center border-4 border-primary relative">
-                                    <i class="fa-solid fa-qrcode text-8xl text-gray-800"></i>
-                                    <div class="absolute inset-0 bg-black/5 flex items-center justify-center">
-                                        <span class="bg-primary text-white font-bold text-[10px] px-2 py-1 rounded shadow-sm">APOTEK NAUFAL</span>
-                                    </div>
+                                <div class="w-48 border-2 border-primary rounded-lg overflow-hidden shadow-sm">
+                                    <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Apotek Naufal" class="w-full h-auto">
                                 </div>
-                                <span class="text-[10px] font-bold tracking-widest mt-2 uppercase">NMID: ID10304958102</span>
+                                <span class="text-[10px] font-bold tracking-widest mt-2 uppercase">NMID: ID2023250018231</span>
                             </div>
 
                             <div class="space-y-2 pt-2 w-full">
