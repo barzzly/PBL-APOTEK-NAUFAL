@@ -187,7 +187,7 @@ Menyimpan informasi transaksi pembelian obat.
 | `shipping_cost` | `decimal(12,2)` | Biaya pengiriman jika delivery |
 | `discount` | `decimal(12,2)` | Potongan harga (nullable) |
 | `total_amount` | `decimal(12,2)` | Total akhir yang wajib dibayar |
-| `payment_method` | `enum('cash', 'transfer', 'bpjs', 'qris')` | Metode pembayaran |
+| `payment_method` | `enum('cash', 'transfer', 'qris')` | Metode pembayaran |
 | `payment_status` | `enum('unpaid', 'paid', 'refunded')` | Status pembayaran |
 | `paid_at` | `timestamp` | Waktu pembayaran terkonfirmasi (nullable) |
 | `payment_proof` | `string` | Bukti transfer pembayaran (nullable) |

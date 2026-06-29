@@ -101,7 +101,6 @@ class Order extends Model
         return match($this->payment_method) {
             'cash'     => 'Tunai',
             'transfer' => 'Transfer Bank',
-            'bpjs'     => 'BPJS',
             'qris'     => 'QRIS',
             default    => strtoupper($this->payment_method),
         };

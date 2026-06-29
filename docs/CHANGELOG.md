@@ -51,7 +51,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Fitur Checkout & Pemesanan Obat:
   - Tipe pengambilan: Pickup (Ambil di Apotek) dan Delivery (Pengiriman Kurir).
-  - Metode pembayaran: Cash, Transfer Bank, QRIS, dan BPJS.
+  - Metode pembayaran: Cash, Transfer Bank, dan QRIS.
 - Perhitungan Jarak & Ongkir Dinamis:
   - Integrasi API OSRM (Open Source Routing Machine) untuk mengukur jarak berkendara dari apotek ke titik lokasi customer.
   - Mekanisme fallback formula Haversine untuk menghitung jarak garis lurus apabila OSRM offline.

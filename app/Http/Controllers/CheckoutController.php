@@ -54,7 +54,7 @@ class CheckoutController extends Controller
         // Dynamic validation
         $validationRules = [
             'order_type' => 'required|in:pickup,delivery',
-            'payment_method' => 'required|in:cash,transfer,bpjs,qris',
+            'payment_method' => 'required|in:cash,transfer,qris',
             'shipping_address' => 'required_if:order_type,delivery|nullable|string',
             'location_details' => 'required_if:order_type,delivery|nullable|string|max:255',
             'delivery_latitude' => 'required_if:order_type,delivery|nullable|numeric',

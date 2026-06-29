@@ -28,7 +28,7 @@ return new class extends Migration
             $table->decimal('shipping_cost', 12, 2)->default(0);
             $table->decimal('discount', 12, 2)->default(0);
             $table->decimal('total_amount', 12, 2)->default(0);
-            $table->enum('payment_method', ['cash', 'transfer', 'bpjs', 'qris'])->default('cash');
+            $table->enum('payment_method', ['cash', 'transfer', 'qris'])->default('cash');
             $table->enum('payment_status', ['unpaid', 'paid', 'refunded'])->default('unpaid');
             $table->timestamp('paid_at')->nullable();
             $table->string('payment_proof')->nullable();      // Bukti transfer
