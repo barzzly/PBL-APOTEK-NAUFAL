@@ -56,7 +56,7 @@ Dokumen ini menjelaskan perencanaan pengerjaan (sprint planning) proyek pengemba
 |---|---|---|---|
 | SP3-01 | Alur checkout pesanan dari keranjang belanja | Hidayathul Fikri | ✅ Selesai |
 | SP3-02 | Form upload resep dokter untuk pembelian obat resep keras | Nabilla Fitricia Hernanda | ✅ Selesai |
-| SP3-03 | Pilihan metode pembayaran (Transfer Bank, COD, QRIS, BPJS) | Farid Yahya | ✅ Selesai |
+| SP3-03 | Pilihan metode pembayaran (Transfer Bank, COD, QRIS) | Farid Yahya | ✅ Selesai |
 | SP3-04 | Halaman dan fitur tracking status pesanan beserta auto-restock jika batal | Rury Fezriani Matari | ✅ Selesai |
 | SP3-05 | Integrasi OSRM API & Haversine formula untuk perhitungan ongkir delivery dinamis | Hidayathul Fikri | ✅ Selesai |
 | SP3-06 | Pengembangan ruang live chat konsultasi dokter & resep (`/tickets/room/{id}`) | Farid Yahya | ✅ Selesai |

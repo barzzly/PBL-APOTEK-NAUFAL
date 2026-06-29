@@ -28,7 +28,7 @@
 
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -109,7 +109,7 @@
                 <div class="lg:col-span-2 space-y-6">
                     
                     <!-- 1. Tipe Pengiriman -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                    <div class="ui-card p-6 space-y-4">
                         <h3 class="text-base font-bold text-text-main flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">1</span>
                             Tipe Pengiriman
@@ -192,7 +192,7 @@
 
 
                     <!-- 3. Metode Pembayaran -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                    <div class="ui-card p-6 space-y-4">
                         <h3 class="text-base font-bold text-text-main flex items-center gap-2">
                             <span class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">2</span>
                             Metode Pembayaran
@@ -220,23 +220,37 @@
                                 <span class="text-xs font-semibold text-text-main mt-1">QRIS / E-Wallet</span>
                             </label>
 
-                            <!-- BPJS -->
-                            <label class="border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden" id="pay-bpjs">
-                                <input type="radio" name="payment_method" value="bpjs" onchange="togglePaymentMethod('bpjs')" class="absolute top-3 right-3 accent-primary">
-                                <div class="text-xl text-primary mt-2"><i class="fa-solid fa-id-card"></i></div>
-                                <span class="text-xs font-semibold text-text-main mt-1">BPJS</span>
-                            </label>
+
                         </div>
 
                         <!-- Transfer Instruction Info -->
                         <div id="transfer-info" class="hidden p-4 rounded-xl bg-gray-50 border border-gray-200 space-y-3 mt-4 text-xs text-text-main">
                             <h4 class="font-bold text-sm text-primary">Informasi Rekening Bank Apotek Naufal</h4>
-                            <p>Silakan lakukan pembayaran ke nomor rekening di bawah ini:</p>
-                            <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
-                                <div>
-                                    <span class="text-text-muted text-[10px] font-sans block uppercase">Bank Mandiri</span>
-                                    <strong>123-000-456789-0</strong>
-                                    <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal Jaya</span>
+                            <p>Silakan lakukan pembayaran ke salah satu nomor rekening di bawah ini:</p>
+                            <div class="space-y-2">
+                                <!-- BCA -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BCA</span>
+                                        <strong>1630507134</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
+                                </div>
+                                <!-- BRI -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BRI</span>
+                                        <strong>1840 0100 2958 533</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
+                                </div>
+                                <!-- BSI -->
+                                <div class="p-3 bg-white border border-gray-100 rounded-lg font-mono flex justify-between items-center text-sm">
+                                    <div>
+                                        <span class="text-text-muted text-[10px] font-sans block uppercase">Bank BSI</span>
+                                        <strong>7102 1461 36</strong>
+                                        <span class="text-xs font-sans text-text-muted block">a/n Apotek Naufal</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="space-y-2 pt-2">
@@ -251,15 +265,13 @@
                             <h4 class="font-bold text-sm text-primary w-full text-left">Pembayaran QRIS Apotek Naufal</h4>
                             <p class="w-full">Pindai kode QR di bawah ini menggunakan aplikasi e-wallet Anda (Gopay, OVO, Dana, LinkAja) atau m-Banking:</p>
                             
-                            <!-- Mock QR Code Design -->
+                            <!-- Actual QRIS Image Design -->
                             <div class="bg-white p-4 rounded-xl border border-gray-100 flex flex-col items-center shadow-inner mt-2">
-                                <div class="w-40 h-40 bg-gray-200 flex items-center justify-center border-4 border-primary relative">
-                                    <i class="fa-solid fa-qrcode text-8xl text-gray-800"></i>
-                                    <div class="absolute inset-0 bg-black/5 flex items-center justify-center">
-                                        <span class="bg-primary text-white font-bold text-[10px] px-2 py-1 rounded shadow-sm">APOTEK NAUFAL</span>
-                                    </div>
+                                <h5 class="text-xs font-bold text-gray-700 mb-2 uppercase">QRIS APOTEK NAUFAL</h5>
+                                <div class="w-48 border-2 border-primary rounded-lg overflow-hidden shadow-sm">
+                                    <img src="{{ asset('images/qris.png') }}" alt="QRIS Apotek Naufal" class="w-full h-auto">
                                 </div>
-                                <span class="text-[10px] font-bold tracking-widest mt-2 uppercase">NMID: ID10304958102</span>
+                                <span class="text-[10px] font-bold tracking-widest mt-2 uppercase">NMID: ID2023250018231</span>
                             </div>
 
                             <div class="space-y-2 pt-2 w-full">
@@ -269,17 +281,13 @@
                             </div>
                         </div>
 
-                        <!-- BPJS Info -->
-                        <div id="bpjs-info" class="hidden p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed mt-4">
-                            <h4 class="font-bold mb-1"><i class="fa-solid fa-circle-info"></i> Ketentuan Klaim BPJS</h4>
-                            <p>Pembayaran menggunakan BPJS memerlukan verifikasi manual oleh staf apotek kami. Pastikan kartu BPJS Anda aktif dan unggah resep dokter BPJS resmi pada form resep dokter di atas.</p>
-                        </div>
+
                     </div>
                 </div>
 
                 <!-- Summary Column -->
                 <div class="space-y-6">
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+                    <div class="ui-card p-6 space-y-6">
                         <h3 class="text-base font-bold text-text-main">Ringkasan Pesanan</h3>
                         
                         <!-- Mini items list -->
@@ -310,7 +318,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md cursor-pointer">
+                        <button type="submit" class="w-full py-3.5 ui-btn-primary font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md cursor-pointer">
                             Buat Pesanan Sekarang
                         </button>
                     </div>
@@ -325,7 +333,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+    <footer class="bg-white/82 backdrop-blur border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10 text-left">
                 <div class="lg:col-span-2">
@@ -688,13 +696,10 @@
         function togglePaymentMethod(method) {
             const transferInfo = document.getElementById('transfer-info');
             const qrisInfo = document.getElementById('qris-info');
-            const bpjsInfo = document.getElementById('bpjs-info');
-
             // Reset borders
             document.getElementById('pay-cash').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
             document.getElementById('pay-transfer').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
             document.getElementById('pay-qris').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
-            document.getElementById('pay-bpjs').className = "border border-gray-200 rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
 
             // Set primary border for active payment method
             document.getElementById(`pay-${method}`).className = "border-2 border-primary rounded-xl p-3 flex flex-col items-center gap-2 text-center cursor-pointer hover:bg-gray-50 transition relative overflow-hidden";
@@ -702,14 +707,11 @@
             // Show instruction
             transferInfo.classList.add('hidden');
             qrisInfo.classList.add('hidden');
-            bpjsInfo.classList.add('hidden');
 
             if (method === 'transfer') {
                 transferInfo.classList.remove('hidden');
             } else if (method === 'qris') {
                 qrisInfo.classList.remove('hidden');
-            } else if (method === 'bpjs') {
-                bpjsInfo.classList.remove('hidden');
             }
         }
 
