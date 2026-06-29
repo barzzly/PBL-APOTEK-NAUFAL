@@ -125,10 +125,6 @@
                             <p><i class="fa-solid fa-motorcycle text-primary mr-1"></i> Pesanan Anda akan dikirimkan oleh kurir kami. Mohon siapkan uang tunai sebesar <strong class="text-secondary font-bold">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong> pas saat pesanan Anda tiba.</p>
                         @endif
                     </div>
-                @elseif($order->payment_method === 'bpjs')
-                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 leading-relaxed">
-                        <p><i class="fa-solid fa-id-card text-amber-600 mr-1"></i> Harap membawa kartu BPJS asli dan fotokopi resep dokter BPJS saat melakukan pengambilan obat atau saat menerima obat dari kurir untuk keperluan verifikasi kepesertaan BPJS Anda.</p>
-                    </div>
                 @endif
             </div>
 

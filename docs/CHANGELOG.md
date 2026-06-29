@@ -4,6 +4,21 @@ Semua perubahan penting pada proyek **Website Apotek Naufal** didokumentasikan d
 
 Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [v0.5.0] - 2026-06-16
+
+### Added
+- Integrasi WhatsApp Bot API kustom (Node.js/Next.js) untuk pengiriman kode OTP 6-digit dan pembaruan real-time status pesanan pelanggan.
+- Fitur WhatsApp OTP Login & Registration: Autentikasi aman tanpa sandi menggunakan One-Time Password (OTP) dikirim langsung ke nomor WhatsApp terdaftar.
+- Fitur "Lupa Password" terhubung langsung dengan alur masuk OTP WhatsApp untuk pemulihan akun yang cepat.
+- Fitur Password Visibility Toggle (tombol ikon mata) di form Login dan Register untuk menampilkan/menyembunyikan sandi secara real-time.
+- Halaman Syarat & Ketentuan (`/syarat-ketentuan`) dan Kebijakan Privasi (`/kebijakan-privasi`) dengan layout premium dua kolom (sticky navigation, scroll highlighting, dan Call-to-Action apoteker).
+- Otomatisasi konversi media: Mengonversi aset utama (`hero.png` -> `hero.webp`) serta fitur backend untuk mengonversi gambar obat/kategori yang diunggah secara otomatis ke format WebP untuk efisiensi performa.
+
+### Changed
+- Footer website: Memperbarui kontak bisnis Apotek Naufal dan menghapus tautan media sosial Facebook/Instagram yang tidak digunakan.
+
+---
+
 ## [v0.4.1] - 2026-06-15
 
 ### Added
@@ -36,7 +51,7 @@ Format mengacu pada [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Fitur Checkout & Pemesanan Obat:
   - Tipe pengambilan: Pickup (Ambil di Apotek) dan Delivery (Pengiriman Kurir).
-  - Metode pembayaran: Cash, Transfer Bank, QRIS, dan BPJS.
+  - Metode pembayaran: Cash, Transfer Bank, dan QRIS.
 - Perhitungan Jarak & Ongkir Dinamis:
   - Integrasi API OSRM (Open Source Routing Machine) untuk mengukur jarak berkendara dari apotek ke titik lokasi customer.
   - Mekanisme fallback formula Haversine untuk menghitung jarak garis lurus apabila OSRM offline.

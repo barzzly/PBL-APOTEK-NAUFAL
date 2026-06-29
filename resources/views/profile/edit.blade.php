@@ -96,7 +96,7 @@
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -105,7 +105,7 @@
             <div class="flex-grow w-full lg:w-auto order-3 lg:order-none relative max-w-2xl">
                 <form action="{{ route('home') }}" method="GET" class="relative">
                     <input type="text" name="search" placeholder="Cari obat, vitamin, atau suplemen..." 
-                        class="w-full py-2.5 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
+                        class="w-full py-2.5 px-5 pr-12 ui-input rounded-full text-sm outline-none transition header-search-input">
                     <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
@@ -154,7 +154,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-border-muted shadow-sm">
+    <nav class="bg-white/70 backdrop-blur border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4">
             <ul class="flex gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-3">
                 <li><a href="/" class="text-text-main hover:text-primary font-medium text-sm transition">Beranda</a></li>
@@ -191,7 +191,7 @@
             </div>
 
             <!-- UNIFIED PROFILE CARD CONTAINER -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <div class="ui-card p-6 md:p-8">
                 
                 <!-- Profile Header Section -->
                 <div class="profile-header-container">
@@ -335,7 +335,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+    <footer class="bg-white/82 backdrop-blur border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
                 <div class="lg:col-span-2">

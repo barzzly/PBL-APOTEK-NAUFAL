@@ -27,7 +27,7 @@
 
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -35,7 +35,7 @@
 
             <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
+                    class="ui-input w-full py-3 px-5 pr-12 rounded-full text-sm outline-none transition header-search-input">
                 <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -51,7 +51,7 @@
                 <div class="hidden sm:flex items-center gap-3">
                     @auth
                         @if(auth()->user()->role === 'admin')
-                            <a href="{{ route('admin.dashboard') }}" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="ui-btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold transition flex items-center gap-2"><i class="fa-solid fa-gauge-high"></i> Panel Admin</a>
                         @else
                             <a href="{{ route('orders.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-receipt"></i> Pesanan Saya</a>
                             <a href="{{ route('tickets.history') }}" class="px-3 py-2 text-xs font-semibold text-primary hover:underline flex items-center gap-1.5"><i class="fa-solid fa-ticket"></i> Ticket Saya</a>
@@ -71,8 +71,8 @@
                             </form>
                         @endif
                     @else
-                        <a href="/login" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-primary bg-white border border-primary hover:bg-primary-light transition">Masuk</a>
-                        <a href="/register" class="px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-dark transition border border-transparent">Daftar</a>
+                        <a href="/login" class="ui-btn-ghost px-5 py-2.5 rounded-xl text-sm font-semibold transition">Masuk</a>
+                        <a href="/register" class="ui-btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold transition">Daftar</a>
                     @endauth
                 </div>
             </div>
@@ -80,7 +80,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-border-muted shadow-sm">
+    <nav class="bg-white/70 backdrop-blur border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4">
             <ul class="flex gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-3">
                 <li><a href="/" class="text-primary font-semibold text-sm relative after:content-[''] after:absolute after:-bottom-3 after:left-0 after:w-full after:h-0.5 after:bg-primary">Beranda</a></li>
@@ -116,19 +116,21 @@
         </div>
         <!-- Hero Section -->
         <section class="max-w-7xl mx-auto px-4 py-5">
-            <div class="w-full h-48 md:h-[350px] rounded-2xl overflow-hidden relative shadow-md bg-primary-light">
-                <img src="/images/hero.webp" alt="Promo Apotek Naufal" class="w-full h-full object-cover">
-                <div class="absolute inset-y-0 left-0 flex flex-col justify-center max-w-md p-6 md:p-12 text-white bg-black/30 backdrop-blur-sm rounded-l-2xl">
-                    <h2 class="text-2xl md:text-4xl font-bold mb-4 leading-tight drop-shadow-md">Kesehatan Anda Adalah Prioritas Kami</h2>
-                    <p class="text-sm md:text-base mb-6 drop-shadow-md hidden md:block">Beli obat asli, lengkap, dan terpercaya secara online dengan pengiriman cepat.</p>
-                    <a href="#" class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition w-max">Belanja Sekarang</a>
+            <div class="w-full min-h-[420px] rounded-[1.75rem] overflow-hidden relative shadow-[0_24px_80px_rgba(15,77,55,0.16)] bg-primary-light">
+                <img src="/images/hero.webp" alt="Promo Apotek Naufal" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/86 via-primary/48 to-transparent"></div>
+                <div class="relative z-10 flex min-h-[420px] flex-col justify-center max-w-2xl p-6 md:p-12 text-white">
+                    <span class="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white ring-1 ring-white/20"><i class="fa-solid fa-shield-heart"></i> Apotek online tepercaya</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold mb-4 leading-tight drop-shadow-md">Kesehatan Anda, Diurus Lebih Cepat</h2>
+                    <p class="text-sm md:text-base mb-7 max-w-xl text-white/88 drop-shadow-md">Beli obat asli, tebus resep, dan konsultasi apoteker dalam pengalaman belanja yang rapi, cepat, dan aman.</p>
+                    <a href="#products-section" class="ui-btn-primary px-6 py-3.5 font-semibold rounded-xl transition w-max inline-flex items-center gap-2">Belanja Sekarang <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
             </div>
         </section>
 
         <!-- Prescription Banner Section -->
         <section class="max-w-7xl mx-auto px-4 py-2">
-            <div class="bg-gradient-to-r from-primary to-[#008f45] text-white rounded-2xl p-6 md:p-8 shadow-sm flex flex-col lg:flex-row justify-between items-center gap-6 relative overflow-hidden group">
+            <div class="bg-gradient-to-r from-primary-dark via-primary to-secondary text-white rounded-[1.25rem] p-6 md:p-8 shadow-[0_18px_50px_rgba(15,77,55,0.18)] flex flex-col lg:flex-row justify-between items-center gap-6 relative overflow-hidden group">
                 <div class="absolute -right-10 -bottom-10 text-white/10 text-9xl font-bold select-none pointer-events-none group-hover:scale-110 transition-transform duration-500">
                     <i class="fa-solid fa-ticket"></i>
                 </div>
@@ -155,7 +157,7 @@
             </div>
             <div class="grid grid-cols-4 md:grid-cols-8 gap-4">
                 @forelse($categories as $category)
-                <a href="{{ route('category.show', $category->slug) }}" class="bg-white rounded-xl p-4 flex flex-col items-center gap-3 shadow-sm hover:-translate-y-1 hover:shadow-md hover:text-primary transition text-center group">
+                <a href="{{ route('category.show', $category->slug) }}" class="ui-card-soft p-4 flex flex-col items-center gap-3 hover:text-primary transition text-center group">
                     @if($category->image)
                     <div class="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-primary-light">
                         <img src="{{ str_starts_with($category->image, '/') ? $category->image : '/' . $category->image }}" alt="{{ $category->name }}" class="w-full h-full object-cover">
@@ -205,7 +207,7 @@
                 
                 @forelse($medicines as $medicine)
                 <!-- Product Card -->
-                <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition flex flex-col relative group border border-gray-100">
+                <div class="ui-product-card overflow-hidden flex flex-col relative group">
                     <div class="absolute top-2 left-2 bg-primary-light text-primary text-[10px] font-bold px-2 py-1 rounded z-10">{{ $medicine->category->name ?? 'Umum' }}</div>
                     <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 flex items-center justify-center bg-white w-full overflow-hidden">
                         @if($medicine->image)
@@ -222,7 +224,7 @@
                         <div class="text-base font-bold text-secondary mb-2 mt-auto">Rp {{ number_format($medicine->price, 0, ',', '.') }}</div>
                         @if($medicine->stock > 0)
                             <button onclick="addToCart(this)" 
-                                    class="mt-auto w-full py-2 bg-white border border-primary text-primary text-xs font-semibold rounded-lg hover:bg-primary hover:text-white transition cursor-pointer"
+                                    class="mt-auto w-full py-2.5 ui-btn-ghost text-xs font-semibold rounded-xl hover:bg-primary hover:text-white transition cursor-pointer"
                                     data-id="{{ $medicine->id }}"
                                     data-name="{{ $medicine->name }}"
                                     data-price="Rp {{ number_format($medicine->price, 0, ',', '.') }}"
@@ -250,7 +252,7 @@
         
         <!-- Trust Indicators Section -->
         <section class="max-w-7xl mx-auto px-4 mb-10">
-            <div class="flex flex-wrap md:flex-nowrap justify-between gap-6 bg-white p-6 md:p-8 rounded-xl shadow-sm">
+            <div class="flex flex-wrap md:flex-nowrap justify-between gap-6 ui-card p-6 md:p-8">
                 <div class="flex items-center gap-4 w-full md:w-auto">
                     <i class="fa-solid fa-shield-halved text-3xl text-primary shrink-0"></i>
                     <div>
@@ -285,7 +287,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+    <footer class="bg-white/82 backdrop-blur border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10">
                 <div class="lg:col-span-2">

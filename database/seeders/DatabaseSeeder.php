@@ -224,7 +224,7 @@ class DatabaseSeeder extends Seeder
             ['ready_for_pickup', 'paid', 'cash', 'pickup', 1, 3, [[2, 2]]], // kemarin, c3
             ['delivered', 'paid', 'transfer', 'delivery', 1, 4, [[10, 1], [11, 1]]], // kemarin, c4
             ['cancelled', 'unpaid', 'transfer', 'delivery', 2, 0, [[4, 3]]], // 2 hari lalu, c0
-            ['delivered', 'paid', 'bpjs', 'pickup', 3, 1, [[3, 1], [4, 1]]], // 3 hari lalu, c1
+            ['delivered', 'paid', 'transfer', 'pickup', 3, 1, [[3, 1], [4, 1]]], // 3 hari lalu, c1
             ['delivered', 'paid', 'cash', 'pickup', 4, 2, [[6, 2]]], // 4 hari lalu, c2
             ['delivered', 'paid', 'qris', 'delivery', 5, 3, [[7, 1], [8, 2]]], // 5 hari lalu, c3
             ['pending', 'unpaid', 'transfer', 'delivery', 1, 4, [[9, 3]]], // kemarin, c4

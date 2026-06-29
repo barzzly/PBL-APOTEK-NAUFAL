@@ -58,7 +58,6 @@
                 <option value="all"      {{ $paymentFilter == 'all'      ? 'selected' : '' }}>Semua Metode</option>
                 <option value="cash"     {{ $paymentFilter == 'cash'     ? 'selected' : '' }}>Tunai</option>
                 <option value="transfer" {{ $paymentFilter == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
-                <option value="bpjs"     {{ $paymentFilter == 'bpjs'     ? 'selected' : '' }}>BPJS</option>
                 <option value="qris"     {{ $paymentFilter == 'qris'     ? 'selected' : '' }}>QRIS</option>
             </select>
         </div>

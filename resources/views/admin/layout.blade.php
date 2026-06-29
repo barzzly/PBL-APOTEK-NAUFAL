@@ -34,40 +34,41 @@
         }
     </style>
 </head>
-<body class="bg-bg-body text-text-main font-sans antialiased flex min-h-screen">
+<body class="admin-shell bg-bg-body text-text-main font-sans antialiased flex min-h-screen">
+    <button type="button" id="adminBackdrop" class="admin-backdrop" aria-label="Tutup menu"></button>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="bg-white border-r border-gray-100 flex flex-col shrink-0 sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20">
-        <div class="h-16 flex items-center px-10 border-b border-gray-100 shrink-0">
+    <aside id="sidebar" class="bg-white/92 backdrop-blur-xl border-r border-border-muted flex flex-col shrink-0 sticky top-0 h-screen shadow-[18px_0_50px_rgba(15,77,55,0.08)] z-20">
+        <div class="h-16 flex items-center px-8 border-b border-border-muted shrink-0">
             <a href="/" class="text-primary text-xl font-bold flex items-center gap-3">
-                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="w-8 h-8 object-contain rounded-lg shadow-sm" alt="Logo Apotek Naufal">
+                <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="w-9 h-9 object-contain rounded-xl bg-primary-light p-1 shadow-sm" alt="Logo Apotek Naufal">
                 <span class="sidebar-text">Apotek Naufal</span>
             </a>
         </div>
         
-        <nav class="flex-grow p-4 space-y-1.5 overflow-y-auto">
+        <nav class="flex-grow p-4 space-y-2 overflow-y-auto">
             <div class="sidebar-text text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 mt-2 px-3">Menu Utama</div>
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.dashboard') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-chart-pie w-5 {{ request()->routeIs('admin.dashboard') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Dashboard</span>
             </a>
-            <a href="{{ route('admin.categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.categories*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.categories') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.categories*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-list w-5 {{ request()->routeIs('admin.categories*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Kategori Obat</span>
             </a>
-            <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.medicines*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.medicines') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.medicines*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-pills w-5 {{ request()->routeIs('admin.medicines*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Data Obat</span>
             </a>
-            <a href="{{ route('admin.orders') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.orders*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.orders') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.orders*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-receipt w-5 {{ request()->routeIs('admin.orders*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Pesanan</span>
             </a>
-            <a href="{{ route('admin.tickets.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.tickets*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.tickets.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.tickets*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-ticket w-5 {{ request()->routeIs('admin.tickets*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Ticket</span>
             </a>
-            <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700' }} transition-all font-medium text-sm">
+            <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Laporan Penjualan</span>
             </a>
@@ -85,17 +86,17 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-grow flex flex-col min-w-0 bg-gray-50/50">
+    <main class="admin-main flex-grow flex flex-col min-w-0">
         <!-- Header -->
-        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between pl-6 pr-10 sticky top-0 z-10 shrink-0">
+        <header class="h-16 ui-glass-nav border-b flex items-center justify-between pl-6 pr-10 sticky top-0 z-10 shrink-0">
             <div class="flex items-center gap-4">
                 <!-- Toggle sidebar button -->
                 <button id="sidebarToggle"
-                    class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-primary hover:bg-gray-100 transition-all"
+                    class="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-primary hover:bg-primary-light transition-all"
                     title="Sembunyikan/Tampilkan Menu">
                     <i class="fa-solid fa-bars text-base"></i>
                 </button>
-                <h1 class="text-xl font-bold text-gray-800">@yield('header_title', 'Dashboard')</h1>
+                <h1 class="text-xl font-extrabold text-text-main tracking-tight">@yield('header_title', 'Dashboard')</h1>
             </div>
             
             <div class="flex items-center gap-6">
@@ -112,7 +113,7 @@
                         </button>
                         
                         {{-- Dropdown Panel --}}
-                        <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden transform origin-top-right transition-all">
+                        <div id="notificationDropdown" class="hidden absolute right-0 mt-3 w-80 sm:w-96 ui-card z-50 overflow-hidden transform origin-top-right transition-all">
                             <div class="px-5 py-4 bg-gradient-to-r from-primary/10 to-emerald-500/10 border-b border-gray-100 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm font-bold text-gray-800">Notifikasi</span>
@@ -174,7 +175,7 @@
         </header>
 
         <!-- Content -->
-        <div class="p-8 bg-bg-body">
+        <div class="admin-content p-5 md:p-8 bg-transparent">
             @yield('content')
         </div>
     </main>
@@ -332,15 +333,51 @@
         (function () {
             var sidebar = document.getElementById('sidebar');
             var btn = document.getElementById('sidebarToggle');
+            var backdrop = document.getElementById('adminBackdrop');
+            var mobileQuery = window.matchMedia('(max-width: 1023px)');
 
-            // Restore saved state
-            if (localStorage.getItem('sidebar_hidden') === '1') {
-                sidebar.classList.add('sidebar-hidden');
+            function closeMobileMenu() {
+                document.body.classList.remove('admin-menu-open');
+            }
+
+            function syncDesktopState() {
+                if (mobileQuery.matches) {
+                    sidebar.classList.remove('sidebar-hidden');
+                    closeMobileMenu();
+                    return;
+                }
+
+                if (localStorage.getItem('sidebar_hidden') === '1') {
+                    sidebar.classList.add('sidebar-hidden');
+                } else {
+                    sidebar.classList.remove('sidebar-hidden');
+                }
+                closeMobileMenu();
+            }
+
+            syncDesktopState();
+            if (mobileQuery.addEventListener) {
+                mobileQuery.addEventListener('change', syncDesktopState);
+            } else if (mobileQuery.addListener) {
+                mobileQuery.addListener(syncDesktopState);
             }
 
             btn.addEventListener('click', function () {
+                if (mobileQuery.matches) {
+                    document.body.classList.toggle('admin-menu-open');
+                    return;
+                }
+
                 sidebar.classList.toggle('sidebar-hidden');
                 localStorage.setItem('sidebar_hidden', sidebar.classList.contains('sidebar-hidden') ? '1' : '0');
+            });
+
+            if (backdrop) {
+                backdrop.addEventListener('click', closeMobileMenu);
+            }
+
+            sidebar.querySelectorAll('a').forEach(function (link) {
+                link.addEventListener('click', closeMobileMenu);
             });
         })();
 
@@ -548,6 +585,118 @@
             });
             lastSeenNotificationKeys = initialNotifs;
 
+            // Build mobile cards from admin tables
+            function buildAdminMobileCards() {
+                document.querySelectorAll('.overflow-x-auto').forEach(function (wrap) {
+                    if (wrap.dataset.mobileCardsBuilt === '1') return;
+                    var table = wrap.querySelector('table');
+                    if (!table) return;
+
+                    var headers = Array.from(table.querySelectorAll('thead th')).map(function (th) {
+                        return (th.innerText || '').replace(/\s+/g, ' ').trim();
+                    });
+
+                    var rows = Array.from(table.querySelectorAll('tbody tr')).filter(function (tr) {
+                        return tr.querySelectorAll('td').length > 1 && !tr.id.includes('empty');
+                    });
+                    if (!rows.length) return;
+
+                    var list = document.createElement('div');
+                    list.className = 'admin-mobile-card-list';
+
+                    rows.forEach(function (tr) {
+                        var cells = Array.from(tr.children);
+                        var card = document.createElement('div');
+                        card.className = 'admin-mobile-card';
+
+                        var titleIndex = cells.findIndex(function (td) {
+                            return td.querySelector('.medicine-name, .category-name, .transaction-number, .customer-name');
+                        });
+                        if (titleIndex < 0) titleIndex = Math.min(1, cells.length - 1);
+
+                        var actionIndex = cells.findIndex(function (td) {
+                            return td.querySelector('a[href], button, form');
+                        });
+                        if (actionIndex === titleIndex) actionIndex = cells.length - 1;
+
+                        var imageIndex = cells.findIndex(function (td) {
+                            return td.querySelector('img') || td.querySelector('.fa-pills, .fa-tags');
+                        });
+
+                        var top = document.createElement('div');
+                        top.className = 'admin-mobile-card__top';
+
+                        if (imageIndex >= 0 && imageIndex !== actionIndex) {
+                            var thumb = document.createElement('div');
+                            thumb.className = 'admin-mobile-card__thumb';
+                            thumb.innerHTML = cells[imageIndex].innerHTML;
+                            top.appendChild(thumb);
+                        }
+
+                        var titleWrap = document.createElement('div');
+                        titleWrap.style.minWidth = '0';
+                        titleWrap.style.flex = '1 1 auto';
+                        var title = document.createElement('div');
+                        title.className = 'admin-mobile-card__title';
+                        title.textContent = (cells[titleIndex].innerText || '-').replace(/\s+/g, ' ').trim();
+                        titleWrap.appendChild(title);
+
+                        var metaCell = cells.find(function (td, idx) {
+                            return idx !== titleIndex && idx !== imageIndex && idx !== actionIndex && (td.innerText || '').trim();
+                        });
+                        if (metaCell) {
+                            var meta = document.createElement('div');
+                            meta.className = 'admin-mobile-card__meta';
+                            meta.textContent = (metaCell.innerText || '').replace(/\s+/g, ' ').trim();
+                            titleWrap.appendChild(meta);
+                        }
+                        top.appendChild(titleWrap);
+                        card.appendChild(top);
+
+                        var grid = document.createElement('div');
+                        grid.className = 'admin-mobile-card__grid';
+
+                        cells.forEach(function (td, idx) {
+                            if (idx === titleIndex || idx === imageIndex || idx === actionIndex) return;
+                            var value = (td.innerText || '').replace(/\s+/g, ' ').trim();
+                            if (!value) return;
+
+                            var field = document.createElement('div');
+                            field.className = 'admin-mobile-card__field';
+                            var label = document.createElement('span');
+                            label.className = 'admin-mobile-card__label';
+                            label.textContent = headers[idx] || 'Info';
+                            var val = document.createElement('span');
+                            val.className = 'admin-mobile-card__value';
+                            val.innerHTML = td.innerHTML;
+                            field.appendChild(label);
+                            field.appendChild(val);
+                            grid.appendChild(field);
+                        });
+
+                        if (grid.children.length) card.appendChild(grid);
+
+                        if (actionIndex >= 0) {
+                            var actions = document.createElement('div');
+                            actions.className = 'admin-mobile-card__actions';
+                            actions.innerHTML = cells[actionIndex].innerHTML;
+                            card.appendChild(actions);
+                        }
+
+                        list.appendChild(card);
+                        var syncCard = function () {
+                            card.style.display = tr.style.display === 'none' ? 'none' : '';
+                        };
+                        syncCard();
+                        new MutationObserver(syncCard).observe(tr, { attributes: true, attributeFilter: ['style', 'class'] });
+                    });
+
+                    wrap.appendChild(list);
+                    wrap.dataset.mobileCardsBuilt = '1';
+                });
+            }
+
+            buildAdminMobileCards();
             // Confirm delete kustom
             document.addEventListener('submit', function(e) {
                 const form = e.target.closest('.confirm-delete');

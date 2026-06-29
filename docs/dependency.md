@@ -76,6 +76,12 @@ Aplikasi Apotek Naufal terintegrasi secara langsung dengan layanan API eksternal
 * **API Endpoint:** `https://router.project-osrm.org/route/v1/driving/`
 * **Fallback:** Jika server OSRM sedang lambat atau offline, sistem otomatis beralih menggunakan rumus matematika **Haversine** untuk mendapatkan jarak garis lurus di bumi secara instan.
 
+### C. WhatsApp Bot API (Custom / Buatan Sendiri)
+* **Fungsi:** Mengirimkan kode OTP 6-digit untuk otentikasi login/register tanpa kata sandi dan pemberitahuan (notifikasi) pembaruan status pesanan secara real-time kepada pelanggan.
+* **Integrasi:** Dilakukan oleh `App\Services\WhatsAppNotificationService`.
+* **API Endpoint:** Terhubung ke API perpesanan berbasis Node.js/Next.js kustom yang dikonfigurasi melalui config `services.whatsapp.url`.
+* **Kebutuhan:** Memerlukan konfigurasi endpoint dan token bot WhatsApp di file `.env`.
+
 ---
 
 ## 6. Update & Pemeliharaan Dependensi
