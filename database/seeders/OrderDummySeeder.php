@@ -46,7 +46,7 @@ class OrderDummySeeder extends Seeder
         }
 
         $statuses = ['delivered', 'cancelled', 'pending', 'confirmed', 'ready_for_pickup', 'shipped'];
-        $paymentMethods = ['cash', 'transfer', 'bpjs', 'qris'];
+        $paymentMethods = ['cash', 'transfer', 'qris'];
 
         // 3. Generate 100 orders distributed over the last 365 days
         $totalOrdersCount = 100;

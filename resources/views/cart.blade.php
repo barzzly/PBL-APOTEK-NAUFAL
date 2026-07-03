@@ -23,7 +23,7 @@
 
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -31,7 +31,7 @@
 
             <form action="{{ route('home') }}" method="GET" class="flex-grow w-full lg:w-auto order-3 lg:order-none relative">
                 <input type="text" name="search" placeholder="Cari obat, vitamin, atau suplemen..." 
-                    class="w-full py-3 px-5 pr-12 border border-border-muted rounded-full text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary-light transition header-search-input">
+                    class="w-full py-3 px-5 pr-12 ui-input rounded-full text-sm outline-none transition header-search-input">
                 <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-primary text-lg cursor-pointer">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -75,7 +75,7 @@
     </header>
 
     <!-- Navigation -->
-    <nav class="bg-white border-b border-border-muted shadow-sm">
+    <nav class="bg-white/70 backdrop-blur border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4">
             <ul class="flex gap-6 overflow-x-auto whitespace-nowrap scrollbar-hide py-3">
                 <li><a href="/" class="text-text-main hover:text-primary font-medium text-sm transition">Beranda</a></li>
@@ -114,7 +114,7 @@
         <div id="cart-container" class="grid grid-cols-1 lg:grid-cols-3 gap-8 @if(empty($cart)) hidden @endif">
             <!-- Items Column -->
             <div class="lg:col-span-2 space-y-4">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="ui-card overflow-hidden">
                     <div class="p-6 border-b border-gray-100 hidden md:grid grid-cols-12 text-xs font-semibold uppercase text-text-muted tracking-wider">
                         <div class="col-span-6">Produk</div>
                         <div class="col-span-2 text-center">Harga</div>
@@ -190,7 +190,7 @@
 
             <!-- Summary Column -->
             <div class="space-y-6">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
+                <div class="ui-card p-6 space-y-6">
                     <h3 class="text-base font-bold text-text-main">Ringkasan Belanja</h3>
                     
                     <div class="space-y-3">
@@ -224,7 +224,7 @@
                         </button>
                         <p class="text-[11px] text-red-500 text-center mt-2">Ada produk dalam keranjang yang kehabisan stok atau melebihi stok tersedia. Mohon sesuaikan keranjang belanja Anda.</p>
                     @else
-                        <a href="{{ route('checkout.index') }}" class="w-full block py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md">
+                        <a href="{{ route('checkout.index') }}" class="w-full block py-3.5 ui-btn-primary font-bold rounded-xl text-center text-sm shadow-sm transition-all hover:shadow-md">
                             Lanjutkan ke Checkout
                         </a>
                     @endif
@@ -248,12 +248,12 @@
             </div>
             <h3 class="text-lg font-bold text-text-main mb-2">Keranjang Belanja Kosong</h3>
             <p class="text-sm text-text-muted mb-8 max-w-sm mx-auto">Anda belum menambahkan produk ke dalam keranjang belanja. Cari obat dan suplemen terbaik Anda sekarang!</p>
-            <a href="/" class="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg text-sm transition">Mulai Belanja</a>
+            <a href="/" class="px-6 py-3 ui-btn-primary font-semibold rounded-xl text-sm transition">Mulai Belanja</a>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-border-muted pt-16 pb-6 mt-12">
+    <footer class="bg-white/82 backdrop-blur border-t border-border-muted pt-16 pb-6 mt-12">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-10 text-left">
                 <div class="lg:col-span-2">

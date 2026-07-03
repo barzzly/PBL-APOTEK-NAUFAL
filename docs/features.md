@@ -109,7 +109,7 @@ Memproses obat yang ada di keranjang menjadi pesanan (*Order*) resmi di database
 **Alur Fitur:**
 1. Halaman checkout mengonfirmasi daftar obat.
 2. Memilih tipe pesanan: **Pengambilan di Apotek (Pickup)** atau **Pengiriman (Delivery)**.
-3. Memilih metode pembayaran: **Cash** (hanya untuk Pickup), **Transfer Bank**, **QRIS**, atau **BPJS**.
+3. Memilih metode pembayaran: **Cash** (hanya untuk Pickup), **Transfer Bank**, atau **QRIS**.
 4. Jika memilih **Delivery**, peta/koordinat pengiriman diset, dan jarak dihitung menggunakan API OSRM (Open Source Routing Machine) dengan fallback formula Haversine. Tarif ongkir disesuaikan dinamis: **Rp2.500 per km** (minimum Rp10.000, maksimum 50 km).
 5. Penyimpanan order dilakukan dalam satu transaksi database (`DB::transaction`) untuk memastikan data konsisten dan langsung memotong stok obat.
 6. Customer mengunggah bukti transfer jika menggunakan metode non-tunai.

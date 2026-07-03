@@ -84,7 +84,7 @@
             </div>
 
             <!-- Submit -->
-            <button type="submit" class="w-full py-3.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+            <button type="submit" class="w-full py-3.5 ui-btn-primary font-bold rounded-xl text-xs shadow-md shadow-primary/10 hover:shadow-lg hover:shadow-primary/20 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
                 <i class="fa-solid fa-shield-check text-sm"></i> Verifikasi & Masuk
             </button>
         </form>

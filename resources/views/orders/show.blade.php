@@ -17,7 +17,7 @@
 <body class="bg-bg-body text-text-main font-sans antialiased flex flex-col min-h-screen">
 
     <!-- Header -->
-    <header class="bg-white py-4 sticky top-0 z-50 shadow-sm border-b border-border-muted">
+    <header class="ui-glass-nav py-3 sticky top-0 z-50 border-b border-b border-border-muted">
         <div class="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4 lg:gap-8">
             <a href="/" class="text-primary text-2xl font-bold flex items-center gap-2">
                 <img src="{{ asset('images/logo_apotek_naufal.png') }}" class="h-8 w-auto object-contain" alt="Logo Apotek Naufal"> Apotek Naufal
@@ -97,7 +97,7 @@
         @endif
 
         <!-- Order Stepper Progress Tracking -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 overflow-x-auto">
+        <div class="ui-card p-6 mb-8 overflow-x-auto">
             <h3 class="text-sm font-bold text-text-main mb-6">Status Pelacakan Pesanan:</h3>
             
             <div class="min-w-[600px] flex items-center justify-between relative px-8">
@@ -170,7 +170,7 @@
             <!-- Left Info column (Items details) -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Rincian Obat -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+                <div class="ui-card p-6 space-y-4">
                     <h3 class="text-base font-bold text-text-main">Rincian Obat Yang Dibeli</h3>
                     
                     <div class="divide-y divide-gray-100">
@@ -213,7 +213,7 @@
 
                 <!-- Catatan Apoteker -->
                 @if($order->pharmacist_note)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-2">
+                <div class="ui-card p-6 space-y-2">
                     <h3 class="text-sm font-bold text-text-main flex items-center gap-2"><i class="fa-solid fa-comment-medical text-primary"></i> Catatan dari Apoteker:</h3>
                     <p class="text-xs text-text-muted leading-relaxed bg-primary-light/40 border border-green-100 p-4 rounded-xl italic">
                         "{{ $order->pharmacist_note }}"
@@ -225,7 +225,7 @@
             <!-- Right Info column (Delivery & Payment details) -->
             <div class="space-y-6">
                 <!-- Tipe Pengiriman -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 text-xs">
+                <div class="ui-card p-6 space-y-4 text-xs">
                     <h3 class="text-sm font-bold text-text-main"><i class="fa-solid fa-truck-ramp-box text-primary mr-1"></i> Informasi Pengiriman</h3>
                     <div>
                         <span class="text-text-muted block mb-1">Tipe Penerimaan</span>
@@ -267,7 +267,7 @@
                 </div>
 
                 <!-- Metode Pembayaran -->
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4 text-xs">
+                <div class="ui-card p-6 space-y-4 text-xs">
                     <h3 class="text-sm font-bold text-text-main"><i class="fa-solid fa-credit-card text-primary mr-1"></i> Informasi Pembayaran</h3>
                     <div>
                         <span class="text-text-muted block mb-1">Metode Pembayaran</span>
