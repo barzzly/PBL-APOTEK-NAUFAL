@@ -207,7 +207,11 @@
                 
                 @forelse($medicines as $medicine)
                 <!-- Product Card -->
-                <div class="ui-product-card overflow-hidden flex flex-col relative group">
+                @php
+                    $isInitiallyHidden = !request('search') && $loop->index >= 10;
+                @endphp
+                <div class="ui-product-card overflow-hidden flex flex-col relative group @if($isInitiallyHidden) hidden-medicine-card @endif"
+                     @if($isInitiallyHidden) style="display: none;" @endif>
                     <div class="absolute top-2 left-2 bg-primary-light text-primary text-[10px] font-bold px-2 py-1 rounded z-10">{{ $medicine->category->name ?? 'Umum' }}</div>
                     <a href="{{ route('product.detail', $medicine->slug) }}" class="h-40 flex items-center justify-center bg-white w-full overflow-hidden">
                         @if($medicine->image)
@@ -248,6 +252,14 @@
                 @endforelse
 
             </div>
+
+            @if(!request('search') && $medicines->count() > 10)
+            <div class="text-center mt-12 mb-4" id="lihat-semua-container">
+                <button onclick="showAllMedicines()" class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-md shadow-primary/10 flex items-center gap-2 mx-auto cursor-pointer hover:-translate-y-0.5">
+                    <i class="fa-solid fa-eye"></i> Lihat Semua Obat
+                </button>
+            </div>
+            @endif
         </section>
         
         <!-- Trust Indicators Section -->
@@ -327,8 +339,8 @@
                     <ul class="flex flex-col gap-3">
                         <li><span class="text-sm text-text-muted flex items-start gap-2"><i class="fa-solid fa-location-dot w-5 text-center mt-1 shrink-0"></i> Jl. Andalas raya No.125, Andalas, Kec. Padang Tim., Kota Padang, Sumatera Barat 25171</span></li>
                         <li><a href="mailto:kalafinnali@gmail.com" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> kalafinnali@gmail.com</a></li>
-                        <li><a href="https://wa.me/628218417911" target="_blank" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center text-emerald-500"></i> 08218417911</a></li>
-                        <li><a href="tel:08218417911" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> 08218417911</a></li>
+                        <li><a href="https://wa.me/6281372869386" target="_blank" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center text-emerald-500"></i> 081372869386</a></li>
+                        <li><a href="tel:081372869386" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> 081372869386</a></li>
                     </ul>
                 </div>
             </div>
@@ -465,6 +477,17 @@
                     });
                 }
             });
+        }
+
+        function showAllMedicines() {
+            const hiddenCards = document.querySelectorAll('.hidden-medicine-card');
+            hiddenCards.forEach(card => {
+                card.style.display = 'flex';
+            });
+            const btnContainer = document.getElementById('lihat-semua-container');
+            if (btnContainer) {
+                btnContainer.remove();
+            }
         }
     </script>
 

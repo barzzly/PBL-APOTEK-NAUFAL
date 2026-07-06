@@ -417,8 +417,8 @@
                     <ul class="flex flex-col gap-3">
                         <li><span class="text-sm text-text-muted flex items-start gap-2"><i class="fa-solid fa-location-dot w-5 text-center mt-1 shrink-0"></i> Jl. Andalas raya No.125, Andalas, Kec. Padang Tim., Kota Padang, Sumatera Barat 25171</span></li>
                         <li><a href="mailto:kalafinnali@gmail.com" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-envelope w-5 text-center"></i> kalafinnali@gmail.com</a></li>
-                        <li><a href="https://wa.me/628218417911" target="_blank" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center text-emerald-500"></i> 08218417911</a></li>
-                        <li><a href="tel:08218417911" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> 08218417911</a></li>
+                        <li><a href="https://wa.me/6281372869386" target="_blank" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-brands fa-whatsapp w-5 text-center text-emerald-500"></i> 081372869386</a></li>
+                        <li><a href="tel:081372869386" class="text-sm text-text-muted hover:text-primary transition flex items-center gap-2"><i class="fa-solid fa-phone w-5 text-center"></i> 081372869386</a></li>
                     </ul>
                 </div>
             </div>
@@ -470,6 +470,59 @@
                 qtyInput.value = 1;
                 let subtotal = unitPrice * 1;
                 subtotalDisplay.innerText = 'Rp' + subtotal.toLocaleString('id-ID');
+            }
+        });
+
+        // Review Rating Star Selection & Hover Effects
+        function setRating(rating) {
+            const ratingInput = document.getElementById('ratingValue');
+            if (ratingInput) {
+                ratingInput.value = rating;
+            }
+            
+            const starBtns = document.querySelectorAll('.star-btn');
+            starBtns.forEach(btn => {
+                const val = parseInt(btn.getAttribute('data-value'));
+                if (val <= rating) {
+                    btn.classList.remove('text-gray-300');
+                    btn.classList.add('text-amber-500');
+                } else {
+                    btn.classList.remove('text-amber-500');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const starSelector = document.getElementById('star-selector');
+            if (starSelector) {
+                const starBtns = starSelector.querySelectorAll('.star-btn');
+                const ratingInput = document.getElementById('ratingValue');
+
+                function highlightStars(rating) {
+                    starBtns.forEach(btn => {
+                        const val = parseInt(btn.getAttribute('data-value'));
+                        if (val <= rating) {
+                            btn.classList.remove('text-gray-300');
+                            btn.classList.add('text-amber-500');
+                        } else {
+                            btn.classList.remove('text-amber-500');
+                            btn.classList.add('text-gray-300');
+                        }
+                    });
+                }
+
+                starBtns.forEach(btn => {
+                    btn.addEventListener('mouseenter', function() {
+                        const hoverVal = parseInt(this.getAttribute('data-value'));
+                        highlightStars(hoverVal);
+                    });
+                });
+
+                starSelector.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(ratingInput.value) || 0;
+                    highlightStars(currentRating);
+                });
             }
         });
     </script>
