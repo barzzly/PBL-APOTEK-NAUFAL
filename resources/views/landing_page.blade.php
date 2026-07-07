@@ -173,19 +173,7 @@
             </div>
         </section>
 
-        <!-- Promo Banners -->
-        <section class="max-w-7xl mx-auto px-4 py-5 flex justify-start">
-            <div class="rounded-xl overflow-hidden h-48 relative flex items-center p-8 bg-gradient-to-br from-[#fff3e0] to-[#ffe0b2] w-full max-w-2xl shadow-sm group">
-                <div class="w-2/3" style="position: relative; z-index: 10;">
-                    <h3 class="text-xl font-bold text-text-main mb-2">Kebutuhan Si Kecil</h3>
-                    <p class="text-sm text-text-muted mb-4 hidden sm:block">Belanja produk ibu & anak sekarang lebih hemat. Gratis Ongkir!</p>
-                    <a href="#" class="px-4 py-2 bg-secondary text-white text-xs font-semibold rounded-lg hover:bg-[#d85517] transition inline-block">Cek Sekarang</a>
-                </div>
-                <div class="absolute select-none pointer-events-none" style="right: -1.5rem; bottom: -1.5rem; color: rgba(245, 124, 0, 0.12); font-size: 8rem; z-index: 1; line-height: 1;">
-                    <i class="fa-solid fa-baby-carriage"></i>
-                </div>
-            </div>
-        </section>
+
 
         <!-- Products Section -->
         <section id="products-section" class="max-w-7xl mx-auto px-4 py-8">
