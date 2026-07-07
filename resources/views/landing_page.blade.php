@@ -173,23 +173,7 @@
             </div>
         </section>
 
-        <!-- Promo Banners -->
-        <section class="max-w-7xl mx-auto px-4 py-5 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="rounded-xl overflow-hidden h-48 relative flex items-center p-8 bg-gradient-to-br from-primary-light to-[#ccecd8]">
-                <div class="z-10 w-2/3">
-                    <h3 class="text-xl font-bold text-text-main mb-2">Diskon Spesial Vitamin</h3>
-                    <p class="text-sm text-text-muted mb-4 hidden sm:block">Jaga daya tahan tubuh dengan vitamin lengkap. Diskon hingga 30%!</p>
-                    <a href="#" class="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-dark transition inline-block">Lihat Promo</a>
-                </div>
-            </div>
-            <div class="rounded-xl overflow-hidden h-48 relative flex items-center p-8 bg-gradient-to-br from-[#fff3e0] to-[#ffe0b2]">
-                <div class="z-10 w-2/3">
-                    <h3 class="text-xl font-bold text-text-main mb-2">Kebutuhan Si Kecil</h3>
-                    <p class="text-sm text-text-muted mb-4 hidden sm:block">Belanja produk ibu & anak sekarang lebih hemat. Gratis Ongkir!</p>
-                    <a href="#" class="px-4 py-2 bg-secondary text-white text-xs font-semibold rounded-lg hover:bg-[#d85517] transition inline-block">Cek Sekarang</a>
-                </div>
-            </div>
-        </section>
+
 
         <!-- Products Section -->
         <section id="products-section" class="max-w-7xl mx-auto px-4 py-8">
