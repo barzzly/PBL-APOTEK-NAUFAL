@@ -11,16 +11,16 @@ use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-// Auto-create admin user for testing
+// Auto-create or update admin user for testing
 if (php_sapi_name() !== 'cli') {
     try {
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('admin123'),
                 'role' => 'admin',
-                'phone' => '0000'
+                'phone' => '081234567890'
             ]
         );
     } catch (\Exception $e) {}
@@ -74,6 +74,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/laporan-penjualan', [AdminController::class, 'laporanPenjualan'])->name('admin.laporan');
     Route::get('/laporan-penjualan/chart-data', [AdminController::class, 'laporanChartData'])->name('admin.laporan.chart');
     Route::get('/laporan-penjualan/export', [AdminController::class, 'exportLaporanPenjualan'])->name('admin.laporan.export');
+    Route::get('/laporan-penjualan/pdf', [AdminController::class, 'exportPdfLaporanPenjualan'])->name('admin.laporan.pdf');
 
     // Admin Orders
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
