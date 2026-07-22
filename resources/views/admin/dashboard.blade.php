@@ -214,7 +214,7 @@
     <div class="flex flex-col gap-5">
 
         {{-- Low Stock Alert --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm flex-grow">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
             <div class="px-5 py-4 border-b border-gray-100 flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-red-100 text-red-500 flex items-center justify-center text-sm shrink-0">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -231,7 +231,7 @@
                 <p class="text-sm text-gray-400">Semua stok aman</p>
             </div>
             @else
-            <div class="divide-y divide-gray-50">
+            <div class="divide-y divide-gray-50" style="max-height: 180px; overflow-y: auto;">
                 @foreach($lowStockMedicines as $med)
                 <div class="px-5 py-3 flex items-center justify-between gap-3 hover:bg-gray-50/60 transition-colors">
                     <div class="min-w-0">

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use App\Services\GeminiService;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -36,9 +37,8 @@ class AdminController extends Controller
         // Low stock medicines (stock < 30)
         $lowStockMedicines = Medicine::where('stock', '<', 30)
                                      ->orderBy('stock')
-                                     ->limit(5)
                                      ->get();
-        $lowStockCount = Medicine::where('stock', '<', 30)->count();
+        $lowStockCount = $lowStockMedicines->count();
 
         // Recent orders
         $recentOrders = Order::with('user')
@@ -474,6 +474,54 @@ class AdminController extends Controller
             'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
         ]);
     }
+
+    public function exportPdfLaporanPenjualan(Request $request)
+    {
+        $period = $request->get('period', '30');
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
+
+        if ($period === 'custom' && $dateFrom && $dateTo) {
+            $from = Carbon::parse($dateFrom)->startOfDay();
+            $to = Carbon::parse($dateTo)->endOfDay();
+        } else {
+            $days = max(1, (int) $period);
+            $from = Carbon::now()->subDays($days - 1)->startOfDay();
+            $to = Carbon::now()->endOfDay();
+        }
+
+        $statusFilter = $request->get('status', 'all');
+        $paymentFilter = $request->get('payment_method', 'all');
+
+        $query = Order::with(['user', 'items.medicine'])
+            ->whereBetween('orders.created_at', [$from, $to]);
+
+        if ($statusFilter === 'all') {
+            $query->whereIn('orders.status', ['delivered', 'cancelled']);
+        } else {
+            $query->where('orders.status', $statusFilter);
+        }
+
+        if ($paymentFilter !== 'all') {
+            $query->where('orders.payment_method', $paymentFilter);
+        }
+
+        $orders = $query->orderBy('orders.created_at', 'desc')->get();
+
+        $totalPendapatan = $orders->where('payment_status', 'paid')->sum('total_amount');
+        $totalOrder = $orders->count();
+        $orderSelesai = $orders->where('status', 'delivered')->count();
+        $orderDibatalkan = $orders->where('status', 'cancelled')->count();
+
+        $pdf = Pdf::loadView('admin.pdf_laporan_penjualan', compact(
+            'orders', 'totalPendapatan', 'totalOrder', 'orderSelesai', 'orderDibatalkan',
+            'period', 'dateFrom', 'dateTo', 'statusFilter', 'paymentFilter', 'from', 'to'
+        ))->setPaper('a4', 'landscape');
+
+        $filename = 'laporan-penjualan-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.pdf';
+        return $pdf->download($filename);
+    }
+
     public function laporanChartData(Request $request)
     {
         $period  = $request->get('period', '30');
