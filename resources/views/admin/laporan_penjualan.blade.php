@@ -76,6 +76,10 @@
                 class="flex items-center gap-2 bg-emerald-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-emerald-600/20 hover:bg-emerald-700 transition-all whitespace-nowrap">
                 <i class="fa-solid fa-file-excel text-xs"></i> Export Excel
             </a>
+            <a href="{{ route('admin.laporan.pdf', request()->query()) }}" target="_blank"
+                class="flex items-center gap-2 bg-rose-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-rose-600/20 hover:bg-rose-700 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-file-pdf text-xs"></i> Export PDF
+            </a>
         </div>
     </div>
 
