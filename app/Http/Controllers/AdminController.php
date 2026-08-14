@@ -268,6 +268,121 @@ class AdminController extends Controller
         return back()->with('success', 'Obat berhasil dihapus!');
     }
 
+    public function importMedicines(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240', // max 10MB
+            'default_price' => 'required|numeric|min:0',
+            'default_stock' => 'required|integer|min:0',
+        ]);
+
+        $file = $request->file('file');
+        $defaultPrice = $request->default_price;
+        $defaultStock = $request->default_stock;
+
+        DB::beginTransaction();
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->getRealPath());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $rows = $worksheet->toArray();
+            
+            $importedCount = 0;
+            $updatedCount = 0;
+
+            foreach ($rows as $row) {
+                // Trim values
+                $name = isset($row[0]) ? trim($row[0]) : '';
+                $categoryName = isset($row[1]) ? trim($row[1]) : '';
+                $unit = isset($row[3]) ? trim($row[3]) : 'box';
+
+                // Skip empty names
+                if (empty($name)) {
+                    continue;
+                }
+
+                // Skip common headers
+                if (in_array(strtolower($name), ['name', 'nama', 'nama obat', 'nama_obat', 'title'])) {
+                    continue;
+                }
+
+                // Category logic
+                if (empty($categoryName)) {
+                    $categoryName = 'Umum';
+                }
+                
+                $category = Category::firstOrCreate(
+                    ['name' => $categoryName],
+                    ['slug' => Str::slug($categoryName)]
+                );
+
+                // Unit normalization
+                if (empty($unit)) {
+                    $unit = 'box';
+                }
+                $unit = strtolower($unit);
+                if ($unit === 'kardus') {
+                    $unit = 'box';
+                }
+
+                $slug = Str::slug($name);
+                if (empty($slug)) {
+                    $slug = 'obat-' . time() . '-' . rand(100, 999);
+                }
+
+                $requiresPrescription = (strcasecmp($categoryName, 'Obat Keras') === 0);
+
+                // Read price and stock columns if present in the spreadsheet (optional columns 5 and 6)
+                $hasPriceInRow = isset($row[4]) && trim($row[4]) !== '';
+                $price = $this->parsePrice($hasPriceInRow ? $row[4] : null, $defaultPrice);
+
+                $hasStockInRow = isset($row[5]) && trim($row[5]) !== '';
+                $stock = $defaultStock;
+                if ($hasStockInRow && filter_var(trim($row[5]), FILTER_VALIDATE_INT) !== false && (int)trim($row[5]) >= 0) {
+                    $stock = (int)trim($row[5]);
+                }
+
+                // Check if slug or name already exists
+                $existing = Medicine::where('slug', $slug)->first();
+
+                if ($existing) {
+                    $updateData = [
+                        'category_id' => $category->id,
+                        'unit' => $unit,
+                        'requires_prescription' => $requiresPrescription,
+                    ];
+                    
+                    if ($hasPriceInRow) {
+                        $updateData['price'] = $price;
+                    }
+                    if ($hasStockInRow) {
+                        $updateData['stock'] = $stock;
+                    }
+
+                    $existing->update($updateData);
+                    $updatedCount++;
+                } else {
+                    Medicine::create([
+                        'category_id' => $category->id,
+                        'name' => $name,
+                        'slug' => $slug,
+                        'unit' => $unit,
+                        'price' => $price,
+                        'stock' => $stock,
+                        'requires_prescription' => $requiresPrescription,
+                        'is_active' => true,
+                    ]);
+                    $importedCount++;
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('admin.medicines')->with('success', "Berhasil mengimpor data obat! ($importedCount ditambahkan, $updatedCount diperbarui)");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal memproses file impor: ' . $e->getMessage());
+        }
+    }
+
     public function generateDescription(Request $request)
     {
         $request->validate([
@@ -824,6 +939,48 @@ class AdminController extends Controller
         imagedestroy($image);
 
         return $folder . '/' . $newFilename;
+    }
+
+    private function parsePrice($priceStr, $defaultPrice)
+    {
+        if ($priceStr === null || trim($priceStr) === '') {
+            return $defaultPrice;
+        }
+
+        // Clean up Rp / Rp. prefix first to prevent keeping the prefix dot
+        $priceStr = preg_replace('/^Rp\.\s*/i', '', trim($priceStr));
+        $priceStr = preg_replace('/^Rp\s*/i', '', $priceStr);
+
+        // Remove any spaces/symbols, keeping only digits, dot, and comma
+        $clean = preg_replace('/[^\d.,]/', '', $priceStr);
+        if ($clean === '') {
+            return $defaultPrice;
+        }
+
+        // If there is both dot and comma
+        if (strpos($clean, '.') !== false && strpos($clean, ',') !== false) {
+            $clean = str_replace('.', '', $clean);
+            $clean = str_replace(',', '.', $clean);
+        } elseif (strpos($clean, ',') !== false) {
+            // Only comma: e.g. 20,000 or 5,5
+            if (preg_match('/,\d{3}$/', $clean)) {
+                $clean = str_replace(',', '', $clean);
+            } else {
+                $clean = str_replace(',', '.', $clean);
+            }
+        }
+
+        $val = floatval($clean);
+
+        // If single dot is followed by 3 or more digits and the value is less than 1000,
+        // it means the dot was a thousands separator (e.g. 20.000 -> 20000, 26.1267 -> 26126.7)
+        if (strpos($clean, '.') !== false && substr_count($clean, '.') === 1) {
+            if ($val < 1000 && preg_match('/\.\d{3,}/', $clean)) {
+                $val *= 1000;
+            }
+        }
+
+        return $val >= 0 ? $val : $defaultPrice;
     }
 }
 

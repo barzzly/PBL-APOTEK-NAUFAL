@@ -23,7 +23,7 @@ class HomeController extends Controller
             });
         }
         
-        $medicines = $query->get();
+        $medicines = $query->inRandomOrder()->get();
         
         return view('landing_page', compact('categories', 'medicines'));
     }

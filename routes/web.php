@@ -65,6 +65,7 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/medicines', [AdminController::class, 'medicines'])->name('admin.medicines');
     Route::get('/medicines/create', [AdminController::class, 'createMedicine'])->name('admin.medicines.create');
     Route::post('/medicines', [AdminController::class, 'storeMedicine'])->name('admin.medicines.store');
+    Route::post('/medicines/import', [AdminController::class, 'importMedicines'])->name('admin.medicines.import');
     Route::get('/medicines/{id}/edit', [AdminController::class, 'editMedicine'])->name('admin.medicines.edit');
     Route::put('/medicines/{id}', [AdminController::class, 'updateMedicine'])->name('admin.medicines.update');
     Route::delete('/medicines/{id}', [AdminController::class, 'deleteMedicine'])->name('admin.medicines.destroy');
