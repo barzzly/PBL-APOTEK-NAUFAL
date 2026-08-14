@@ -172,15 +172,16 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th class="text-center" style="width: 4%;">No</th>
-                <th style="width: 11%;">Tanggal</th>
-                <th style="width: 14%;">No. Order</th>
-                <th style="width: 16%;">Pelanggan</th>
-                <th class="text-center" style="width: 9%;">Tipe Order</th>
-                <th class="text-center" style="width: 10%;">Status Order</th>
-                <th class="text-center" style="width: 11%;">Metode Bayar</th>
-                <th class="text-center" style="width: 11%;">Status Bayar</th>
-                <th class="text-right" style="width: 14%;">Total (Rp)</th>
+                <th class="text-center" style="width: 3%;">No</th>
+                <th style="width: 10%;">Tanggal</th>
+                <th style="width: 12%;">No. Order</th>
+                <th style="width: 13%;">Pelanggan</th>
+                <th style="width: 22%;">Rincian Obat Terjual (Qty)</th>
+                <th class="text-center" style="width: 7%;">Tipe</th>
+                <th class="text-center" style="width: 9%;">Status</th>
+                <th class="text-center" style="width: 8%;">Metode</th>
+                <th class="text-center" style="width: 6%;">Bayar</th>
+                <th class="text-right" style="width: 10%;">Total (Rp)</th>
             </tr>
         </thead>
         <tbody>
@@ -192,6 +193,13 @@
                 <td>
                     <div class="font-bold">{{ optional($order->user)->name ?? 'Guest' }}</div>
                     <div style="font-size: 8.5px; color: #6b7280;">{{ optional($order->user)->phone ?? '-' }}</div>
+                </td>
+                <td style="font-size: 9px; line-height: 1.3;">
+                    @forelse($order->items as $item)
+                        <div>• {{ $item->medicine_name }} <strong>({{ $item->quantity }}x)</strong></div>
+                    @empty
+                        <span style="color: #9ca3af;">-</span>
+                    @endforelse
                 </td>
                 <td class="text-center">
                     {{ $order->order_type === 'delivery' ? 'Delivery' : 'Pickup' }}
@@ -221,7 +229,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="text-center" style="padding: 20px; color: #9ca3af;">
+                <td colspan="10" class="text-center" style="padding: 20px; color: #9ca3af;">
                     Tidak ada data transaksi penjualan pada periode ini.
                 </td>
             </tr>
@@ -230,7 +238,7 @@
         @if($orders->count() > 0)
         <tfoot>
             <tr style="background-color: #f3f4f6; font-weight: bold;">
-                <td colspan="8" class="text-right" style="padding: 8px;">Total Pendapatan (Lunas):</td>
+                <td colspan="9" class="text-right" style="padding: 8px;">Total Pendapatan (Lunas):</td>
                 <td class="text-right" style="padding: 8px; color: #16704A; font-size: 11px;">
                     Rp {{ number_format($totalPendapatan, 0, ',', '.') }}
                 </td>
@@ -238,6 +246,36 @@
         </tfoot>
         @endif
     </table>
+
+    @if(isset($soldMedicines) && $soldMedicines->count() > 0)
+    <div style="page-break-inside: avoid; margin-top: 15px;">
+        <div style="font-size: 12px; font-weight: bold; color: #16704A; margin-bottom: 6px; padding: 4px 6px; background-color: #e6efe5; border-left: 4px solid #16704A;">
+            RINCIAN AKUMULASI OBAT TERJUAL PADA PERIODE INI
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width: 5%;">No</th>
+                    <th style="width: 45%;">Nama Obat</th>
+                    <th style="width: 25%;">Kategori</th>
+                    <th class="text-center" style="width: 12%;">Total Qty Terjual</th>
+                    <th class="text-right" style="width: 13%;">Total Pendapatan</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($soldMedicines as $idx => $med)
+                <tr>
+                    <td class="text-center">{{ $idx + 1 }}</td>
+                    <td class="font-bold">{{ $med->medicine_name }}</td>
+                    <td>{{ optional(optional($med->medicine)->category)->name ?? '-' }}</td>
+                    <td class="text-center font-bold" style="color: #16704A;">{{ number_format($med->total_qty) }}</td>
+                    <td class="text-right font-bold">Rp {{ number_format($med->total_revenue, 0, ',', '.') }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
 
     {{-- Footer --}}
     <table class="footer">

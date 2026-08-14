@@ -87,7 +87,6 @@
                 @foreach($categories->take(5) as $navCat)
                 <li><a href="{{ route('category.show', $navCat->slug) }}" class="text-text-main hover:text-primary font-medium text-sm transition">{{ $navCat->name }}</a></li>
                 @endforeach
-                <li><a href="#" class="text-text-main hover:text-primary font-medium text-sm transition">Promo</a></li>
             </ul>
         </div>
     </nav>
@@ -173,23 +172,6 @@
             </div>
         </section>
 
-        <!-- Promo Banners -->
-        <section class="max-w-7xl mx-auto px-4 py-5 grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div class="rounded-xl overflow-hidden h-48 relative flex items-center p-8 bg-gradient-to-br from-primary-light to-[#ccecd8]">
-                <div class="z-10 w-2/3">
-                    <h3 class="text-xl font-bold text-text-main mb-2">Diskon Spesial Vitamin</h3>
-                    <p class="text-sm text-text-muted mb-4 hidden sm:block">Jaga daya tahan tubuh dengan vitamin lengkap. Diskon hingga 30%!</p>
-                    <a href="#" class="px-4 py-2 bg-primary text-white text-xs font-semibold rounded-lg hover:bg-primary-dark transition inline-block">Lihat Promo</a>
-                </div>
-            </div>
-            <div class="rounded-xl overflow-hidden h-48 relative flex items-center p-8 bg-gradient-to-br from-[#fff3e0] to-[#ffe0b2]">
-                <div class="z-10 w-2/3">
-                    <h3 class="text-xl font-bold text-text-main mb-2">Kebutuhan Si Kecil</h3>
-                    <p class="text-sm text-text-muted mb-4 hidden sm:block">Belanja produk ibu & anak sekarang lebih hemat. Gratis Ongkir!</p>
-                    <a href="#" class="px-4 py-2 bg-secondary text-white text-xs font-semibold rounded-lg hover:bg-[#d85517] transition inline-block">Cek Sekarang</a>
-                </div>
-            </div>
-        </section>
 
         <!-- Products Section -->
         <section id="products-section" class="max-w-7xl mx-auto px-4 py-8">
@@ -305,18 +287,15 @@
                     <ul class="flex flex-col gap-3">
                         <li><a href="{{ route('tickets.create') }}" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
                         <li><a href="{{ route('tickets.consult.create') }}" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Apoteker</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cek Lab</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Artikel Kesehatan</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Promo Menarik</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Bantuan & Panduan</h3>
                     <ul class="flex flex-col gap-3">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
+                        <li><a href="{{ route('cara_belanja') }}" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
+                        <li><a href="{{ route('metode_pembayaran') }}" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
+                        <li><a href="{{ route('pengiriman') }}" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
                         <li><a href="{{ route('syarat_ketentuan') }}" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
                         <li><a href="{{ route('kebijakan_privasi') }}" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
                     </ul>

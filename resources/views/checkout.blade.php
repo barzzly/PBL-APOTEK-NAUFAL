@@ -349,20 +349,17 @@
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Layanan</h3>
                     <ul class="flex flex-col gap-3 text-left">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Dokter</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cek Lab</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Artikel Kesehatan</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Promo Menarik</a></li>
+                        <li><a href="{{ route('tickets.create') }}" class="text-sm text-text-muted hover:text-primary transition">Tebus Resep</a></li>
+                        <li><a href="{{ route('tickets.consult.create') }}" class="text-sm text-text-muted hover:text-primary transition">Konsultasi Apoteker</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h3 class="text-base font-semibold text-text-main mb-5">Bantuan & Panduan</h3>
                     <ul class="flex flex-col gap-3 text-left">
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
-                        <li><a href="#" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
+                        <li><a href="{{ route('cara_belanja') }}" class="text-sm text-text-muted hover:text-primary transition">Cara Belanja</a></li>
+                        <li><a href="{{ route('metode_pembayaran') }}" class="text-sm text-text-muted hover:text-primary transition">Metode Pembayaran</a></li>
+                        <li><a href="{{ route('pengiriman') }}" class="text-sm text-text-muted hover:text-primary transition">Pengiriman</a></li>
                         <li><a href="{{ route('syarat_ketentuan') }}" class="text-sm text-text-muted hover:text-primary transition">Syarat & Ketentuan</a></li>
                         <li><a href="{{ route('kebijakan_privasi') }}" class="text-sm text-text-muted hover:text-primary transition">Kebijakan Privasi</a></li>
                     </ul>

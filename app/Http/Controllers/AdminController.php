@@ -405,7 +405,7 @@ class AdminController extends Controller
         $statusFilter = $request->get('status', 'all');
         $paymentFilter = $request->get('payment_method', 'all');
 
-        $query = Order::with('user')
+        $query = Order::with(['user', 'items.medicine'])
             ->whereBetween('orders.created_at', [$from, $to]);
 
         if ($statusFilter === 'all') {
@@ -420,26 +420,56 @@ class AdminController extends Controller
 
         $orders = $query->orderBy('orders.created_at', 'desc')->get();
         $paidRevenue = $orders->where('payment_status', 'paid')->sum('total_amount');
+
+        // Ringkasan obat terjual pada periode ini
+        $soldMedicines = OrderItem::select(
+                'medicine_id',
+                'medicine_name',
+                DB::raw('SUM(quantity) as total_qty'),
+                DB::raw('SUM(subtotal) as total_revenue')
+            )
+            ->whereHas('order', function ($q) use ($from, $to, $statusFilter, $paymentFilter) {
+                $q->whereBetween('created_at', [$from, $to]);
+                if ($statusFilter === 'all') {
+                    $q->whereIn('status', ['delivered', 'cancelled']);
+                } else {
+                    $q->where('status', $statusFilter);
+                }
+                if ($paymentFilter !== 'all') {
+                    $q->where('payment_method', $paymentFilter);
+                }
+            })
+            ->with('medicine.category')
+            ->groupBy('medicine_id', 'medicine_name')
+            ->orderByDesc('total_qty')
+            ->get();
+
         $filename = 'laporan-penjualan-' . $from->format('Ymd') . '-' . $to->format('Ymd') . '.xls';
 
-        return response()->streamDownload(function () use ($orders, $from, $to, $statusFilter, $paymentFilter, $paidRevenue) {
+        return response()->streamDownload(function () use ($orders, $soldMedicines, $from, $to, $statusFilter, $paymentFilter, $paidRevenue) {
             echo '<html><head><meta charset="UTF-8"><style>';
             echo 'table{border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px}';
             echo 'th{background:#16704A;color:#fff;font-weight:bold}th,td{border:1px solid #DDE7E2;padding:6px 8px}';
             echo '.title{font-size:18px;font-weight:bold;text-align:center}.meta{text-align:center;color:#333}.money{mso-number-format:"\\0022Rp\\0022 #,##0";text-align:right}.bold{font-weight:bold}';
             echo '</style></head><body>';
+            
+            // TABEL 1: DAFTAR TRANSAKSI
             echo '<table>';
-            echo '<tr><td colspan="14" class="title">Laporan Penjualan Apotek Naufal</td></tr>';
-            echo '<tr><td colspan="14" class="meta">Periode: ' . e($from->format('d/m/Y')) . ' - ' . e($to->format('d/m/Y')) . '</td></tr>';
-            echo '<tr><td colspan="14" class="meta">Status: ' . e($statusFilter === 'all' ? 'Semua' : $statusFilter) . ' | Metode Bayar: ' . e($paymentFilter === 'all' ? 'Semua' : strtoupper($paymentFilter)) . '</td></tr>';
+            echo '<tr><td colspan="15" class="title">Laporan Penjualan Apotek Naufal</td></tr>';
+            echo '<tr><td colspan="15" class="meta">Periode: ' . e($from->format('d/m/Y')) . ' - ' . e($to->format('d/m/Y')) . '</td></tr>';
+            echo '<tr><td colspan="15" class="meta">Status: ' . e($statusFilter === 'all' ? 'Semua' : $statusFilter) . ' | Metode Bayar: ' . e($paymentFilter === 'all' ? 'Semua' : strtoupper($paymentFilter)) . '</td></tr>';
             echo '<tr></tr>';
             echo '<tr>';
-            foreach (['No', 'Tanggal', 'No Order', 'Pelanggan', 'Email', 'Telepon', 'Jenis Order', 'Status Order', 'Metode Bayar', 'Status Bayar', 'Subtotal', 'Ongkir', 'Diskon', 'Total'] as $header) {
+            foreach (['No', 'Tanggal', 'No Order', 'Pelanggan', 'Email', 'Telepon', 'Jenis Order', 'Status Order', 'Metode Bayar', 'Status Bayar', 'Rincian Obat (Qty)', 'Subtotal', 'Ongkir', 'Diskon', 'Total'] as $header) {
                 echo '<th>' . e($header) . '</th>';
             }
             echo '</tr>';
 
             foreach ($orders as $index => $order) {
+                $itemDetails = $order->items->map(function($item) {
+                    return $item->medicine_name . ' (' . $item->quantity . 'x)';
+                })->implode('; ');
+
                 $values = [
                     $index + 1,
                     optional($order->created_at)->format('d/m/Y H:i'),
@@ -451,6 +481,7 @@ class AdminController extends Controller
                     $order->status_label,
                     $order->payment_method_label,
                     $order->payment_status_label,
+                    $itemDetails ?: '-',
                     (float) $order->subtotal,
                     (float) $order->shipping_cost,
                     (float) $order->discount,
@@ -459,15 +490,37 @@ class AdminController extends Controller
 
                 echo '<tr>';
                 foreach ($values as $columnIndex => $value) {
-                    $class = $columnIndex >= 10 ? ' class="money"' : '';
+                    $class = $columnIndex >= 11 ? ' class="money"' : '';
                     echo '<td' . $class . '>' . e((string) $value) . '</td>';
                 }
                 echo '</tr>';
             }
 
             echo '<tr></tr>';
-            echo '<tr><td colspan="13" class="bold">Total Pendapatan Lunas</td><td class="money bold">' . e((string) (float) $paidRevenue) . '</td></tr>';
-            echo '<tr><td colspan="13" class="bold">Total Order</td><td class="bold">' . e((string) $orders->count()) . '</td></tr>';
+            echo '<tr><td colspan="14" class="bold">Total Pendapatan Lunas</td><td class="money bold">' . e((string) (float) $paidRevenue) . '</td></tr>';
+            echo '<tr><td colspan="14" class="bold">Total Order</td><td class="bold">' . e((string) $orders->count()) . '</td></tr>';
+            echo '</table>';
+
+            echo '<br/><br/>';
+
+            // TABEL 2: RINCIAN OBAT TERJUAL
+            echo '<table>';
+            echo '<tr><td colspan="5" class="title" style="background:#E6EFE5;color:#16704A;font-size:14px;padding:8px;">RINCIAN AKUMULASI OBAT TERJUAL</td></tr>';
+            echo '<tr>';
+            foreach (['No', 'Nama Obat', 'Kategori', 'Total Qty Terjual', 'Total Pendapatan (Rp)'] as $header) {
+                echo '<th>' . e($header) . '</th>';
+            }
+            echo '</tr>';
+
+            foreach ($soldMedicines as $idx => $med) {
+                echo '<tr>';
+                echo '<td>' . ($idx + 1) . '</td>';
+                echo '<td>' . e($med->medicine_name) . '</td>';
+                echo '<td>' . e(optional(optional($med->medicine)->category)->name ?? '-') . '</td>';
+                echo '<td class="bold">' . e((string) $med->total_qty) . '</td>';
+                echo '<td class="money bold">' . e((string) (float) $med->total_revenue) . '</td>';
+                echo '</tr>';
+            }
             echo '</table></body></html>';
         }, $filename, [
             'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
@@ -513,8 +566,31 @@ class AdminController extends Controller
         $orderSelesai = $orders->where('status', 'delivered')->count();
         $orderDibatalkan = $orders->where('status', 'cancelled')->count();
 
+        // Rincian akumulasi obat terjual
+        $soldMedicines = OrderItem::select(
+                'medicine_id',
+                'medicine_name',
+                DB::raw('SUM(quantity) as total_qty'),
+                DB::raw('SUM(subtotal) as total_revenue')
+            )
+            ->whereHas('order', function ($q) use ($from, $to, $statusFilter, $paymentFilter) {
+                $q->whereBetween('created_at', [$from, $to]);
+                if ($statusFilter === 'all') {
+                    $q->whereIn('status', ['delivered', 'cancelled']);
+                } else {
+                    $q->where('status', $statusFilter);
+                }
+                if ($paymentFilter !== 'all') {
+                    $q->where('payment_method', $paymentFilter);
+                }
+            })
+            ->with('medicine.category')
+            ->groupBy('medicine_id', 'medicine_name')
+            ->orderByDesc('total_qty')
+            ->get();
+
         $pdf = Pdf::loadView('admin.pdf_laporan_penjualan', compact(
-            'orders', 'totalPendapatan', 'totalOrder', 'orderSelesai', 'orderDibatalkan',
+            'orders', 'soldMedicines', 'totalPendapatan', 'totalOrder', 'orderSelesai', 'orderDibatalkan',
             'period', 'dateFrom', 'dateTo', 'statusFilter', 'paymentFilter', 'from', 'to'
         ))->setPaper('a4', 'landscape');
 

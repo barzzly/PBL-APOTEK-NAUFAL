@@ -68,6 +68,14 @@
                 <i class="fa-solid fa-ticket w-5 {{ request()->routeIs('admin.tickets*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Ticket</span>
             </a>
+            <a href="{{ route('admin.suppliers.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.suppliers*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-truck-field w-5 {{ request()->routeIs('admin.suppliers*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Data Supplier</span>
+            </a>
+            <a href="{{ route('admin.supplier_transactions.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.supplier_transactions*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
+                <i class="fa-solid fa-boxes-packing w-5 {{ request()->routeIs('admin.supplier_transactions*') ? 'text-white/90' : 'text-gray-400' }}"></i>
+                <span class="sidebar-text">Stok Masuk / Keluar</span>
+            </a>
             <a href="{{ route('admin.laporan') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl {{ request()->routeIs('admin.laporan*') ? 'bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/20' : 'text-gray-500 hover:bg-primary-light hover:text-primary' }} transition-all font-medium text-sm">
                 <i class="fa-solid fa-chart-line w-5 {{ request()->routeIs('admin.laporan*') ? 'text-white/90' : 'text-gray-400' }}"></i>
                 <span class="sidebar-text">Laporan Penjualan</span>

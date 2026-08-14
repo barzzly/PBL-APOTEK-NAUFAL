@@ -7,13 +7,13 @@
 </div>
 
 {{-- ── GREETING BANNER ── --}}
-<div class="bg-gradient-to-r from-primary to-emerald-400 rounded-2xl p-6 mb-6 text-white relative overflow-hidden">
-    <div class="absolute -right-8 -top-8 w-40 h-40 bg-white/10 rounded-full"></div>
-    <div class="absolute -right-2 bottom-0 w-24 h-24 bg-white/5 rounded-full"></div>
-    <div class="relative">
-        <p class="text-sm font-medium text-white/75 mb-1">{{ now()->isoFormat('dddd, DD MMMM YYYY') }}</p>
-        <h2 class="text-2xl font-bold mb-1">Selamat datang, {{ auth()->user()->name ?? 'Admin' }}!</h2>
-        <p class="text-sm text-white/80">Berikut ringkasan aktivitas Apotek Naufal hari ini.</p>
+<div class="relative rounded-2xl min-h-[160px] p-6 mb-6 text-white overflow-hidden shadow-md flex items-center">
+    <img src="{{ asset('images/dashboard_banner.jpg') }}" alt="Apotek Naufal Dashboard" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-r from-primary-dark/90 via-primary/80 to-transparent"></div>
+    <div class="relative z-10 max-w-xl">
+        <p class="text-xs font-semibold text-emerald-200 uppercase tracking-widest mb-1">{{ now()->isoFormat('dddd, DD MMMM YYYY') }}</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold mb-1 drop-shadow-sm">Selamat datang, {{ auth()->user()->name ?? 'Admin' }}!</h2>
+        <p class="text-xs md:text-sm text-white/90 drop-shadow-sm">Berikut ringkasan aktivitas dan performa Apotek Naufal hari ini.</p>
     </div>
 </div>
 

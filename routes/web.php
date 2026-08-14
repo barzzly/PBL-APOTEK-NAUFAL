@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WhatsAppAuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -75,6 +76,19 @@ Route::middleware('auth')->prefix('admin')->group(function () {
     Route::get('/laporan-penjualan/export', [AdminController::class, 'exportLaporanPenjualan'])->name('admin.laporan.export');
     Route::get('/laporan-penjualan/pdf', [AdminController::class, 'exportPdfLaporanPenjualan'])->name('admin.laporan.pdf');
 
+    // Supplier Routes
+    Route::get('/suppliers', [SupplierController::class, 'suppliers'])->name('admin.suppliers.index');
+    Route::get('/suppliers/create', [SupplierController::class, 'createSupplier'])->name('admin.suppliers.create');
+    Route::post('/suppliers', [SupplierController::class, 'storeSupplier'])->name('admin.suppliers.store');
+    Route::get('/suppliers/{id}/edit', [SupplierController::class, 'editSupplier'])->name('admin.suppliers.edit');
+    Route::put('/suppliers/{id}', [SupplierController::class, 'updateSupplier'])->name('admin.suppliers.update');
+    Route::delete('/suppliers/{id}', [SupplierController::class, 'destroySupplier'])->name('admin.suppliers.destroy');
+
+    // Supplier Transaction Routes (Barang Masuk / Keluar)
+    Route::get('/supplier-transactions', [SupplierController::class, 'transactions'])->name('admin.supplier_transactions.index');
+    Route::get('/supplier-transactions/create', [SupplierController::class, 'createTransaction'])->name('admin.supplier_transactions.create');
+    Route::post('/supplier-transactions', [SupplierController::class, 'storeTransaction'])->name('admin.supplier_transactions.store');
+
     // Admin Orders
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::get('/orders/{id}', [AdminController::class, 'showOrder'])->name('admin.orders.show');
@@ -124,7 +138,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// T&C and Privacy Policy routes
+// Bantuan & Panduan routes
+Route::get('/cara-belanja', function () {
+    $categories = \App\Models\Category::all();
+    return view('cara_belanja', compact('categories'));
+})->name('cara_belanja');
+
+Route::get('/metode-pembayaran', function () {
+    $categories = \App\Models\Category::all();
+    return view('metode_pembayaran', compact('categories'));
+})->name('metode_pembayaran');
+
+Route::get('/pengiriman', function () {
+    $categories = \App\Models\Category::all();
+    return view('pengiriman', compact('categories'));
+})->name('pengiriman');
+
 Route::get('/syarat-ketentuan', function () {
     $categories = \App\Models\Category::all();
     return view('syarat_ketentuan', compact('categories'));
